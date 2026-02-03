@@ -1,0 +1,2 @@
+-> Selección de cantidad de tallas por color.
+-> Mirar precios para beneficios

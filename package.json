@@ -2,14 +2,26 @@
   "name": "thegooddecisions",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cron-test": "node src/app/scripts/sync-stanley.js",
+    "normalize-test": "node src/app/scripts/normalize-products.js",
+    "falk-ross-api": "node src/app/scripts/FalkRoss/falk-ross.js"
   },
   "dependencies": {
+    "@midudev/tailwind-animations": "^0.2.0",
+    "@prisma/client": "^6.19.2",
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "framer-motion": "^12.24.10",
+    "fs": "0.0.1-security",
+    "lucide-react": "^0.562.0",
     "next": "16.1.1",
+    "prisma": "^6.19.2",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Creacion de la tabla para el JSON
+model RawProducts {
+  id  Int @id @default(autoincrement())
+  externalId String @unique
+  payload Json
+  createdAt DateTime @default(now())
+}
+
+//Creacion de las tablas de la base de datos
+model Product {
+  id  Int @id @default(autoincrement())
+  externalId String @unique
+  name String
+  createdAt DateTime @default(now())
+  shortDescription String?
+  longDescription String?
+
+  images Image[]
+  variants Variant[]
+}
+
+model Price {
+  id        Int     @id @default(autoincrement())
+  variantId Int @unique
+
+  unit      Float
+  gt10      Float?
+  gt100     Float?
+  gt500     Float?
+  gt1000    Float?
+
+  variant   Variant @relation(fields: [variantId], references: [id])
+}
+
+model Variant {
+  id  Int @id @default(autoincrement())
+  productId Int
+  size  String
+  color String?
+  sku String?
+
+  product Product @relation(fields: [productId], references: [id])
+  prices  Price[]
+
+  @@unique([productId, size, color, sku])
+}
+
+model Image {
+  id  Int @id @default(autoincrement())
+  productId Int
+  url String
+  type String?
+  color String?
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([productId, url])
+}
+
+
+
