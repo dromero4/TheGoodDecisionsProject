@@ -72,5 +72,44 @@ model Image {
   @@unique([productId, url])
 }
 
+// ROLY
+model RolyProduct {
+  productId    String @id      // ahora será baseProductId, ej: "BA909"
+  name         String
+  description  String?
+  weight       Float?
 
+  variants     RolyVariant[]
+  images       RolyImages[]     // opcional: imágenes por modelo o por color (te explico abajo)
+}
+
+model RolyVariant {
+  id           Int @id @default(autoincrement())
+
+  productId    String          // FK -> RolyProduct.productId (base)
+  colorProductId String        // ej: "BA909-01" (modelo+color)
+  size         String
+
+  color_code   Int
+  color_name   String
+  name         String?
+
+  product      RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+
+  @@index([productId])
+  @@unique([productId, colorProductId, size]) // 1 talla por color dentro del modelo
+}
+
+model RolyImages {
+  id            Int @id @default(autoincrement())
+  productId     String         // base (BA909)
+  colorProductId String        // color (BA909-01)
+  url           String
+
+  product       RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([productId, colorProductId])
+  @@unique([colorProductId, url])
+}
 

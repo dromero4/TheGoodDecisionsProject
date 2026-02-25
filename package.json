@@ -8,9 +8,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "cron-test": "node src/app/scripts/sync-stanley.js",
-    "normalize-test": "node src/app/scripts/normalize-products.js",
-    "falk-ross-api": "node src/app/scripts/FalkRoss/falk-ross.js"
+    "sync-stanley": "node src/app/scripts/sync-stanley.js",
+    "normalize-stanley": "node src/app/scripts/normalize-stanley.js",
+    "sync-roly": "node src/app/scripts/roly/sync-roly.js",
+    "test": "node src/app/scripts/test.js",
+    "reset-db": "node src/app/scripts/db/reset-db.js"
   },
   "dependencies": {
     "@midudev/tailwind-animations": "^0.2.0",

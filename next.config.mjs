@@ -3,11 +3,18 @@ const nextConfig = {
   /* config options here */
   reactCompiler: true,
   images: {
-    remotePatterns: [{
-      protocol: "https",
-      hostname: "res.cloudinary.com",
-      pathname: "/**",
-    }]
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "static.gorfactory.es",
+        pathname: "/**",
+      }
+    ]
   }
 };
 

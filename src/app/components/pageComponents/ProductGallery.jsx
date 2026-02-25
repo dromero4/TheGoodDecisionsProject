@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import ProductImages from "../ProductImages";
 import ColorSelector from "../ColorSelector";
 import ProductAccordion from "../ProductAccordion";
-import Personalization from "./personalization/Personalization";
 
 export default function ProductGallery({ product }) {
     const images = useMemo(() => product?.images ?? [], [product?.images]);
@@ -104,7 +103,6 @@ export default function ProductGallery({ product }) {
     const tiers = useMemo(() => {
         if (!price) return [];
         return [
-            { label: "1 - 9", price: price.unit },
             { label: "10 - 99", price: price.gt10 },
             { label: "100 - 499", price: price.gt100 },
             { label: "500 - 999", price: price.gt500 },
@@ -371,7 +369,6 @@ export default function ProductGallery({ product }) {
                     </p>
                 </section>
 
-                <Personalization />
 
             </section>
 

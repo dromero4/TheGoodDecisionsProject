@@ -30,11 +30,11 @@ export async function GetPrices() {
         for (const p of data){
             prices.push({
                 B2BSKUREF: p.B2BSKUREF,
-                price_per_unit: p.PurchasePrice * 1.5,
-                price_gt_10: p.RecommendedSalesPriceGT10pcs * 1.2,
-                price_gt_100: p.RecommendedSalesPriceGT100pcs * 1.2,
-                price_gt_500: p.RecommendedSalesPriceGT500pcs * 1.2,
-                price_gt_1000: p.RecommendedSalesPriceGT1000pcs * 1.2
+                price_per_unit: p.PurchasePrice,
+                price_gt_10: p.RecommendedSalesPriceGT10pcs,
+                price_gt_100: p.RecommendedSalesPriceGT100pcs,
+                price_gt_500: p.RecommendedSalesPriceGT500pcs,
+                price_gt_1000: p.RecommendedSalesPriceGT1000pc
             });
         }
 

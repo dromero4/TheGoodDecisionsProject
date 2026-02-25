@@ -6,7 +6,7 @@ export async function getFullProductCatalog() {
     const products = await GetStanleyProducts();
     const images = await GetStanleyImages();
     const prices = await GetPrices();
-
+    
     //Images
     const imagesByStyleColor = {}
 

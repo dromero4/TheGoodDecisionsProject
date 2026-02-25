@@ -6,10 +6,9 @@ import { getFullProductCatalog } from '../lib/stanley/index.js';
 async function sync() {
     const products = await getFullProductCatalog();
 
-
-    console.log(JSON.stringify(products[0], 2, null));
-
     console.log(products.length, "products to sync");
+
+    // console.log(allProducts);
 
     for (const p of products) {
         
