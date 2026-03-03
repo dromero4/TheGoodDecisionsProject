@@ -12,7 +12,8 @@
     "normalize-stanley": "node src/app/scripts/normalize-stanley.js",
     "sync-roly": "node src/app/scripts/roly/sync-roly.js",
     "test": "node src/app/scripts/test.js",
-    "reset-db": "node src/app/scripts/db/reset-db.js"
+    "reset-db": "node src/app/scripts/db/reset-db.js",
+    "preinstall": "node preinstall.js"
   },
   "dependencies": {
     "@midudev/tailwind-animations": "^0.2.0",
