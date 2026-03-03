@@ -113,3 +113,11 @@ model RolyImages {
   @@unique([colorProductId, url])
 }
 
+model RawTopTexProducts {
+  externalId String @id
+  payload    Json
+  source     String?
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+}
+
