@@ -11,11 +11,8 @@
     "sync-stanley": "node src/app/scripts/sync-stanley.js",
     "normalize-stanley": "node src/app/scripts/normalize-stanley.js",
     "sync-roly": "node src/app/scripts/roly/sync-roly.js",
-    "sync-toptex": "node src/app/scripts/sync-toptex.js",
-    "reset-db": "node src/app/scripts/db/reset-db.js",
-    "normalize-toptex": "node src/app/scripts/toptex/normalize-toptex.js",
-    "get-normalized-toptex": "node src/app/scripts/toptex/get-normalized-toptex.js",
-    "test": "node src/app/scripts/test/test.js"
+    "test": "node src/app/scripts/test.js",
+    "reset-db": "node src/app/scripts/db/reset-db.js"
   },
   "dependencies": {
     "@midudev/tailwind-animations": "^0.2.0",
