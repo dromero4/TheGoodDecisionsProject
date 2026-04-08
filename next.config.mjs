@@ -13,6 +13,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "static.gorfactory.es",
         pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.toptex.com",
+        pathname: "/**",
       }
     ]
   }

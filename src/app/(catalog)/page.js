@@ -1,37 +1,41 @@
-import Link from "next/link";
 import { getProducts } from "../lib/products.server";
-import Image from "next/image";
+import { getNormalizedToptexProducts } from "../scripts/toptex/get-normalized-toptex";
+import ProductsPaginationClient from "../components/pageComponents/products/ProductsPaginationClient";
+
+
+function normalizeStanley(products = []) {
+  return products.map((product) => ({
+    id: `stanley-${product.externalId}`,
+    name: product.name,
+    image: product.images?.[0]?.url || null,
+    href: `/product/${product.externalId}`,
+    source: "stanley",
+  }));
+}
+
+function normalizeToptex(products = []) {
+  return products.map((product, idx) => ({
+    id: `toptex-${product.id ?? idx}`,
+    name: product.name ?? "Unnamed product",
+    image: product.image || null,
+    href: null,
+    source: "toptex",
+  }));
+}
 
 export default async function Home() {
-  const products = await getProducts();
+  const [stanleyProducts, toptexProducts] = await Promise.all([
+    getProducts(),
+    getNormalizedToptexProducts(),
+  ]);
 
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4 flex-1 mr-17">
-      {products.map((product) => (
-        <Link
-            key={product.id}
-            href={`/product/${product.externalId}`}
-            className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-        > 
-            <div className="md:w-full md:h-50 relative w-full h-50">
-                {product.images[0] ? (
-                    <Image
-                        src={product.images[0].url}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                    />
-                ) : (
-                    <div className="h-full bg-gray-200 flex items-center justify-center">
-                        No Image
-                    </div>
-                )}
-            </div>
-            <div className="p-4">
-                <h2 className="text-lg font-semibold">{product.name}</h2>
-            </div>
-        </Link>
-      ))}
-    </div>
-  )
+  
+  const allProducts = [
+    ...normalizeStanley(stanleyProducts),
+    ...normalizeToptex(toptexProducts),
+  ];
+
+
+
+  return <ProductsPaginationClient products={allProducts} />;
 }
