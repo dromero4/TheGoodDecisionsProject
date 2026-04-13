@@ -1,10 +1,23 @@
+import getToken from "../../lib/roly/token.js";
+import {getRolyProducts,  groupRolyProducts} from "../../lib/roly/products.js";
+
 export default async function testRoly() {
     console.log("Testing Roly function");
     try {
         const token = await getToken();
-        console.log("TOKEN:", token);
+        const products = await getRolyProducts(token);
+
+        console.log("Roly Products:", products);
+        
+        const groupedProducts = groupRolyProducts(products);
+        console.log("Grouped Roly Products:", JSON.stringify(groupedProducts, null, 2));
+
+        return groupedProducts;
+
     } catch (error) {
         console.error("Error in testRoly function:", error);
         throw error;
     }
 }
+
+testRoly();

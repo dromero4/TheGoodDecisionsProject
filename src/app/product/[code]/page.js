@@ -14,6 +14,7 @@ export default async function ProductPage({ params }) {
   return (
    <main>
     <ProductGallery product={product} />
+    
    </main>
   );
 }

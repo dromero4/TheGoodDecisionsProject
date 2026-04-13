@@ -1,7 +1,7 @@
 import { getProducts } from "../lib/products.server";
 import { getNormalizedToptexProducts } from "../scripts/toptex/get-normalized-toptex";
+import { getNormalizedRolyProducts } from "../scripts/roly/get-normalized-roly";
 import ProductsPaginationClient from "../components/pageComponents/products/ProductsPaginationClient";
-
 
 function normalizeStanley(products = []) {
   return products.map((product) => ({
@@ -24,18 +24,17 @@ function normalizeToptex(products = []) {
 }
 
 export default async function Home() {
-  const [stanleyProducts, toptexProducts] = await Promise.all([
+  const [stanleyProducts, toptexProducts, rolyProducts] = await Promise.all([
     getProducts(),
     getNormalizedToptexProducts(),
+    getNormalizedRolyProducts(),
   ]);
 
-  
   const allProducts = [
     ...normalizeStanley(stanleyProducts),
     ...normalizeToptex(toptexProducts),
+    ...rolyProducts,
   ];
-
-
 
   return <ProductsPaginationClient products={allProducts} />;
 }
