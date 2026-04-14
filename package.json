@@ -12,6 +12,7 @@
     "normalize-stanley": "node src/app/scripts/normalize-stanley.js",
     "sync-roly": "node src/app/scripts/roly/sync-roly.js",
     "sync-toptex": "node src/app/scripts/sync-toptex.js",
+    "sync-falkross": "node src/app/scripts/sync-falkross.js",
     "reset-db": "node src/app/scripts/db/reset-db.js",
     "normalize-toptex": "node src/app/scripts/toptex/normalize-toptex.js",
     "get-normalized-toptex": "node src/app/scripts/toptex/get-normalized-toptex.js",
