@@ -15,44 +15,44 @@ datasource db {
 
 // Creacion de la tabla para el JSON
 model RawProducts {
-  id         Int      @id @default(autoincrement())
-  externalId String   @unique
-  payload    Json
-  createdAt  DateTime @default(now())
+  id  Int @id @default(autoincrement())
+  externalId String @unique
+  payload Json
+  createdAt DateTime @default(now())
 }
 
-// Creacion de las tablas de la base de datos
+//Creacion de las tablas de la base de datos
 model Product {
-  id               Int      @id @default(autoincrement())
-  externalId       String   @unique
-  name             String
-  createdAt        DateTime @default(now())
+  id  Int @id @default(autoincrement())
+  externalId String @unique
+  name String
+  createdAt DateTime @default(now())
   shortDescription String?
-  longDescription  String?
+  longDescription String?
 
-  images   Image[]
+  images Image[]
   variants Variant[]
 }
 
 model Price {
-  id        Int @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   variantId Int @unique
 
-  unit   Float
-  gt10   Float?
-  gt100  Float?
-  gt500  Float?
-  gt1000 Float?
+  unit      Float
+  gt10      Float?
+  gt100     Float?
+  gt500     Float?
+  gt1000    Float?
 
-  variant Variant @relation(fields: [variantId], references: [id])
+  variant   Variant @relation(fields: [variantId], references: [id])
 }
 
 model Variant {
-  id        Int     @id @default(autoincrement())
+  id  Int @id @default(autoincrement())
   productId Int
-  size      String
-  color     String?
-  sku       String?
+  size  String
+  color String?
+  sku String?
 
   product Product @relation(fields: [productId], references: [id])
   prices  Price[]
@@ -61,11 +61,11 @@ model Variant {
 }
 
 model Image {
-  id        Int     @id @default(autoincrement())
+  id  Int @id @default(autoincrement())
   productId Int
-  url       String
-  type      String?
-  color     String?
+  url String
+  type String?
+  color String?
 
   product Product @relation(fields: [productId], references: [id])
 
@@ -74,47 +74,68 @@ model Image {
 
 // ROLY
 model RolyProduct {
-  productId   String  @id // ahora será baseProductId, ej: "BA909"
-  name        String
-  description String?
-  weight      Float?
+  productId     String   @id   // modelcode
+  name          String   // modelname
+  displayName   String?
+  description   String?
+  family        String?
+  familyCode    String?
+  gender        String?
+  genderCode    String?
+  observations  String?
+  weight        Float?
 
-  variants RolyVariant[]
-  images   RolyImages[] // opcional: imágenes por modelo o por color (te explico abajo)
+  variants      RolyVariant[]
+  images        RolyImage[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model RolyVariant {
-  id Int @id @default(autoincrement())
+  variantId     String   @id   // itemcode
+  productId     String
+  sku           String
+  barcode       String?
 
-  productId      String // FK -> RolyProduct.productId (base)
-  colorProductId String // ej: "BA909-01" (modelo+color)
-  size           String
+  sizeCode      String?
+  sizeLabel     String?
+  sizeValue     String?
 
-  color_code Int
-  color_name String
-  name       String?
+  colorCode     String?
+  colorName     String?
 
-  product RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  rawName       String?
+
+  product       RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([productId])
-  @@unique([productId, colorProductId, size]) // 1 talla por color dentro del modelo
+  @@index([productId, colorCode])
+  @@index([productId, sizeCode])
+  @@unique([productId, colorCode, sizeCode])
 }
 
-model RolyImages {
-  id             Int    @id @default(autoincrement())
-  productId      String // base (BA909)
-  colorProductId String // color (BA909-01)
-  url            String
+model RolyImage {
+  id            Int      @id @default(autoincrement())
+  productId     String
+  colorCode     String?
+  url           String
 
-  product RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  product       RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([productId])
-  @@index([productId, colorProductId])
-  @@unique([colorProductId, url])
+  @@index([productId, colorCode])
+  @@unique([productId, colorCode, url])
 }
 
 model RawTopTexProducts {
-  externalId String   @id
+  externalId String @id
   payload    Json
   source     String?
   updatedAt  DateTime @updatedAt
