@@ -144,7 +144,6 @@ model RawTopTexProducts {
 
 model FallkRossProducts {
   productId   String  @id @map("product_id")
-  externalId String @unique @map("external_id")
   shortDescription String? @map("short_description")
   longDescription  String? @map("long_description")
 
@@ -168,7 +167,11 @@ model FalkRossVariant {
   productId String @map("product_id")
   product FallkRossProducts @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
-  @@unique([productId, size, color, sku])
+  @@unique([productId, size, color])
+
+  @@index([productId])
+  @@index([productId, color])
+  @@index([productId, size])
 
   @@map("falk_ross_variant")
 }
@@ -183,7 +186,9 @@ model FalkRossImage {
   productId String @map("product_id")
   product FallkRossProducts @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
-  @@unique([productId, sku, color])
+  @@index([productId])
+  @@index([productId, color])
+  @@unique([productId, color, url])
 
   @@map("falk_ross_image")
 }

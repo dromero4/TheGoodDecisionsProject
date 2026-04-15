@@ -7,13 +7,11 @@ export class PrismaProductStoreRepository extends ProductStoreRepository {
             const p = await tx.fallkRossProducts.upsert({
                 where: {productId: product.productId},
                 update: {
-                    externalId: product.supplierId,
                     shortDescription: product.shortDescription,
                     longDescription: product.longDescription,
                 },
                 create: {
                     productId: product.productId,
-                    externalId: product.supplierId,
                     shortDescription: product.shortDescription,
                     longDescription: product.longDescription,
                 },
@@ -25,15 +23,33 @@ export class PrismaProductStoreRepository extends ProductStoreRepository {
                 typeof i?.color === "string"
             );
 
-            await tx.falkRossVariant.createMany({
-                data: variants.map((i) => ({
-                    productId: product.productId,
-                    sku: i.sku,
-                    color: i.color,
-                    size: i.size,
-                })),
-                skipDuplicates: true,
-            });
+            if (variants.length > 0) {
+                await tx.falkRossVariant.createMany({
+                    data: variants.map((i) => ({
+                        productId: product.productId,
+                        sku: i.sku,
+                        color: i.color,
+                        size: i.size,
+                    })),
+                    skipDuplicates: true,
+                });
+            }
+
+            const images = variants.filter(
+                (i) => typeof i?.image === "string" && i.image.trim().length > 0
+            );
+
+            if (images.length > 0) {
+                await tx.falkRossImage.createMany({
+                    data: images.map((i) => ({
+                        productId: product.productId,
+                        sku: i.sku,
+                        color: i.color,
+                        url: i.image.trim(),
+                    })),
+                    skipDuplicates: true,
+                });
+            }
 
             return p
         });
