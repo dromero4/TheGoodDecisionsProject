@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "postinstall": "prisma generate",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -14,6 +15,7 @@
     "sync-roly": "node src/app/scripts/roly/sync-roly.js",
     "sync-toptex": "node src/app/scripts/sync-toptex.js",
     "sync-falkross": "node src/app/scripts/sync-falkross.js",
+    "sync-falkross-prices": "node src/app/scripts/sync-falkross-prices.js",
     "normalize-roly": "node src/app/scripts/roly/get-normalized-roly.js",
     "reset-db": "node src/app/scripts/db/reset-db.js",
     "normalize-toptex": "node src/app/scripts/toptex/normalize-toptex.js",
@@ -24,6 +26,7 @@
     "@midudev/tailwind-animations": "^0.2.0",
     "@prisma/client": "^6.19.2",
     "axios": "^1.13.2",
+    "csv-parse": "^6.2.1",
     "dotenv": "^17.2.3",
     "framer-motion": "^12.24.10",
     "fs": "0.0.1-security",

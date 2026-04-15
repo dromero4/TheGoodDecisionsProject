@@ -1,5 +1,7 @@
 import {Product} from "../../domain/entities/product.js";
 import {ProductRepository} from "../../domain/repositories/product-repository.js";
+import {Variant} from "../../domain/valueobjects/variant.js";
+import {Image} from "../../domain/valueobjects/image.js";
 
 export class HttpProductRepository extends ProductRepository {
     async getProductByURL(url) {
@@ -25,14 +27,22 @@ export class HttpProductRepository extends ProductRepository {
                 : [];
 
         for (const skuItem of skuList) {
-            const variant = {
+            const variant = new Variant({
+                productId: product.productId,
                 sku: skuItem?.sku_artnum?.$t,
                 size: skuItem?.sku_size_name?.$t,
                 color: skuItem?.sku_color_name?.$t,
-                image: skuItem?.sku_color_picture_url?.$t
-            }
+            })
+
+
+            const image = new Image({
+                productId: product.productId,
+                sku: variant.sku,
+                url: skuItem?.sku_color_picture_url?.$t,
+            })
 
             product.variants.push(variant);
+            product.images.push(image);
         }
 
         return product;

@@ -15,44 +15,44 @@ datasource db {
 
 // Creacion de la tabla para el JSON
 model RawProducts {
-  id  Int @id @default(autoincrement())
-  externalId String @unique
-  payload Json
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  externalId String   @unique
+  payload    Json
+  createdAt  DateTime @default(now())
 }
 
 //Creacion de las tablas de la base de datos
 model Product {
-  id  Int @id @default(autoincrement())
-  externalId String @unique
-  name String
-  createdAt DateTime @default(now())
+  id               Int      @id @default(autoincrement())
+  externalId       String   @unique
+  name             String
+  createdAt        DateTime @default(now())
   shortDescription String?
-  longDescription String?
+  longDescription  String?
 
-  images Image[]
+  images   Image[]
   variants Variant[]
 }
 
 model Price {
-  id        Int     @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   variantId Int @unique
 
-  unit      Float
-  gt10      Float?
-  gt100     Float?
-  gt500     Float?
-  gt1000    Float?
+  unit   Float
+  gt10   Float?
+  gt100  Float?
+  gt500  Float?
+  gt1000 Float?
 
-  variant   Variant @relation(fields: [variantId], references: [id])
+  variant Variant @relation(fields: [variantId], references: [id])
 }
 
 model Variant {
-  id  Int @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   productId Int
-  size  String
-  color String?
-  sku String?
+  size      String
+  color     String?
+  sku       String?
 
   product Product @relation(fields: [productId], references: [id])
   prices  Price[]
@@ -61,11 +61,11 @@ model Variant {
 }
 
 model Image {
-  id  Int @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   productId Int
-  url String
-  type String?
-  color String?
+  url       String
+  type      String?
+  color     String?
 
   product Product @relation(fields: [productId], references: [id])
 
@@ -74,68 +74,68 @@ model Image {
 
 // ROLY
 model RolyProduct {
-  productId     String   @id   // modelcode
-  name          String   // modelname
-  displayName   String?
-  description   String?
-  family        String?
-  familyCode    String?
-  gender        String?
-  genderCode    String?
-  observations  String?
-  weight        Float?
+  productId    String  @id // modelcode
+  name         String // modelname
+  displayName  String?
+  description  String?
+  family       String?
+  familyCode   String?
+  gender       String?
+  genderCode   String?
+  observations String?
+  weight       Float?
 
-  variants      RolyVariant[]
-  images        RolyImage[]
+  variants RolyVariant[]
+  images   RolyImage[]
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RolyVariant {
-  variantId     String   @id   // itemcode
-  productId     String
-  sku           String
-  barcode       String?
+  variantId String  @id // itemcode
+  productId String
+  sku       String
+  barcode   String?
 
-  sizeCode      String?
-  sizeLabel     String?
-  sizeValue     String?
+  sizeCode  String?
+  sizeLabel String?
+  sizeValue String?
 
-  colorCode     String?
-  colorName     String?
+  colorCode String?
+  colorName String?
 
-  rawName       String?
+  rawName String?
 
-  product       RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  product RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@unique([productId, colorCode, sizeCode])
   @@index([productId])
   @@index([productId, colorCode])
   @@index([productId, sizeCode])
-  @@unique([productId, colorCode, sizeCode])
 }
 
 model RolyImage {
-  id            Int      @id @default(autoincrement())
-  productId     String
-  colorCode     String?
-  url           String
+  id        Int     @id @default(autoincrement())
+  productId String
+  colorCode String?
+  url       String
 
-  product       RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  product RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@unique([productId, colorCode, url])
   @@index([productId])
   @@index([productId, colorCode])
-  @@unique([productId, colorCode, url])
 }
 
 model RawTopTexProducts {
-  externalId String @id
+  externalId String   @id
   payload    Json
   source     String?
   updatedAt  DateTime @updatedAt
@@ -143,12 +143,12 @@ model RawTopTexProducts {
 }
 
 model FallkRossProducts {
-  productId   String  @id @map("product_id")
+  productId        String  @id @map("product_id")
   shortDescription String? @map("short_description")
   longDescription  String? @map("long_description")
 
-  images   FalkRossImage[]
-  variants FalkRossVariant[]
+  images   FalkRossImages[]
+  variants FalkRossVariants[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
@@ -156,39 +156,39 @@ model FallkRossProducts {
   @@map("falk_ross_products")
 }
 
-model FalkRossVariant {
-  id Int @id @default(autoincrement())
+model FalkRossVariants {
+  sku   String @id
+  size  String
+  color String
 
-  sku       String
-  size      String
-  color     String
-
-
-  productId String @map("product_id")
-  product FallkRossProducts @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  productId String            @map("product_id")
+  product   FallkRossProducts @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
   @@unique([productId, size, color])
-
   @@index([productId])
   @@index([productId, color])
   @@index([productId, size])
-
   @@map("falk_ross_variant")
 }
 
-model FalkRossImage {
-  id Int @id @default(autoincrement())
+model FalkRossImages {
+  sku String @id
+  url String
 
-  sku       String
-  url       String
-  color     String?
+  productId String            @map("product_id")
+  product   FallkRossProducts @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
-  productId String @map("product_id")
-  product FallkRossProducts @relation(fields: [productId], references: [productId], onDelete: Cascade)
-
+  @@unique([productId, url])
   @@index([productId])
-  @@index([productId, color])
-  @@unique([productId, color, url])
-
   @@map("falk_ross_image")
+}
+
+model FalkRossPrices {
+  sku          String @id
+  defaultPrice Float @map("default_price")
+  price        Float
+  currency     String
+
+  @@unique([sku, currency])
+  @@map("falk_ross_price")
 }

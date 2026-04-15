@@ -1,8 +1,9 @@
 export class ProductService {
-    constructor({ catalogRepository, productRepository, productStoreRepository }) {
+    constructor({catalogRepository, productRepository, productStoreRepository, priceRepository}) {
         this.catalogRepository = catalogRepository;
         this.productRepository = productRepository;
         this.productStoreRepository = productStoreRepository;
+        this.priceRepository = priceRepository;
     }
 
     async syncCatalog({batchSize = 100} = {}) {
@@ -46,5 +47,28 @@ export class ProductService {
         }
 
         return saved;
+    }
+
+    async syncPrices({batchSize = 100} = {}) {
+        if (!this.priceRepository) {
+            return [];
+        }
+
+        const prices = await this.priceRepository.getAll();
+        const items = Array.isArray(prices) ? prices : [];
+
+        if (!this.productStoreRepository) {
+            return items;
+        }
+
+        const allSaved = [];
+
+        for (let i = 0; i < items.length; i += batchSize) {
+            const batch = items.slice(i, i + batchSize);
+            const saved = await this.productStoreRepository.updatePrices(batch);
+            allSaved.push(...(Array.isArray(saved) ? saved : []));
+        }
+
+        return allSaved;
     }
 }

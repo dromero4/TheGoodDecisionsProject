@@ -5,6 +5,7 @@ export class Product {
         this.shortDescription = "";
         this.longDescription = "";
         this.variants = [];
+        this.images = [];
     }
 
     addShortDescription(shortDescription) {
