@@ -1,99 +1,38 @@
 import "dotenv/config";
+import {HttpCatalogRepository} from "../lib/falkross/infrastructure/http/catalog-repository.js";
+import {HttpProductRepository} from "../lib/falkross/infrastructure/http/product-repository.js";
+import {PrismaProductStoreRepository} from "../lib/falkross/infrastructure/prisma/product-store-repository.js";
+import {ProductService} from "../lib/falkross/application/services/product-service.js";
 
-import getProduct from "../lib/falkross/index.js";
-import {prisma} from "../lib/prisma.js";
-
-function parseProductId(productId) {
-    const [catalogId, externalId] = productId.split("//");
-
-    if (!catalogId || !externalId) {
-        throw new Error(`Invalid productId format: ${productId}`);
-    }
-
-    return {catalogId, externalId};
-}
-
-function toArray(value) {
-    if (Array.isArray(value)) return value;
-    if (value == null) return [];
-    return [value];
-}
 
 async function sync() {
-    const productId = "R000-011//99967";
-    const {externalId} = parseProductId(productId);
-    const product = await getProduct(productId);
+    const catalogRepo = new HttpCatalogRepository;
+    const productRepo = new HttpProductRepository;
+    const productStoreRepo = new PrismaProductStoreRepository;
 
-    const style = product?.style_list?.style;
-    const shortDescription = style?.style_name?.language?.en?.$t ?? null;
-    const longDescription = style?.style_description?.language?.en?.$t ?? null;
-    const skuList = toArray(style?.sku_list?.sku);
 
-    await prisma.fallkRossProducts.upsert({
-        where: {productId},
-        update: {
-            externalId,
-            shortDescription,
-            longDescription,
-        },
-        create: {
-            productId,
-            externalId,
-            shortDescription,
-            longDescription,
-        },
+    const service = new ProductService({
+        catalogRepository: catalogRepo,
+        productRepository: productRepo,
+        productStoreRepository: productStoreRepo,
     });
 
-    for (const skuItem of skuList) {
-        console.log(skuItem);
+    const res = await service.syncCatalog();
 
-        const sku = skuItem?.sku_ean?.$t ?? null;
-        const size = skuItem?.sku_size_name?.$t;
-        const color = skuItem?.sku_color_name?.$t ?? null;
-        const image = skuItem?.sku_color_picture_url.$t ?? null;
+    const products = Array.isArray(res) ? res : [];
 
-        if (!size) continue;
-
-        await prisma.falkRossVariant.upsert({
-            where: {
-                productId_size_color_sku: {
-                    productId,
-                    size,
-                    color,
-                    sku,
-                },
-            },
-            update: {},
-            create: {
-                productId,
-                sku,
-                color,
-                size,
-            },
-        });
-
-        await prisma.falkRossImage.upsert({
-            where: {
-                productId_sku_color: {
-                    productId,
-                    sku,
-                    color,
-                },
-            },
-            update: {},
-            create: {
-                productId,
-                sku,
-                color,
-                url: image,
-            },
-        });
-    }
+    // TODO replace with telemetry in production
+    console.log(`products synced: ${products.length}`);
+    console.table(
+        products.map((product) => ({
+            productId: product.productId,
+            externalId: product.externalId,
+            shortDescription: product.shortDescription,
+        }))
+    );
 }
 
-sync()
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    })
-    .finally(() => prisma.$disconnect());
+sync().catch(err => {
+    console.error(err);
+    process.exitCode = 1;
+});
