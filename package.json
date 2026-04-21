@@ -17,7 +17,7 @@
     "reset-db": "node src/app/scripts/db/reset-db.js",
     "normalize-toptex": "node src/app/scripts/toptex/normalize-toptex.js",
     "get-normalized-toptex": "node src/app/scripts/toptex/get-normalized-toptex.js",
-    "test": "node src/app/scripts/test/test.js"
+    "test": "node src/app/dev/test/personalization.js"
   },
   "dependencies": {
     "@midudev/tailwind-animations": "^0.2.0",
@@ -30,10 +30,13 @@
     "next": "16.1.1",
     "prisma": "^6.19.2",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-rnd": "^10.5.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/node": "25.6.0",
+    "@types/react": "19.2.14",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",

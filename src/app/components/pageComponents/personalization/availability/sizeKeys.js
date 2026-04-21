@@ -1,0 +1,160 @@
+// src/app/components/pageComponents/personalization/availability/sizeCatalog.js
+
+export const SIZE_KEYS = {
+  // Bordado / tamaños cuadrados frecuentes
+  SIZE_3X3: "3x3",
+  SIZE_5X5: "5x5",
+  SIZE_7X7: "7x7",
+  SIZE_10X10: "10x10",
+  SIZE_15X15: "15x15",
+  SIZE_20X20: "20x20",
+  SIZE_25X25: "25x25",
+  SIZE_27X27: "27x27",
+  SIZE_30X30: "30x30",
+  SIZE_35X35: "35x35",
+  SIZE_40X40: "40x40",
+
+  // Rectangulares frecuentes
+  SIZE_25X5: "2.5x5",
+  SIZE_3X6: "3x6",
+  SIZE_5X10: "5x10",
+  SIZE_6X6: "6x6",
+  SIZE_10X14: "10x14",
+  SIZE_10X15: "10x15",
+  SIZE_10X20: "10x20",
+  SIZE_10X30: "10x30",
+  SIZE_10X40: "10x40",
+  SIZE_14X10: "14x10",
+  SIZE_14X20: "14x20",
+  SIZE_15X20: "15x20",
+  SIZE_17X25: "17x25",
+  SIZE_20X14: "20x14",
+  SIZE_20X25: "20x25",
+  SIZE_20X27: "20x27",
+  SIZE_20X30: "20x30",
+  SIZE_25X30: "25x30",
+  SIZE_25X35: "25x35",
+  SIZE_27X40: "27x40",
+  SIZE_30X35: "30x35",
+  SIZE_30X40: "30x40",
+  SIZE_34X49_5: "34x49.5",
+  SIZE_35X40: "35x40",
+  SIZE_38X55: "38x55",
+
+  // Medidas de serigrafía
+  A5: "a5",
+  A4: "a4",
+  A3: "a3",
+};
+
+export const SIZE_LABELS = {
+  [SIZE_KEYS.SIZE_3X3]: "3 x 3 cm",
+  [SIZE_KEYS.SIZE_5X5]: "5 x 5 cm",
+  [SIZE_KEYS.SIZE_7X7]: "7 x 7 cm",
+  [SIZE_KEYS.SIZE_10X10]: "10 x 10 cm",
+  [SIZE_KEYS.SIZE_15X15]: "15 x 15 cm",
+  [SIZE_KEYS.SIZE_20X20]: "20 x 20 cm",
+  [SIZE_KEYS.SIZE_25X25]: "25 x 25 cm",
+  [SIZE_KEYS.SIZE_27X27]: "27 x 27 cm",
+  [SIZE_KEYS.SIZE_30X30]: "30 x 30 cm",
+  [SIZE_KEYS.SIZE_35X35]: "35 x 35 cm",
+  [SIZE_KEYS.SIZE_40X40]: "40 x 40 cm",
+
+  [SIZE_KEYS.SIZE_25X5]: "2,5 x 5 cm",
+  [SIZE_KEYS.SIZE_3X6]: "3 x 6 cm",
+  [SIZE_KEYS.SIZE_5X10]: "5 x 10 cm",
+  [SIZE_KEYS.SIZE_6X6]: "6 x 6 cm",
+  [SIZE_KEYS.SIZE_10X14]: "10 x 14 cm",
+  [SIZE_KEYS.SIZE_10X15]: "10 x 15 cm",
+  [SIZE_KEYS.SIZE_10X20]: "10 x 20 cm",
+  [SIZE_KEYS.SIZE_10X30]: "10 x 30 cm",
+  [SIZE_KEYS.SIZE_10X40]: "10 x 40 cm",
+  [SIZE_KEYS.SIZE_14X10]: "14 x 10 cm",
+  [SIZE_KEYS.SIZE_14X20]: "14 x 20 cm",
+  [SIZE_KEYS.SIZE_15X20]: "15 x 20 cm",
+  [SIZE_KEYS.SIZE_17X25]: "17 x 25 cm",
+  [SIZE_KEYS.SIZE_20X14]: "20 x 14 cm",
+  [SIZE_KEYS.SIZE_20X25]: "20 x 25 cm",
+  [SIZE_KEYS.SIZE_20X27]: "20 x 27 cm",
+  [SIZE_KEYS.SIZE_20X30]: "20 x 30 cm",
+  [SIZE_KEYS.SIZE_25X30]: "25 x 30 cm",
+  [SIZE_KEYS.SIZE_25X35]: "25 x 35 cm",
+  [SIZE_KEYS.SIZE_27X40]: "27 x 40 cm",
+  [SIZE_KEYS.SIZE_30X35]: "30 x 35 cm",
+  [SIZE_KEYS.SIZE_30X40]: "30 x 40 cm",
+  [SIZE_KEYS.SIZE_34X49_5]: "34 x 49,5 cm",
+  [SIZE_KEYS.SIZE_35X40]: "35 x 40 cm",
+  [SIZE_KEYS.SIZE_38X55]: "38 x 55 cm",
+
+  [SIZE_KEYS.A5]: "A5",
+  [SIZE_KEYS.A4]: "A4",
+  [SIZE_KEYS.A3]: "A3",
+};
+
+export const SIZE_GROUPS = {
+  EMBROIDERY_BASIC: [
+    SIZE_KEYS.SIZE_3X3,
+    SIZE_KEYS.SIZE_5X5,
+    SIZE_KEYS.SIZE_7X7,
+    SIZE_KEYS.SIZE_10X10,
+    SIZE_KEYS.SIZE_15X15,
+    SIZE_KEYS.SIZE_25X25,
+    SIZE_KEYS.SIZE_27X27,
+  ],
+
+  PATCH_EXTENDED: [
+    SIZE_KEYS.SIZE_5X5,
+    SIZE_KEYS.SIZE_5X10,
+    SIZE_KEYS.SIZE_10X10,
+    SIZE_KEYS.SIZE_10X15,
+    SIZE_KEYS.SIZE_15X15,
+    SIZE_KEYS.SIZE_15X20,
+    SIZE_KEYS.SIZE_20X20,
+    SIZE_KEYS.SIZE_20X30,
+    SIZE_KEYS.SIZE_25X35,
+    SIZE_KEYS.SIZE_30X30,
+    SIZE_KEYS.SIZE_35X35,
+    SIZE_KEYS.SIZE_40X40,
+  ],
+
+  DTF_STANDARD: [
+    SIZE_KEYS.SIZE_5X5,
+    SIZE_KEYS.SIZE_5X10,
+    SIZE_KEYS.SIZE_10X10,
+    SIZE_KEYS.SIZE_10X14,
+    SIZE_KEYS.SIZE_14X20,
+    SIZE_KEYS.SIZE_20X27,
+    SIZE_KEYS.SIZE_27X40,
+    SIZE_KEYS.SIZE_38X55,
+  ],
+
+  DTG_STANDARD: [
+    SIZE_KEYS.SIZE_10X10,
+    SIZE_KEYS.SIZE_15X20,
+    SIZE_KEYS.SIZE_30X30,
+    SIZE_KEYS.SIZE_34X49_5,
+  ],
+
+  SCREENPRINT_STANDARD: [
+    SIZE_KEYS.A4,
+    SIZE_KEYS.A3,
+  ],
+
+  LABEL_DTF: [
+    SIZE_KEYS.SIZE_25X5,
+    SIZE_KEYS.SIZE_5X5,
+  ],
+
+  LABEL_WOVEN_OR_PRINTED: [
+    SIZE_KEYS.SIZE_3X6,
+    SIZE_KEYS.SIZE_6X6,
+  ],
+};
+
+export function getSizeLabel(sizeKey) {
+  return SIZE_LABELS[sizeKey] || sizeKey;
+}
+
+export function getSizeGroup(groupKey) {
+  return SIZE_GROUPS[groupKey] || [];
+}

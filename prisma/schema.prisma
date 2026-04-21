@@ -29,6 +29,7 @@ model Product {
   createdAt DateTime @default(now())
   shortDescription String?
   longDescription String?
+  category String?
 
   images Image[]
   variants Variant[]
@@ -51,6 +52,7 @@ model Variant {
   id  Int @id @default(autoincrement())
   productId Int
   size  String
+  category String?
   color String?
   sku String?
 

@@ -20,6 +20,8 @@ export async function GetStanleyProducts() {
         });
 
         let data = response.data.result; //string
+
+        // console.log("CATEGORY DATA:", JSON.stringify(data, 10, 2));
         
 
         //Queremos pasarlo a object (JSON)
@@ -43,12 +45,13 @@ export async function GetStanleyProducts() {
                     variants: []
                 })
             }
-
+            
             map.get(product.StyleCode).variants.push({
                 sku: product.B2BSKUREF,
                 color: product.Color,
                 size: product.SizeCode,
                 colorCode: product.ColorCode,
+                category: product.Category,
                 shortDescription: product.ShortDescription,
                 longDescription: product.LongDescription
             })

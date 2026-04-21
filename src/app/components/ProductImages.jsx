@@ -21,6 +21,8 @@ export default function ProductImages({ images = [] }) {
 
   if (!activeImage) return null;
 
+  
+
   return (
     <section className="w-105">
       {/* IMAGE PREVIEW */}

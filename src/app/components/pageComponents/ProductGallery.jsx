@@ -4,8 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import ProductImages from "../ProductImages";
 import ColorSelector from "../ColorSelector";
 import ProductAccordion from "../ProductAccordion";
+import Personalization from "./personalization/Personalization";
+import ProductCustomizerBase from "./personalization/ProductCustomizerBase";
 
-export default function ProductGallery({ product }) {
+export default function ProductGallery({ product  }) {
     const images = useMemo(() => product?.images ?? [], [product?.images]);
 
 
@@ -369,9 +371,8 @@ export default function ProductGallery({ product }) {
                     </p>
                 </section>
 
-
+  <Personalization product={product} selectedColor={selectedColor} />
             </section>
-
 
         </main>
     );

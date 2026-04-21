@@ -7,6 +7,7 @@ import Link from "next/link";
 const PRODUCTS_PER_PAGE = 50;
 
 function ProductCard({ product }) {
+  
   const content = (
     <>
       <div className="relative w-full h-52">
@@ -28,6 +29,7 @@ function ProductCard({ product }) {
       <div className="p-4">
         <h2 className="text-lg font-semibold">{product.name}</h2>
         <p className="text-sm text-gray-500 capitalize">{product.source}</p>
+        <p className="text-sm text-gray-500 capitalize">{product.category}</p>
       </div>
     </>
   );

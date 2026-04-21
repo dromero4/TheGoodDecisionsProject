@@ -37,12 +37,16 @@ async function normalize() {
                 name: data.name,
                 shortDescription: data.variants[i].shortDescription ?? null,
                 longDescription: data.variants[i].longDescription ?? null,
+                category: data.variants[i].category ?? null,
             },
             create: {
                 externalId: raw.externalId,
                 name: data.name,
                 shortDescription: data.variants[i].shortDescription ?? null,
                 longDescription: data.variants[i].longDescription ?? null,
+                                category: data.variants[i].category ?? null,
+
+
             },
         });
 

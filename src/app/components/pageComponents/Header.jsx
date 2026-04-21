@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 
-import logo from '@/../public/images/logo.svg'
+import logo from '../../../../public/images/logo.svg'
 import { UserRound } from "lucide-react";
 
 export default function Header() {

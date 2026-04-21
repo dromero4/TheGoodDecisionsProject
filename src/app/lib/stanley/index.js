@@ -6,6 +6,8 @@ export async function getFullProductCatalog() {
     const products = await GetStanleyProducts();
     const images = await GetStanleyImages();
     const prices = await GetPrices();
+
+    console.log("PRODUCTOS: ",JSON.stringify(products, 1, 2));
     
     //Images
     const imagesByStyleColor = {}

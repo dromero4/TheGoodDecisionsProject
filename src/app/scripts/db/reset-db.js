@@ -9,6 +9,8 @@ async function reset() {
   await prisma.price.deleteMany({});
   await prisma.variant.deleteMany({});
   await prisma.product.deleteMany({});
+  await prisma.RolyProduct.deleteMany({});
+  await prisma.RolyVariant.deleteMany({});
 
   // Raws al final
   await prisma.rawProducts.deleteMany({});

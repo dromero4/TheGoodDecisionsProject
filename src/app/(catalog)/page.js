@@ -10,6 +10,7 @@ function normalizeStanley(products = []) {
     image: product.images?.[0]?.url || null,
     href: `/product/${product.externalId}`,
     source: "stanley",
+    category: product.category,
   }));
 }
 
