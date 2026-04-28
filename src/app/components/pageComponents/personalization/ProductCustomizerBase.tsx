@@ -24,6 +24,16 @@ type EmbroideryType =
 
 type ScreenprintType = "plana" | "puff";
 
+const VINYL_VARIANTS = [
+  { value: "textil_flex", label: "Textil Flex" },
+  { value: "brick_600", label: "Brick 600" },
+  { value: "brick_1000", label: "Brick 1000" },
+  { value: "electric_holografic", label: "Electric / Holografic" },
+  { value: "flock", label: "Flock" },
+  { value: "glitter", label: "Glitter" },
+  { value: "reflectante", label: "Reflectante" },
+];
+
 type CustomElement = {
   id: string;
   type: ElementType;
@@ -45,9 +55,11 @@ type CustomElement = {
 
   embroideryType?: EmbroideryType;
   screenprintType?: ScreenprintType;
+  vinylType?: string;
 
   sizeLabel?: string;
   notes?: string;
+
 };
 
 type ZoneState = {
@@ -219,21 +231,21 @@ export default function ProductCustomizerBase({
   category,
 }: ProductCustomizerBaseProps) {
   const inferredConfig = useMemo(() => {
-  return inferProductConfigFromCategory(category);
-}, [category]);
+    return inferProductConfigFromCategory(category);
+  }, [category]);
 
-const resolvedProductType = productType ?? inferredConfig.productType;
+  const resolvedProductType = productType ?? inferredConfig.productType;
 
-const resolvedProductFeatures = useMemo(() => {
-  return {
-    ...inferredConfig.productFeatures,
-    ...(productFeatures || {}),
-  };
-}, [inferredConfig, productFeatures]);
+  const resolvedProductFeatures = useMemo(() => {
+    return {
+      ...inferredConfig.productFeatures,
+      ...(productFeatures || {}),
+    };
+  }, [inferredConfig, productFeatures]);
 
-const zones = useMemo(() => {
-  return getProductZones(resolvedProductType, resolvedProductFeatures);
-}, [resolvedProductType, resolvedProductFeatures]);
+  const zones = useMemo(() => {
+    return getProductZones(resolvedProductType, resolvedProductFeatures);
+  }, [resolvedProductType, resolvedProductFeatures]);
 
   const zoneLabels = Object.fromEntries(
     zones.map((zone) => [zone.id, zone.label])
@@ -284,16 +296,16 @@ const zones = useMemo(() => {
     }));
   }
 
-function handleSelectedImageUpload(file: File) {
-  if (!selectedElementId || !file) return;
+  function handleSelectedImageUpload(file: File) {
+    if (!selectedElementId || !file) return;
 
-  const objectUrl = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(file);
 
-  updateSelectedElement({
-    imageUrl: objectUrl,
-    name: file.name,
-  });
-}
+    updateSelectedElement({
+      imageUrl: objectUrl,
+      name: file.name,
+    });
+  }
 
   function addTextElement() {
     const newElement: CustomElement = {
@@ -386,11 +398,10 @@ function handleSelectedImageUpload(file: File) {
               <button
                 key={zone.id}
                 onClick={() => handleChangeZone(zone.id)}
-                className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                  isActive
+                className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${isActive
                     ? "border-blue-600 bg-blue-600 text-white"
                     : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-                }`}
+                  }`}
               >
                 {zone.label} ({count})
               </button>
@@ -437,11 +448,10 @@ function handleSelectedImageUpload(file: File) {
               return (
                 <div
                   key={el.id}
-                  className={`rounded-lg border p-3 transition ${
-                    isSelected
+                  className={`rounded-lg border p-3 transition ${isSelected
                       ? "border-blue-600 bg-blue-50"
                       : "border-slate-200 bg-white"
-                  }`}
+                    }`}
                 >
                   <button
                     onClick={() => setSelectedElementId(el.id)}
@@ -491,25 +501,25 @@ function handleSelectedImageUpload(file: File) {
             <div className="relative h-140 w-full max-w-130 overflow-hidden rounded-2xl border border-slate-300 bg-white">
               <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_center,#f8fafc_0%,#eef2f7_100%)]">
                 {previewImage ? (
-  <Image
-    src={previewImage}
-    alt={zoneLabels[activeZone]}
-    fill
-    unoptimized
-    sizes="(max-width: 1280px) 100vw, 520px"
-    className="object-contain"
-    draggable={false}
-  />
-) : (
-  <div className="text-center">
-    <p className="text-xl font-semibold text-slate-700">
-      Prenda preview
-    </p>
-    <p className="text-sm text-slate-400">
-      {zoneLabels[activeZone]}
-    </p>
-  </div>
-)}
+                  <Image
+                    src={previewImage}
+                    alt={zoneLabels[activeZone]}
+                    fill
+                    unoptimized
+                    sizes="(max-width: 1280px) 100vw, 520px"
+                    className="object-contain"
+                    draggable={false}
+                  />
+                ) : (
+                  <div className="text-center">
+                    <p className="text-xl font-semibold text-slate-700">
+                      Prenda preview
+                    </p>
+                    <p className="text-sm text-slate-400">
+                      {zoneLabels[activeZone]}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {activeZoneElements.map((el) => {
@@ -542,12 +552,12 @@ function handleSelectedImageUpload(file: File) {
                         elements.map((item) =>
                           item.id === el.id
                             ? {
-                                ...item,
-                                width: newWidth,
-                                height: newHeight,
-                                x: position.x,
-                                y: position.y,
-                              }
+                              ...item,
+                              width: newWidth,
+                              height: newHeight,
+                              x: position.x,
+                              y: position.y,
+                            }
                             : item
                         )
                       );
@@ -581,16 +591,16 @@ function handleSelectedImageUpload(file: File) {
                           {el.text ?? "TEXT"}
                         </span>
                       ) : el.imageUrl ? (
-  <Image
-  src={el.imageUrl}
-  alt={el.name}
-  width={el.width || 120}
-  height={el.height || 120}
-  unoptimized
-  className="h-full w-full object-contain"
-  draggable={false}
-/>
-) : (
+                        <Image
+                          src={el.imageUrl}
+                          alt={el.name}
+                          width={el.width || 120}
+                          height={el.height || 120}
+                          unoptimized
+                          className="h-full w-full object-contain"
+                          draggable={false}
+                        />
+                      ) : (
                         <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
                           Sin imagen
                         </div>
@@ -680,24 +690,24 @@ function handleSelectedImageUpload(file: File) {
                     </Field>
 
                     <Field label="Subir imagen">
-  <input
-    type="file"
-    accept="image/*"
-    onChange={(e) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        handleSelectedImageUpload(file);
-      }
-    }}
-    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500 file:mr-3 file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-2 file:text-white"
-  />
-</Field>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handleSelectedImageUpload(file);
+                          }
+                        }}
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500 file:mr-3 file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-2 file:text-white"
+                      />
+                    </Field>
 
-{selectedElement.imageUrl && (
-  <p className="text-xs text-slate-500">
-    Imagen cargada: {selectedElement.name}
-  </p>
-)}
+                    {selectedElement.imageUrl && (
+                      <p className="text-xs text-slate-500">
+                        Imagen cargada: {selectedElement.name}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -759,6 +769,26 @@ function handleSelectedImageUpload(file: File) {
                       >
                         <option value="plana">Plana</option>
                         <option value="puff">Puff</option>
+                      </select>
+                    </Field>
+                  )}
+
+                  {selectedElement.technique === "vinyl" && (
+                    <Field label="Tipo de vinilo">
+                      <select
+                        value={selectedElement.vinylType || "textil_flex"}
+                        onChange={(e) =>
+                          updateSelectedElement({
+                            vinylType: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
+                      >
+                        {VINYL_VARIANTS.map((variant) => (
+                          <option key={variant.value} value={variant.value}>
+                            {variant.label}
+                          </option>
+                        ))}
                       </select>
                     </Field>
                   )}
@@ -898,15 +928,13 @@ function Field({
 
 function formatTechnique(el: CustomElement) {
   if (el.technique === "embroidery") {
-    return `Bordado${
-      el.embroideryType ? ` · ${humanEmbroidery(el.embroideryType)}` : ""
-    }`;
+    return `Bordado${el.embroideryType ? ` · ${humanEmbroidery(el.embroideryType)}` : ""
+      }`;
   }
 
   if (el.technique === "screenprint") {
-    return `Serigrafía${
-      el.screenprintType ? ` · ${humanScreenprint(el.screenprintType)}` : ""
-    }`;
+    return `Serigrafía${el.screenprintType ? ` · ${humanScreenprint(el.screenprintType)}` : ""
+      }`;
   }
 
   if (el.technique === "dtf") return "DTF";
