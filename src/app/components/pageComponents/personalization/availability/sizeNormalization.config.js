@@ -44,28 +44,37 @@ export const GLOBAL_SIZE_PRICE_EQUIVALENCES = {
     "34.5x49": "34_5x49",
   },
 
-  rhinestone: {
+  rhinestones: {
     "10x20": "15x20",
     "10x30": "20x30",
     "10x40": "30x40",
     "14x15": "15x15",
     "14x20": "15x20",
     "20x27": "25x25",
+
+    "15x10": "10x15",
+    "20x15": "15x20",
+    "20x20": "20x20",
+    "25x17": "17x25",
+    "25x17.5": "17x25",
+    "30x20": "20x30",
+    "35x25": "25x35",
+    "40x30": "30x40",
   },
-  
-vinyl: {
-  "40x30": "30x40",
-  "30x20": "20x30",
-  "20x15": "15x20",
-  "15x10": "10x15",
 
-  "10x20": "15x20",
-  "10x30": "20x30",
-  "10x40": "30x40",
-  "20x27": "20x30",
+  vinyl: {
+    "40x30": "30x40",
+    "30x20": "20x30",
+    "20x15": "15x20",
+    "15x10": "10x15",
 
-  "5x7.5": "5x10",
-},
+    "10x20": "15x20",
+    "10x30": "20x30",
+    "10x40": "30x40",
+    "20x27": "20x30",
+
+    "5x7.5": "5x10",
+  },
   screenprint: {
     a5: "a4",
 
@@ -95,7 +104,7 @@ export const PRODUCT_VIEW_SIZE_PRICE_EQUIVALENCES = {
       patch: {
         "20x27": "20x30",
       },
-      rhinestone: {
+      rhinestones: {
         "20x27": "25x25",
       },
       vinyl: {
@@ -115,12 +124,12 @@ export const PRODUCT_VIEW_SIZE_PRICE_EQUIVALENCES = {
         "10x20": "14x20",
         "10x30": "20x27",
       },
-      rhinestone: {
+      rhinestones: {
         "10x20": "15x20",
         "10x30": "20x30",
       },
       vinyl: {
-        "10x20": "10x30",
+        "10x20": "15x20",
         "10x30": "20x30",
       },
       screenprint: {
@@ -142,12 +151,12 @@ export const PRODUCT_VIEW_SIZE_PRICE_EQUIVALENCES = {
         "10x20": "14x20",
         "10x30": "20x27",
       },
-      rhinestone: {
+      rhinestones: {
         "10x20": "15x20",
         "10x30": "20x30",
       },
       vinyl: {
-        "10x20": "10x30",
+        "10x20": "15x20",
         "10x30": "20x30",
       },
       screenprint: {
@@ -176,7 +185,7 @@ export const PRODUCT_VIEW_SIZE_PRICE_EQUIVALENCES = {
         "34,5x49": "34_5x49",
         "34.5x49": "34_5x49",
       },
-      rhinestone: {
+      rhinestones: {
         "14x15": "15x15",
         "14x20": "15x20",
       },
@@ -201,7 +210,7 @@ export const PRODUCT_VIEW_SIZE_PRICE_EQUIVALENCES = {
         "10x30": "20x27",
         "10x40": "27x40",
       },
-      rhinestone: {
+      rhinestones: {
         "10x30": "20x30",
         "10x40": "30x40",
       },
@@ -225,7 +234,7 @@ export const PRODUCT_VIEW_SIZE_PRICE_EQUIVALENCES = {
         "10x30": "20x27",
         "10x40": "27x40",
       },
-      rhinestone: {
+      rhinestones: {
         "10x30": "20x30",
         "10x40": "30x40",
       },
@@ -255,7 +264,7 @@ export const PRODUCT_VIEW_SIZE_PRICE_EQUIVALENCES = {
         "10x30": "20x27",
         "10x40": "27x40",
       },
-      rhinestone: {
+      rhinestones: {
         "10x30": "20x30",
         "10x40": "30x40",
       },

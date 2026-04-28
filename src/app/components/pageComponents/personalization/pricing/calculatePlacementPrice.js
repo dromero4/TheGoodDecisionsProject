@@ -10,6 +10,10 @@ import { getPatchUnitPrice } from "./pricing.tables.patch.js";
 import { getScreenprintUnitPrice } from "./pricing.tables.screenprint.js";
 import { getDtgUnitPrice } from "./pricing.tables.dtg.js";
 import { getVinylUnitPrice, VINYL_SUPPORTED_VARIANTS} from "./pricing.tables.vinyl.js";
+import {
+  getRhinestonesUnitPrice,
+  RHINESTONES_SUPPORTED_VARIANTS,
+} from "./pricing.tables.rhinestones.js";
 /**
  * Calcula el precio de una personalización individual.
  *
@@ -307,6 +311,51 @@ export function calculatePlacementPrice({
       return {
         pricingMode: "manual_quote",
         reason: "vinyl_price_not_found",
+        unitPrice: null,
+        totalPrice: null,
+        requestedSize,
+        chargedSize,
+        quantityBracket,
+      };
+    }
+
+    return {
+      pricingMode: "automatic",
+      technique,
+      variant,
+      requestedSize,
+      chargedSize,
+      quantity,
+      quantityBracket,
+      unitPrice,
+      totalPrice: roundPrice(unitPrice * quantity),
+    };
+  }
+
+    // PEDRERÍA
+  if (technique === "rhinestones") {
+    if (!RHINESTONES_SUPPORTED_VARIANTS.includes(String(variant))) {
+      return {
+        pricingMode: "manual_quote",
+        reason: "rhinestones_variant_not_supported",
+        unitPrice: null,
+        totalPrice: null,
+        requestedSize,
+        chargedSize,
+        quantityBracket,
+      };
+    }
+
+    const unitPrice = getRhinestonesUnitPrice(
+      chargedSize,
+      String(variant),
+      quantityBracket
+    );
+
+    if (unitPrice == null) {
+      return {
+        pricingMode: "manual_quote",
+        reason: "rhinestones_price_not_found",
         unitPrice: null,
         totalPrice: null,
         requestedSize,

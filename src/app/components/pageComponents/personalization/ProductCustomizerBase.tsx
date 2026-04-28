@@ -56,10 +56,10 @@ type CustomElement = {
   embroideryType?: EmbroideryType;
   screenprintType?: ScreenprintType;
   vinylType?: string;
+  rhinestonesType?: string;
 
   sizeLabel?: string;
   notes?: string;
-
 };
 
 type ZoneState = {
