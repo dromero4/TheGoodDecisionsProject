@@ -8,7 +8,8 @@ import { getEmbroideryUnitPrice } from "./pricing.tables.embroidery.js";
 import { getEmbroidery3dUnitPrice } from "./pricing.tables.embroidery3d.js";
 import { getPatchUnitPrice } from "./pricing.tables.patch.js";
 import { getScreenprintUnitPrice } from "./pricing.tables.screenprint.js";
-
+import { getDtgUnitPrice } from "./pricing.tables.dtg.js";
+import { getVinylUnitPrice, VINYL_SUPPORTED_VARIANTS} from "./pricing.tables.vinyl.js";
 /**
  * Calcula el precio de una personalización individual.
  *
@@ -138,7 +139,7 @@ export function calculatePlacementPrice({
   }
 
   //BORDADO 3D
-    if (technique === "embroidery" && variant === "3d") {
+  if (technique === "embroidery" && variant === "3d") {
     const unitPrice = getEmbroidery3dUnitPrice(chargedSize, quantityBracket);
 
     if (unitPrice == null) {
@@ -167,7 +168,7 @@ export function calculatePlacementPrice({
   }
 
   //PARCHE BORDADO
-    if (technique === "patch") {
+  if (technique === "patch") {
     const unitPrice = getPatchUnitPrice(chargedSize, quantityBracket);
 
     if (unitPrice == null) {
@@ -196,7 +197,7 @@ export function calculatePlacementPrice({
   }
 
   //SERIGRAFIA PLANA / PUFF
-    if (technique === "screenprint") {
+  if (technique === "screenprint") {
     if (variant !== "plana") {
       return {
         pricingMode: "manual_quote",
@@ -253,6 +254,80 @@ export function calculatePlacementPrice({
     };
   }
 
+    // DTG
+  if (technique === "dtg") {
+    const unitPrice = getDtgUnitPrice(chargedSize, quantityBracket);
+
+    if (unitPrice == null) {
+      return {
+        pricingMode: "manual_quote",
+        reason: "dtg_price_not_found",
+        unitPrice: null,
+        totalPrice: null,
+        requestedSize,
+        chargedSize,
+        quantityBracket,
+      };
+    }
+
+    return {
+      pricingMode: "automatic",
+      technique,
+      variant,
+      requestedSize,
+      chargedSize,
+      quantity,
+      quantityBracket,
+      unitPrice,
+      totalPrice: roundPrice(unitPrice * quantity),
+    };
+  }
+
+    // VINILO
+  if (technique === "vinyl") {
+    if (!VINYL_SUPPORTED_VARIANTS.includes(String(variant))) {
+      return {
+        pricingMode: "manual_quote",
+        reason: "vinyl_variant_not_supported",
+        unitPrice: null,
+        totalPrice: null,
+        requestedSize,
+        chargedSize,
+        quantityBracket,
+      };
+    }
+
+    const unitPrice = getVinylUnitPrice(
+      chargedSize,
+      String(variant),
+      quantityBracket
+    );
+
+    if (unitPrice == null) {
+      return {
+        pricingMode: "manual_quote",
+        reason: "vinyl_price_not_found",
+        unitPrice: null,
+        totalPrice: null,
+        requestedSize,
+        chargedSize,
+        quantityBracket,
+      };
+    }
+
+    return {
+      pricingMode: "automatic",
+      technique,
+      variant,
+      requestedSize,
+      chargedSize,
+      quantity,
+      quantityBracket,
+      unitPrice,
+      totalPrice: roundPrice(unitPrice * quantity),
+    };
+  }
+
 
   return {
     pricingMode: "manual_quote",
@@ -264,7 +339,7 @@ export function calculatePlacementPrice({
     quantityBracket,
   };
 
-  
+
 }
 
 function roundPrice(value) {

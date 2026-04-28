@@ -40,6 +40,8 @@ export const GLOBAL_SIZE_PRICE_EQUIVALENCES = {
 
   dtg: {
     "14x20": "15x20",
+    "34,5x49": "34_5x49",
+    "34.5x49": "34_5x49",
   },
 
   rhinestone: {
@@ -50,15 +52,20 @@ export const GLOBAL_SIZE_PRICE_EQUIVALENCES = {
     "14x20": "15x20",
     "20x27": "25x25",
   },
+  
+vinyl: {
+  "40x30": "30x40",
+  "30x20": "20x30",
+  "20x15": "15x20",
+  "15x10": "10x15",
 
-  vinyl: {
-    "10x20": "15x20",
-    "10x30": "20x30",
-    "10x40": "30x40",
-    "20x27": "20x30",
-    "5x7.5": "7x7",
-  },
+  "10x20": "15x20",
+  "10x30": "20x30",
+  "10x40": "30x40",
+  "20x27": "20x30",
 
+  "5x7.5": "5x10",
+},
   screenprint: {
     a5: "a4",
 
@@ -166,6 +173,8 @@ export const PRODUCT_VIEW_SIZE_PRICE_EQUIVALENCES = {
       },
       dtg: {
         "14x20": "15x20",
+        "34,5x49": "34_5x49",
+        "34.5x49": "34_5x49",
       },
       rhinestone: {
         "14x15": "15x15",
@@ -309,7 +318,7 @@ export function resolveChargedSize({
 }) {
   const productRule =
     PRODUCT_VIEW_SIZE_PRICE_EQUIVALENCES?.[productType]?.[view]?.[technique]?.[
-      requestedSize
+    requestedSize
     ];
 
   if (productRule) return productRule;
