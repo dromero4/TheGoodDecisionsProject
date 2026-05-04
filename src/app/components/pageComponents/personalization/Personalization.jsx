@@ -3,6 +3,66 @@
 import { useEffect, useState } from "react";
 import ProductCustomizerBase from "@/app/components/pageComponents/personalization/ProductCustomizerBase";
 
+const IMAGE_INDEX_MAP_BY_CATEGORY = {
+  tees: {
+    front: 1,
+    back: 0,
+    leftSleeve: 7,
+    rightSleeve: 8,
+    neck: 1, // luego lo afinamos
+  },
+
+  sweatshirts: {
+    front: 1,
+    back: 0,
+    leftSleeve: 6,
+    rightSleeve: 7,
+    neck: 4, // luego lo afinamos
+    hood: 1,
+    pocket: 5,
+  },
+
+  pants: {
+    frontRightLeg: 2,
+    frontLeftLeg: 2,
+    backRightLeg: 1,
+    backLeftLeg: 1,
+    waist: 4,
+    backPocket: 5,
+  },
+};
+
+
+function normalizeCategory(category) {
+  return String(category || "")
+    .trim()
+    .toLowerCase();
+}
+
+function getImageMapByCategory(category) {
+  const normalized = normalizeCategory(category);
+
+  if (normalized.includes("tee")) return IMAGE_INDEX_MAP_BY_CATEGORY.tees;
+  if (normalized.includes("sweat")) return IMAGE_INDEX_MAP_BY_CATEGORY.sweatshirts;
+  if (normalized.includes("hoodie")) return IMAGE_INDEX_MAP_BY_CATEGORY.sweatshirts;
+  if (normalized.includes("pant")) return IMAGE_INDEX_MAP_BY_CATEGORY.pants;
+
+  return IMAGE_INDEX_MAP_BY_CATEGORY.tees;
+}
+
+function buildZoneImages(fallbackImages, category) {
+  const map = getImageMapByCategory(category);
+  const firstImage = fallbackImages?.[0]?.url || null;
+
+  const result = {};
+
+  Object.entries(map).forEach(([zoneKey, imageIndex]) => {
+    result[zoneKey] = fallbackImages?.[imageIndex]?.url || firstImage;
+  });
+
+  return result;
+}
+
 export default function Personalization({ product, 
   selectedColor, 
   quantity, 
@@ -24,33 +84,7 @@ export default function Personalization({ product,
 
   const fallbackImages = filteredImages.length ? filteredImages : images;
 
-  const zoneImages = {
-    front: fallbackImages[0]?.url || null,
-    back: fallbackImages[1]?.url || fallbackImages[0]?.url || null,
-    leftSleeve:
-      fallbackImages[fallbackImages.length - 1]?.url ||
-      fallbackImages[1]?.url ||
-      fallbackImages[0]?.url ||
-      null,
-    rightSleeve:
-      fallbackImages[fallbackImages.length - 2]?.url ||
-      fallbackImages[0]?.url ||
-      null,
-    neck: fallbackImages[2]?.url || fallbackImages[0]?.url || null,
-    hood: fallbackImages[4]?.url || fallbackImages[0]?.url || null,
-    pocket: fallbackImages[6]?.url || fallbackImages[0]?.url || null,
-
-    frontRightLeg: fallbackImages[0]?.url || null,
-    frontLeftLeg: fallbackImages[1]?.url || fallbackImages[0]?.url || null,
-    backRightLeg: fallbackImages[2]?.url || fallbackImages[0]?.url || null,
-    backLeftLeg: fallbackImages[3]?.url || fallbackImages[0]?.url || null,
-    waist: fallbackImages[4]?.url || fallbackImages[0]?.url || null,
-    backPocket: fallbackImages[5]?.url || fallbackImages[0]?.url || null,
-
-    leftSide: fallbackImages[1]?.url || fallbackImages[0]?.url || null,
-    rightSide: fallbackImages[2]?.url || fallbackImages[0]?.url || null,
-    visor: fallbackImages[3]?.url || fallbackImages[0]?.url || null,
-  };
+const zoneImages = buildZoneImages(fallbackImages, product?.category);
 
   useEffect(() => {
     function handleEsc(e) {
@@ -85,7 +119,7 @@ export default function Personalization({ product,
       : "bg-blue-500 hover:bg-blue-700"
   }`}
 >
-  Personalize {product.category}
+  Personalize {product?.category}
 </button>
 
 {isDisabled && (
@@ -111,10 +145,11 @@ export default function Personalization({ product,
       ✕
     </button>
 
+
     <div className="h-full overflow-y-auto p-4 md:p-6">
       <ProductCustomizerBase
         zoneImages={zoneImages}
-        category={product.category}
+        category={product?.category}
         quantity={quantity}
         basePriceBreakdown={basePriceBreakdown}
         garmentBaseTotal={garmentBaseTotal}
