@@ -717,7 +717,10 @@ const hasManualQuote = allPlacementPricings.some(
           )}
 
           {selectedElement && (
-            <div className="space-y-5">
+  <div
+    key={`${selectedElement.id}-${selectedElement.type}`}
+    className="space-y-5"
+  >
               <div className="rounded-xl border border-slate-200 bg-white p-4">
                 <p className="mb-3 text-sm font-semibold text-slate-800">
                   Contenido del elemento
@@ -1087,7 +1090,7 @@ const hasManualQuote = allPlacementPricings.some(
       <p className="font-semibold text-slate-800">Personalizaciones</p>
 
       {allPlacementPricings.length > 0 ? (
-        <div className="mt-2 space-y-2 text-slate-600">
+        <div className="mt-2 space-y-2 text-slate-600 max-h-75 overflow-auto">
           {allPlacementPricings.map((item) => {
             const isAutomatic = item.pricing.pricingMode === "automatic";
 
@@ -1222,6 +1225,7 @@ function Field({
 
 function getTechniqueVariant(element: CustomElement) {
   if (element.technique === "embroidery") {
+    if (element.embroideryType === "bordado_3d") return "3d";
     return element.embroideryType || "mixto";
   }
 
@@ -1236,19 +1240,7 @@ function getTechniqueVariant(element: CustomElement) {
   if (element.technique === "rhinestones") {
     return element.rhinestonesType || "6ss";
   }
-
-  if (element.technique === "patch") {
-    return "";
-  }
-
-  if (element.technique === "dtf") {
-    return "";
-  }
-
-  if (element.technique === "dtg") {
-    return "";
-  }
-
+  
   return "";
 }
 
