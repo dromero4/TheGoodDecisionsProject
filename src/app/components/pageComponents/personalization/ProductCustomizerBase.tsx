@@ -620,8 +620,8 @@ export default function ProductCustomizerBase({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[280px_minmax(420px,1fr)_360px]">
-        <aside className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[280px_minmax(420px,1fr)_360px]">
+        <aside className="xl:sticky xl:top-4 xl:self-start rounded-xl border border-slate-200 bg-slate-50 p-4">
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-slate-900">Elementos</h3>
             <p className="text-sm text-slate-500">
@@ -698,7 +698,7 @@ export default function ProductCustomizerBase({
           </div>
         </aside>
 
-        <section className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <section className="xl:sticky xl:top-4 xl:self-start rounded-xl border border-slate-200 bg-slate-50 p-4 xl:max-h-[calc(90vh-5rem)]">
           <div className="mb-4">
             <h3 className="text-lg font-semibold text-slate-900">Preview</h3>
             <p className="text-sm text-slate-500">
