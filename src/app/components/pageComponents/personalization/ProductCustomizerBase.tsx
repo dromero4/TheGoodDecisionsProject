@@ -30,7 +30,6 @@ type ScreenprintType = "plana" | "puff";
 const SIZE_OPTIONS_BY_TECHNIQUE: Record<Technique, { value: string; label: string }[]> = {
   embroidery: [
     { value: "5x5", label: "5x5 cm" },
-    { value: "5x10", label: "5x10 cm" },
     { value: "10x10", label: "10x10 cm" },
     { value: "14x15", label: "14x15 cm" },
     { value: "14x20", label: "14x20 cm" },
@@ -76,16 +75,9 @@ const SIZE_OPTIONS_BY_TECHNIQUE: Record<Technique, { value: string; label: strin
   ],
 
   screenprint: [
-    { value: "5x5", label: "5x5 cm" },
-    { value: "5x10", label: "5x10 cm" },
-    { value: "10x10", label: "10x10 cm" },
-    { value: "10x15", label: "10x15 cm" },
-    { value: "10x20", label: "10x20 cm" },
-    { value: "10x30", label: "10x30 cm" },
-    { value: "a5", label: "A5" },
-    { value: "a4", label: "A4" },
-    { value: "a3", label: "A3" },
-  ],
+  { value: "a4", label: "A4 (21x29,7 cm, centrado)" },
+  { value: "a3", label: "A3 (29,7x42 cm, centrado)" },
+],
 
   vinyl: [
     { value: "5x5", label: "5x5 cm" },
