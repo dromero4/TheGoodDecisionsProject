@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { Rnd } from "react-rnd";
 
-import {calculatePlacementPrice} from "./pricing/calculatePlacementPrice.js";
+import { calculatePlacementPrice } from "./pricing/calculatePlacementPrice.js";
 
 type ZoneId = string;
 
@@ -26,6 +26,133 @@ type EmbroideryType =
   | "bordado_3d";
 
 type ScreenprintType = "plana" | "puff";
+
+const SIZE_OPTIONS_BY_TECHNIQUE: Record<Technique, { value: string; label: string }[]> = {
+  embroidery: [
+    { value: "5x5", label: "5x5 cm" },
+    { value: "5x10", label: "5x10 cm" },
+    { value: "10x10", label: "10x10 cm" },
+    { value: "14x15", label: "14x15 cm" },
+    { value: "14x20", label: "14x20 cm" },
+    { value: "15x15", label: "15x15 cm" },
+    { value: "15x20", label: "15x20 cm" },
+    { value: "20x27", label: "20x27 cm" },
+    { value: "25x25", label: "25x25 cm" },
+  ],
+
+  patch: [
+    { value: "5x5", label: "5x5 cm" },
+    { value: "5x10", label: "5x10 cm" },
+    { value: "10x10", label: "10x10 cm" },
+    { value: "10x20", label: "10x20 cm" },
+    { value: "10x30", label: "10x30 cm" },
+    { value: "10x40", label: "10x40 cm" },
+    { value: "14x15", label: "14x15 cm" },
+    { value: "14x20", label: "14x20 cm" },
+    { value: "15x15", label: "15x15 cm" },
+    { value: "15x20", label: "15x20 cm" },
+    { value: "20x27", label: "20x27 cm" },
+    { value: "20x30", label: "20x30 cm" },
+    { value: "27x40", label: "27x40 cm" },
+  ],
+
+  dtf: [
+    { value: "5x5", label: "5x5 cm" },
+    { value: "5x10", label: "5x10 cm" },
+    { value: "10x10", label: "10x10 cm" },
+    { value: "10x20", label: "10x20 cm" },
+    { value: "10x30", label: "10x30 cm" },
+    { value: "10x40", label: "10x40 cm" },
+    { value: "14x20", label: "14x20 cm" },
+    { value: "20x27", label: "20x27 cm" },
+    { value: "27x40", label: "27x40 cm" },
+  ],
+
+  dtg: [
+    { value: "10x10", label: "10x10 cm" },
+    { value: "15x20", label: "15x20 cm" },
+    { value: "30x30", label: "30x30 cm" },
+    { value: "34,5x49", label: "34,5x49 cm" },
+  ],
+
+  screenprint: [
+    { value: "5x5", label: "5x5 cm" },
+    { value: "5x10", label: "5x10 cm" },
+    { value: "10x10", label: "10x10 cm" },
+    { value: "10x15", label: "10x15 cm" },
+    { value: "10x20", label: "10x20 cm" },
+    { value: "10x30", label: "10x30 cm" },
+    { value: "a5", label: "A5" },
+    { value: "a4", label: "A4" },
+    { value: "a3", label: "A3" },
+  ],
+
+  vinyl: [
+    { value: "5x5", label: "5x5 cm" },
+    { value: "5x10", label: "5x10 cm" },
+    { value: "10x10", label: "10x10 cm" },
+    { value: "10x15", label: "10x15 cm" },
+    { value: "10x20", label: "10x20 cm" },
+    { value: "10x30", label: "10x30 cm" },
+    { value: "10x40", label: "10x40 cm" },
+    { value: "15x20", label: "15x20 cm" },
+    { value: "20x27", label: "20x27 cm" },
+    { value: "20x30", label: "20x30 cm" },
+    { value: "30x40", label: "30x40 cm" },
+    { value: "40x30", label: "40x30 cm" },
+  ],
+
+  rhinestones: [
+    { value: "5x5", label: "5x5 cm" },
+    { value: "5x10", label: "5x10 cm" },
+    { value: "10x10", label: "10x10 cm" },
+    { value: "10x15", label: "10x15 cm" },
+    { value: "10x20", label: "10x20 cm" },
+    { value: "10x30", label: "10x30 cm" },
+    { value: "10x40", label: "10x40 cm" },
+    { value: "14x15", label: "14x15 cm" },
+    { value: "14x20", label: "14x20 cm" },
+    { value: "15x15", label: "15x15 cm" },
+    { value: "15x20", label: "15x20 cm" },
+    { value: "20x20", label: "20x20 cm" },
+    { value: "20x27", label: "20x27 cm" },
+    { value: "20x30", label: "20x30 cm" },
+    { value: "25x25", label: "25x25 cm" },
+    { value: "25x35", label: "25x35 cm" },
+    { value: "30x30", label: "30x30 cm" },
+    { value: "30x40", label: "30x40 cm" },
+    { value: "35x35", label: "35x35 cm" },
+    { value: "40x40", label: "40x40 cm" },
+  ],
+};
+
+const SIZE_OPTIONS = [
+  { value: "5x5", label: "5x5 cm" },
+  { value: "5x10", label: "5x10 cm" },
+  { value: "10x10", label: "10x10 cm" },
+  { value: "10x15", label: "10x15 cm" },
+  { value: "10x20", label: "10x20 cm" },
+  { value: "10x30", label: "10x30 cm" },
+  { value: "10x40", label: "10x40 cm" },
+  { value: "14x15", label: "14x15 cm" },
+  { value: "14x20", label: "14x20 cm" },
+  { value: "15x15", label: "15x15 cm" },
+  { value: "15x20", label: "15x20 cm" },
+  { value: "20x20", label: "20x20 cm" },
+  { value: "20x27", label: "20x27 cm" },
+  { value: "20x30", label: "20x30 cm" },
+  { value: "25x25", label: "25x25 cm" },
+  { value: "25x35", label: "25x35 cm" },
+  { value: "27x40", label: "27x40 cm" },
+  { value: "30x30", label: "30x30 cm" },
+  { value: "30x40", label: "30x40 cm" },
+  { value: "34,5x49", label: "34,5x49 cm" },
+  { value: "35x35", label: "35x35 cm" },
+  { value: "40x40", label: "40x40 cm" },
+  { value: "a5", label: "A5" },
+  { value: "a4", label: "A4" },
+  { value: "a3", label: "A3" },
+];
 
 const VINYL_VARIANTS = [
   { value: "textil_flex", label: "Textil Flex" },
@@ -284,7 +411,7 @@ export default function ProductCustomizerBase({
   );
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
 
-  
+
 
   useEffect(() => {
     setProductState((prev) => {
@@ -313,53 +440,53 @@ export default function ProductCustomizerBase({
   }, [activeZoneElements, selectedElementId]);
 
   const selectedElementPricing = useMemo(() => {
-  if (!selectedElement) return null;
+    if (!selectedElement) return null;
 
-  return calculatePlacementPrice({
-    productType: resolvedProductType,
-    view: activeZone,
-    technique: selectedElement.technique,
-    variant: getTechniqueVariant(selectedElement),
-    requestedSize: selectedElement.sizeLabel,
-    quantity,
-    inkCount: selectedElement.inkCount,
-  });
-}, [selectedElement, resolvedProductType, activeZone, quantity]);
+    return calculatePlacementPrice({
+      productType: resolvedProductType,
+      view: activeZone,
+      technique: selectedElement.technique,
+      variant: getTechniqueVariant(selectedElement),
+      requestedSize: selectedElement.sizeLabel,
+      quantity,
+      inkCount: selectedElement.inkCount,
+    });
+  }, [selectedElement, resolvedProductType, activeZone, quantity]);
 
-const allPlacementPricings = useMemo(() => {
-  return Object.entries(productState).flatMap(([zone, zoneData]) =>
-    (zoneData.elements || []).map((element) => {
-      const pricing = calculatePlacementPrice({
-        productType: resolvedProductType,
-        view: zone,
-        technique: element.technique,
-        variant: getTechniqueVariant(element),
-        requestedSize: element.sizeLabel,
-        quantity,
-        inkCount: element.inkCount,
-      });
+  const allPlacementPricings = useMemo(() => {
+    return Object.entries(productState).flatMap(([zone, zoneData]) =>
+      (zoneData.elements || []).map((element) => {
+        const pricing = calculatePlacementPrice({
+          productType: resolvedProductType,
+          view: zone,
+          technique: element.technique,
+          variant: getTechniqueVariant(element),
+          requestedSize: element.sizeLabel,
+          quantity,
+          inkCount: element.inkCount,
+        });
 
-      return {
-        zone,
-        element,
-        pricing,
-      };
-    })
+        return {
+          zone,
+          element,
+          pricing,
+        };
+      })
+    );
+  }, [productState, resolvedProductType, quantity]);
+
+  const customizationTotal = useMemo(() => {
+    return allPlacementPricings.reduce((sum, item) => {
+      if (item.pricing.pricingMode !== "automatic") return sum;
+      return sum + Number(item.pricing.totalPrice || 0);
+    }, 0);
+  }, [allPlacementPricings]);
+
+  const finalTotal = garmentBaseTotal + customizationTotal;
+
+  const hasManualQuote = allPlacementPricings.some(
+    (item) => item.pricing.pricingMode === "manual_quote"
   );
-}, [productState, resolvedProductType, quantity]);
-
-const customizationTotal = useMemo(() => {
-  return allPlacementPricings.reduce((sum, item) => {
-    if (item.pricing.pricingMode !== "automatic") return sum;
-    return sum + Number(item.pricing.totalPrice || 0);
-  }, 0);
-}, [allPlacementPricings]);
-
-const finalTotal = garmentBaseTotal + customizationTotal;
-
-const hasManualQuote = allPlacementPricings.some(
-  (item) => item.pricing.pricingMode === "manual_quote"
-);
 
   function updateZoneElements(
     zone: ZoneId,
@@ -462,6 +589,10 @@ const hasManualQuote = allPlacementPricings.some(
     setActiveZone(zone);
     setSelectedElementId(null);
   }
+
+  const selectedSizeOptions = selectedElement
+    ? SIZE_OPTIONS_BY_TECHNIQUE[selectedElement.technique] ?? SIZE_OPTIONS
+    : SIZE_OPTIONS;
 
   return (
     <div className="w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-6">
@@ -717,10 +848,10 @@ const hasManualQuote = allPlacementPricings.some(
           )}
 
           {selectedElement && (
-  <div
-    key={`${selectedElement.id}-${selectedElement.type}`}
-    className="space-y-5"
-  >
+            <div
+              key={`${selectedElement.id}-${selectedElement.type}`}
+              className="space-y-5"
+            >
               <div className="rounded-xl border border-slate-200 bg-white p-4">
                 <p className="mb-3 text-sm font-semibold text-slate-800">
                   Contenido del elemento
@@ -811,11 +942,16 @@ const hasManualQuote = allPlacementPricings.some(
                   <Field label="Técnica">
                     <select
                       value={selectedElement.technique}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const nextTechnique = e.target.value as Technique;
+                        const nextSize =
+                          SIZE_OPTIONS_BY_TECHNIQUE[nextTechnique]?.[0]?.value ?? "10x10";
+
                         updateSelectedElement({
-                          technique: e.target.value as Technique,
-                        })
-                      }
+                          technique: nextTechnique,
+                          sizeLabel: nextSize,
+                        });
+                      }}
                       className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
                     >
                       <option value="embroidery">Bordado directo</option>
@@ -926,15 +1062,19 @@ const hasManualQuote = allPlacementPricings.some(
                   )}
 
                   <Field label="Tamaño">
-                    <input
-                      type="text"
-                      value={selectedElement.sizeLabel ?? ""}
+                    <select
+                      value={selectedElement.sizeLabel ?? selectedSizeOptions[0]?.value ?? ""}
                       onChange={(e) =>
                         updateSelectedElement({ sizeLabel: e.target.value })
                       }
-                      placeholder="Ej: 7x7 cm"
                       className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                    />
+                    >
+                      {selectedSizeOptions.map((size) => (
+                        <option key={size.value} value={size.value}>
+                          {size.label}
+                        </option>
+                      ))}
+                    </select>
                   </Field>
                 </div>
               </div>
@@ -990,171 +1130,171 @@ const hasManualQuote = allPlacementPricings.some(
                 </div>
               </div>
 
-{selectedElementPricing && (
-  <div className="rounded-xl border border-slate-200 bg-white p-4">
-    <p className="mb-3 text-sm font-semibold text-slate-800">
-      Precio de esta personalización
-    </p>
+              {selectedElementPricing && (
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="mb-3 text-sm font-semibold text-slate-800">
+                    Precio de esta personalización
+                  </p>
 
-    {selectedElementPricing.pricingMode === "automatic" ? (
-      <div className="space-y-1 text-sm text-slate-600">
-        <p>
-          Tamaño solicitado:{" "}
-          <span className="font-medium">
-            {selectedElementPricing.requestedSize}
-          </span>
-        </p>
+                  {selectedElementPricing.pricingMode === "automatic" ? (
+                    <div className="space-y-1 text-sm text-slate-600">
+                      <p>
+                        Tamaño solicitado:{" "}
+                        <span className="font-medium">
+                          {selectedElementPricing.requestedSize}
+                        </span>
+                      </p>
 
-        <p>
-          Tamaño cobrado:{" "}
-          <span className="font-medium">
-            {selectedElementPricing.chargedSize}
-          </span>
-        </p>
+                      <p>
+                        Tamaño cobrado:{" "}
+                        <span className="font-medium">
+                          {selectedElementPricing.chargedSize}
+                        </span>
+                      </p>
 
-        
 
-        {selectedElementPricing.inkCount && (
-          <p>
-            Tintas:{" "}
-            <span className="font-medium">
-              {selectedElementPricing.inkCount}
-            </span>
-          </p>
-        )}
 
-        <p>
-          Precio unitario:{" "}
-          <span className="font-medium">
-            {Number(selectedElementPricing.unitPrice).toFixed(2)} €
-          </span>
-        </p>
+                      {selectedElementPricing.inkCount && (
+                        <p>
+                          Tintas:{" "}
+                          <span className="font-medium">
+                            {selectedElementPricing.inkCount}
+                          </span>
+                        </p>
+                      )}
 
-        <p>
-          Total:{" "}
-          <span className="font-semibold text-slate-900">
-            {Number(selectedElementPricing.totalPrice).toFixed(2)} €
-          </span>
-        </p>
-      </div>
-    ) : (
-      <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
-        <p className="font-medium">Presupuesto manual</p>
-        <p className="mt-1">
-          Motivo: {selectedElementPricing.reason || "No disponible"}
-        </p>
-      </div>
-    )}
-  </div>
-)}
+                      <p>
+                        Precio unitario:{" "}
+                        <span className="font-medium">
+                          {Number(selectedElementPricing.unitPrice).toFixed(2)} €
+                        </span>
+                      </p>
 
-<div className="rounded-xl border border-slate-200 bg-white p-4">
-  <p className="mb-3 text-sm font-semibold text-slate-800">
-    Resumen final
-  </p>
-
-  <div className="space-y-3 text-sm">
-    <div className="rounded-lg bg-slate-50 p-3">
-      <p className="font-semibold text-slate-800">Prendas base</p>
-
-      {basePriceBreakdown.length > 0 ? (
-        <div className="mt-2 space-y-1 text-slate-600">
-          {basePriceBreakdown.map((item) => (
-            <div
-              key={item.size}
-              className="flex justify-between gap-3"
-            >
-              <span>
-                Talla {item.size}: {item.quantity} uds ×{" "}
-                {formatMoney(item.unitPrice)}
-              </span>
-              <span className="font-medium">
-                {formatMoney(item.total)}
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-2 text-slate-500">
-          No hay prendas seleccionadas.
-        </p>
-      )}
-
-      <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold">
-        <span>Total prendas</span>
-        <span>{formatMoney(garmentBaseTotal)}</span>
-      </div>
-    </div>
-
-    <div className="rounded-lg bg-slate-50 p-3">
-      <p className="font-semibold text-slate-800">Personalizaciones</p>
-
-      {allPlacementPricings.length > 0 ? (
-        <div className="mt-2 space-y-2 text-slate-600 max-h-75 overflow-auto">
-          {allPlacementPricings.map((item) => {
-            const isAutomatic = item.pricing.pricingMode === "automatic";
-
-            return (
-              <div
-                key={`${item.zone}-${item.element.id}`}
-                className="rounded-md border border-slate-200 bg-white p-2"
-              >
-                <div className="flex justify-between gap-3">
-                  <span>
-                    {zoneLabels[item.zone] ?? item.zone} ·{" "}
-                    {formatTechnique(item.element)}
-                  </span>
-
-                  <span className="font-medium">
-                    {isAutomatic
-                      ? formatMoney(Number(item.pricing.totalPrice || 0))
-                      : "Manual"}
-                  </span>
+                      <p>
+                        Total:{" "}
+                        <span className="font-semibold text-slate-900">
+                          {Number(selectedElementPricing.totalPrice).toFixed(2)} €
+                        </span>
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+                      <p className="font-medium">Presupuesto manual</p>
+                      <p className="mt-1">
+                        Motivo: {selectedElementPricing.reason || "No disponible"}
+                      </p>
+                    </div>
+                  )}
                 </div>
+              )}
 
-                <p className="mt-1 text-xs text-slate-500">
-                  Tamaño: {item.pricing.requestedSize} →{" "}
-                  {item.pricing.chargedSize || "—"} · Tramo:{" "}
-                  {item.pricing.quantityBracket || "—"} uds
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <p className="mb-3 text-sm font-semibold text-slate-800">
+                  Resumen final
                 </p>
 
-                {!isAutomatic && (
-                  <p className="mt-1 text-xs text-amber-700">
-                    Requiere presupuesto manual: {item.pricing.reason}
-                  </p>
-                )}
+                <div className="space-y-3 text-sm">
+                  <div className="rounded-lg bg-slate-50 p-3">
+                    <p className="font-semibold text-slate-800">Prendas base</p>
+
+                    {basePriceBreakdown.length > 0 ? (
+                      <div className="mt-2 space-y-1 text-slate-600">
+                        {basePriceBreakdown.map((item) => (
+                          <div
+                            key={item.size}
+                            className="flex justify-between gap-3"
+                          >
+                            <span>
+                              Talla {item.size}: {item.quantity} uds ×{" "}
+                              {formatMoney(item.unitPrice)}
+                            </span>
+                            <span className="font-medium">
+                              {formatMoney(item.total)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-slate-500">
+                        No hay prendas seleccionadas.
+                      </p>
+                    )}
+
+                    <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold">
+                      <span>Total prendas</span>
+                      <span>{formatMoney(garmentBaseTotal)}</span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-slate-50 p-3">
+                    <p className="font-semibold text-slate-800">Personalizaciones</p>
+
+                    {allPlacementPricings.length > 0 ? (
+                      <div className="mt-2 space-y-2 text-slate-600 max-h-75 overflow-auto">
+                        {allPlacementPricings.map((item) => {
+                          const isAutomatic = item.pricing.pricingMode === "automatic";
+
+                          return (
+                            <div
+                              key={`${item.zone}-${item.element.id}`}
+                              className="rounded-md border border-slate-200 bg-white p-2"
+                            >
+                              <div className="flex justify-between gap-3">
+                                <span>
+                                  {zoneLabels[item.zone] ?? item.zone} ·{" "}
+                                  {formatTechnique(item.element)}
+                                </span>
+
+                                <span className="font-medium">
+                                  {isAutomatic
+                                    ? formatMoney(Number(item.pricing.totalPrice || 0))
+                                    : "Manual"}
+                                </span>
+                              </div>
+
+                              <p className="mt-1 text-xs text-slate-500">
+                                Tamaño: {item.pricing.requestedSize} →{" "}
+                                {item.pricing.chargedSize || "—"} · Tramo:{" "}
+                                {item.pricing.quantityBracket || "—"} uds
+                              </p>
+
+                              {!isAutomatic && (
+                                <p className="mt-1 text-xs text-amber-700">
+                                  Requiere presupuesto manual: {item.pricing.reason}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-slate-500">
+                        No hay personalizaciones añadidas.
+                      </p>
+                    )}
+
+                    <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold">
+                      <span>Total personalización</span>
+                      <span>{formatMoney(customizationTotal)}</span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl bg-slate-900 p-4 text-white">
+                    <div className="flex justify-between text-base font-bold">
+                      <span>Total estimado</span>
+                      <span>{formatMoney(finalTotal)}</span>
+                    </div>
+
+                    {hasManualQuote && (
+                      <p className="mt-2 text-xs text-slate-300">
+                        Hay personalizaciones que requieren presupuesto manual. El total final
+                        puede variar.
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
-            );
-          })}
-        </div>
-      ) : (
-        <p className="mt-2 text-slate-500">
-          No hay personalizaciones añadidas.
-        </p>
-      )}
 
-      <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold">
-        <span>Total personalización</span>
-        <span>{formatMoney(customizationTotal)}</span>
-      </div>
-    </div>
-
-    <div className="rounded-xl bg-slate-900 p-4 text-white">
-      <div className="flex justify-between text-base font-bold">
-        <span>Total estimado</span>
-        <span>{formatMoney(finalTotal)}</span>
-      </div>
-
-      {hasManualQuote && (
-        <p className="mt-2 text-xs text-slate-300">
-          Hay personalizaciones que requieren presupuesto manual. El total final
-          puede variar.
-        </p>
-      )}
-    </div>
-  </div>
-</div>
-              
 
               <details className="rounded-xl border border-slate-200 bg-white p-4">
                 <summary className="cursor-pointer text-sm font-semibold text-slate-800">
@@ -1240,7 +1380,7 @@ function getTechniqueVariant(element: CustomElement) {
   if (element.technique === "rhinestones") {
     return element.rhinestonesType || "6ss";
   }
-  
+
   return "";
 }
 
