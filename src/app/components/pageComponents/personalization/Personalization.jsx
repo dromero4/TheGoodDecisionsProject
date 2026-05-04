@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import ProductCustomizerBase from "@/app/components/pageComponents/personalization/ProductCustomizerBase";
 
-export default function Personalization({ product, selectedColor }) {
+export default function Personalization({ product, 
+  selectedColor, 
+  quantity, 
+  basePriceBreakdown = [], 
+  garmentBaseTotal = 0 
+}) {
   const [open, setOpen] = useState(false);
 
   const normalize = (value) =>
@@ -93,6 +98,9 @@ export default function Personalization({ product, selectedColor }) {
               <ProductCustomizerBase
                 zoneImages={zoneImages}
                 category={product.category}
+                quantity={quantity}
+                basePriceBreakdown={basePriceBreakdown}
+                garmentBaseTotal={garmentBaseTotal}
               />
             </div>
           </div>

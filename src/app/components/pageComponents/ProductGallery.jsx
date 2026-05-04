@@ -7,7 +7,7 @@ import ProductAccordion from "../ProductAccordion";
 import Personalization from "./personalization/Personalization";
 import ProductCustomizerBase from "./personalization/ProductCustomizerBase";
 
-export default function ProductGallery({ product  }) {
+export default function ProductGallery({ product }) {
     const images = useMemo(() => product?.images ?? [], [product?.images]);
 
 
@@ -135,6 +135,53 @@ export default function ProductGallery({ product  }) {
     const totalUnits = useMemo(() => {
         return Object.values(sizeQty).reduce((a, b) => a + (Number(b) || 0), 0);
     }, [sizeQty]);
+
+    function getTierUnitPrice(price, totalUnits) {
+        if (!price) return 0;
+
+        if (totalUnits >= 1000) {
+            return Number(price.gt1000 ?? price.gt500 ?? price.gt100 ?? price.gt10 ?? price.unit ?? 0);
+        }
+
+        if (totalUnits >= 500) {
+            return Number(price.gt500 ?? price.gt100 ?? price.gt10 ?? price.unit ?? 0);
+        }
+
+        if (totalUnits >= 100) {
+            return Number(price.gt100 ?? price.gt10 ?? price.unit ?? 0);
+        }
+
+        if (totalUnits >= 10) {
+            return Number(price.gt10 ?? price.unit ?? 0);
+        }
+
+        return Number(price.unit ?? 0);
+    }
+
+    const basePriceBreakdown = useMemo(() => {
+        return Object.entries(sizeQty)
+            .filter(([, qty]) => Number(qty) > 0)
+            .map(([size, qty]) => {
+                const variant = (product?.variants ?? []).find(
+                    (v) => v.color === selectedColor && v.size === size
+                );
+
+                const price = variant?.prices?.[0] ?? null;
+                const unitPrice = getTierUnitPrice(price, totalUnits);
+                const quantity = Number(qty) || 0;
+
+                return {
+                    size,
+                    quantity,
+                    unitPrice,
+                    total: unitPrice * quantity,
+                };
+            });
+    }, [sizeQty, product?.variants, selectedColor, totalUnits]);
+
+    const garmentBaseTotal = useMemo(() => {
+        return basePriceBreakdown.reduce((sum, item) => sum + item.total, 0);
+    }, [basePriceBreakdown]);
 
     return (
         <main className="flex justify-evenly">
@@ -369,9 +416,18 @@ export default function ProductGallery({ product  }) {
                     <p className="mt-2 text-xs text-black/50">
                         Prices shown per unit. Final price depends on variant and availability.
                     </p>
-                </section>
 
-  <Personalization product={product} selectedColor={selectedColor} />
+
+
+                </section>
+                
+                <Personalization
+                    product={product}
+                    selectedColor={selectedColor}
+                    quantity={totalUnits}
+                    basePriceBreakdown={basePriceBreakdown}
+                    garmentBaseTotal={garmentBaseTotal}
+                />
             </section>
 
         </main>

@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { Rnd } from "react-rnd";
 
+import {calculatePlacementPrice} from "./pricing/calculatePlacementPrice.js";
+
 type ZoneId = string;
 
 type ElementType = "text" | "image";
@@ -14,7 +16,8 @@ type Technique =
   | "dtf"
   | "dtg"
   | "rhinestones"
-  | "vinyl";
+  | "vinyl"
+  | "patch";
 
 type EmbroideryType =
   | "matizado"
@@ -32,6 +35,13 @@ const VINYL_VARIANTS = [
   { value: "flock", label: "Flock" },
   { value: "glitter", label: "Glitter" },
   { value: "reflectante", label: "Reflectante" },
+];
+
+const RHINESTONES_VARIANTS = [
+  { value: "6ss", label: "6SS / 2 mm" },
+  { value: "10ss", label: "10SS / 3 mm" },
+  { value: "16ss", label: "16SS / 4 mm" },
+  { value: "20ss", label: "20SS / 5 mm" },
 ];
 
 type CustomElement = {
@@ -57,6 +67,8 @@ type CustomElement = {
   screenprintType?: ScreenprintType;
   vinylType?: string;
   rhinestonesType?: string;
+
+  inkCount?: string;
 
   sizeLabel?: string;
   notes?: string;
@@ -88,6 +100,14 @@ type ProductCustomizerBaseProps = {
   productFeatures?: ProductFeatureFlags;
   zoneImages?: Record<string, string | null>;
   category?: string;
+  quantity?: number;
+  basePriceBreakdown?: {
+    size: string;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+  }[];
+  garmentBaseTotal?: number;
 };
 
 const PRODUCT_ZONES: Record<ProductType, ProductZone[]> = {
@@ -126,6 +146,10 @@ const PRODUCT_ZONES: Record<ProductType, ProductZone[]> = {
     { id: "visor", label: "Visera" },
   ],
 };
+
+function formatMoney(value: number) {
+  return `${Number(value || 0).toFixed(2)} €`;
+}
 
 function getProductZones(
   productType: ProductType,
@@ -229,6 +253,9 @@ export default function ProductCustomizerBase({
   productFeatures,
   zoneImages = {},
   category,
+  quantity = 1,
+  basePriceBreakdown = [],
+  garmentBaseTotal = 0,
 }: ProductCustomizerBaseProps) {
   const inferredConfig = useMemo(() => {
     return inferProductConfigFromCategory(category);
@@ -257,6 +284,8 @@ export default function ProductCustomizerBase({
   );
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
 
+  
+
   useEffect(() => {
     setProductState((prev) => {
       const next = { ...prev };
@@ -282,6 +311,55 @@ export default function ProductCustomizerBase({
   const selectedElement = useMemo(() => {
     return activeZoneElements.find((el) => el.id === selectedElementId) ?? null;
   }, [activeZoneElements, selectedElementId]);
+
+  const selectedElementPricing = useMemo(() => {
+  if (!selectedElement) return null;
+
+  return calculatePlacementPrice({
+    productType: resolvedProductType,
+    view: activeZone,
+    technique: selectedElement.technique,
+    variant: getTechniqueVariant(selectedElement),
+    requestedSize: selectedElement.sizeLabel,
+    quantity,
+    inkCount: selectedElement.inkCount,
+  });
+}, [selectedElement, resolvedProductType, activeZone, quantity]);
+
+const allPlacementPricings = useMemo(() => {
+  return Object.entries(productState).flatMap(([zone, zoneData]) =>
+    (zoneData.elements || []).map((element) => {
+      const pricing = calculatePlacementPrice({
+        productType: resolvedProductType,
+        view: zone,
+        technique: element.technique,
+        variant: getTechniqueVariant(element),
+        requestedSize: element.sizeLabel,
+        quantity,
+        inkCount: element.inkCount,
+      });
+
+      return {
+        zone,
+        element,
+        pricing,
+      };
+    })
+  );
+}, [productState, resolvedProductType, quantity]);
+
+const customizationTotal = useMemo(() => {
+  return allPlacementPricings.reduce((sum, item) => {
+    if (item.pricing.pricingMode !== "automatic") return sum;
+    return sum + Number(item.pricing.totalPrice || 0);
+  }, 0);
+}, [allPlacementPricings]);
+
+const finalTotal = garmentBaseTotal + customizationTotal;
+
+const hasManualQuote = allPlacementPricings.some(
+  (item) => item.pricing.pricingMode === "manual_quote"
+);
 
   function updateZoneElements(
     zone: ZoneId,
@@ -322,13 +400,18 @@ export default function ProductCustomizerBase({
       textColor: "#111111",
       fontSize: 24,
       embroideryType: "mixto",
-      sizeLabel: "7x7 cm",
+      screenprintType: "plana",
+      vinylType: "textil_flex",
+      rhinestonesType: "6ss",
+      inkCount: "1",
+      sizeLabel: "10x10",
       notes: "",
     };
 
     updateZoneElements(activeZone, (elements) => [...elements, newElement]);
     setSelectedElementId(newElement.id);
   }
+
 
   function addImageElement() {
     const newElement: CustomElement = {
@@ -341,9 +424,13 @@ export default function ProductCustomizerBase({
       height: 120,
       rotation: 0,
       technique: "embroidery",
-      imageUrl: "https://placehold.co/200x200/png",
+      imageUrl: "",
       embroideryType: "mixto",
-      sizeLabel: "7x7 cm",
+      screenprintType: "plana",
+      vinylType: "textil_flex",
+      rhinestonesType: "6ss",
+      inkCount: "1",
+      sizeLabel: "10x10",
       notes: "",
     };
 
@@ -399,8 +486,8 @@ export default function ProductCustomizerBase({
                 key={zone.id}
                 onClick={() => handleChangeZone(zone.id)}
                 className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${isActive
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                  ? "border-blue-600 bg-blue-600 text-white"
+                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
                   }`}
               >
                 {zone.label} ({count})
@@ -449,8 +536,8 @@ export default function ProductCustomizerBase({
                 <div
                   key={el.id}
                   className={`rounded-lg border p-3 transition ${isSelected
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-slate-200 bg-white"
+                    ? "border-blue-600 bg-blue-50"
+                    : "border-slate-200 bg-white"
                     }`}
                 >
                   <button
@@ -641,7 +728,7 @@ export default function ProductCustomizerBase({
                     <Field label="Texto">
                       <input
                         type="text"
-                        value={selectedElement.text || ""}
+                        value={selectedElement.text ?? ""}
                         onChange={(e) =>
                           updateSelectedElement({
                             text: e.target.value,
@@ -655,7 +742,7 @@ export default function ProductCustomizerBase({
                     <Field label="Color del texto">
                       <input
                         type="color"
-                        value={selectedElement.textColor || "#111111"}
+                        value={selectedElement.textColor ?? "#111111"}
                         onChange={(e) =>
                           updateSelectedElement({ textColor: e.target.value })
                         }
@@ -666,7 +753,7 @@ export default function ProductCustomizerBase({
                     <Field label="Tamaño de tipografía">
                       <input
                         type="number"
-                        value={selectedElement.fontSize || 24}
+                        value={selectedElement.fontSize ?? 24}
                         onChange={(e) =>
                           updateSelectedElement({
                             fontSize: Number(e.target.value),
@@ -681,7 +768,7 @@ export default function ProductCustomizerBase({
                     <Field label="Nombre interno">
                       <input
                         type="text"
-                        value={selectedElement.name}
+                        value={selectedElement.name ?? ""}
                         onChange={(e) =>
                           updateSelectedElement({ name: e.target.value })
                         }
@@ -729,6 +816,7 @@ export default function ProductCustomizerBase({
                       className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
                     >
                       <option value="embroidery">Bordado directo</option>
+                      <option value="patch">Parche bordado</option>
                       <option value="screenprint">Serigrafía</option>
                       <option value="dtf">DTF</option>
                       <option value="dtg">DTG</option>
@@ -773,6 +861,27 @@ export default function ProductCustomizerBase({
                     </Field>
                   )}
 
+                  {selectedElement.technique === "screenprint" &&
+                    selectedElement.screenprintType === "plana" && (
+                      <Field label="Número de tintas">
+                        <select
+                          value={selectedElement.inkCount || "1"}
+                          onChange={(e) =>
+                            updateSelectedElement({
+                              inkCount: e.target.value,
+                            })
+                          }
+                          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
+                        >
+                          <option value="1">1 tinta</option>
+                          <option value="2">2 tintas</option>
+                          <option value="3">3 tintas</option>
+                          <option value="4">4 tintas</option>
+                          <option value="5">+4 tintas / presupuesto manual</option>
+                        </select>
+                      </Field>
+                    )}
+
                   {selectedElement.technique === "vinyl" && (
                     <Field label="Tipo de vinilo">
                       <select
@@ -793,10 +902,30 @@ export default function ProductCustomizerBase({
                     </Field>
                   )}
 
+                  {selectedElement.technique === "rhinestones" && (
+                    <Field label="Tipo de pedrería">
+                      <select
+                        value={selectedElement.rhinestonesType || "6ss"}
+                        onChange={(e) =>
+                          updateSelectedElement({
+                            rhinestonesType: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
+                      >
+                        {RHINESTONES_VARIANTS.map((variant) => (
+                          <option key={variant.value} value={variant.value}>
+                            {variant.label}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                  )}
+
                   <Field label="Tamaño">
                     <input
                       type="text"
-                      value={selectedElement.sizeLabel || ""}
+                      value={selectedElement.sizeLabel ?? ""}
                       onChange={(e) =>
                         updateSelectedElement({ sizeLabel: e.target.value })
                       }
@@ -806,7 +935,6 @@ export default function ProductCustomizerBase({
                   </Field>
                 </div>
               </div>
-
               <div className="rounded-xl border border-slate-200 bg-white p-4">
                 <p className="mb-3 text-sm font-semibold text-slate-800">
                   Transformación visual
@@ -833,7 +961,7 @@ export default function ProductCustomizerBase({
                     <Field label="Ancho">
                       <input
                         type="number"
-                        value={selectedElement.width}
+                        value={selectedElement.width ?? 0}
                         onChange={(e) =>
                           updateSelectedElement({
                             width: Number(e.target.value),
@@ -846,7 +974,7 @@ export default function ProductCustomizerBase({
                     <Field label="Alto">
                       <input
                         type="number"
-                        value={selectedElement.height}
+                        value={selectedElement.height ?? 0}
                         onChange={(e) =>
                           updateSelectedElement({
                             height: Number(e.target.value),
@@ -859,6 +987,172 @@ export default function ProductCustomizerBase({
                 </div>
               </div>
 
+{selectedElementPricing && (
+  <div className="rounded-xl border border-slate-200 bg-white p-4">
+    <p className="mb-3 text-sm font-semibold text-slate-800">
+      Precio de esta personalización
+    </p>
+
+    {selectedElementPricing.pricingMode === "automatic" ? (
+      <div className="space-y-1 text-sm text-slate-600">
+        <p>
+          Tamaño solicitado:{" "}
+          <span className="font-medium">
+            {selectedElementPricing.requestedSize}
+          </span>
+        </p>
+
+        <p>
+          Tamaño cobrado:{" "}
+          <span className="font-medium">
+            {selectedElementPricing.chargedSize}
+          </span>
+        </p>
+
+        
+
+        {selectedElementPricing.inkCount && (
+          <p>
+            Tintas:{" "}
+            <span className="font-medium">
+              {selectedElementPricing.inkCount}
+            </span>
+          </p>
+        )}
+
+        <p>
+          Precio unitario:{" "}
+          <span className="font-medium">
+            {Number(selectedElementPricing.unitPrice).toFixed(2)} €
+          </span>
+        </p>
+
+        <p>
+          Total:{" "}
+          <span className="font-semibold text-slate-900">
+            {Number(selectedElementPricing.totalPrice).toFixed(2)} €
+          </span>
+        </p>
+      </div>
+    ) : (
+      <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+        <p className="font-medium">Presupuesto manual</p>
+        <p className="mt-1">
+          Motivo: {selectedElementPricing.reason || "No disponible"}
+        </p>
+      </div>
+    )}
+  </div>
+)}
+
+<div className="rounded-xl border border-slate-200 bg-white p-4">
+  <p className="mb-3 text-sm font-semibold text-slate-800">
+    Resumen final
+  </p>
+
+  <div className="space-y-3 text-sm">
+    <div className="rounded-lg bg-slate-50 p-3">
+      <p className="font-semibold text-slate-800">Prendas base</p>
+
+      {basePriceBreakdown.length > 0 ? (
+        <div className="mt-2 space-y-1 text-slate-600">
+          {basePriceBreakdown.map((item) => (
+            <div
+              key={item.size}
+              className="flex justify-between gap-3"
+            >
+              <span>
+                Talla {item.size}: {item.quantity} uds ×{" "}
+                {formatMoney(item.unitPrice)}
+              </span>
+              <span className="font-medium">
+                {formatMoney(item.total)}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-2 text-slate-500">
+          No hay prendas seleccionadas.
+        </p>
+      )}
+
+      <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold">
+        <span>Total prendas</span>
+        <span>{formatMoney(garmentBaseTotal)}</span>
+      </div>
+    </div>
+
+    <div className="rounded-lg bg-slate-50 p-3">
+      <p className="font-semibold text-slate-800">Personalizaciones</p>
+
+      {allPlacementPricings.length > 0 ? (
+        <div className="mt-2 space-y-2 text-slate-600">
+          {allPlacementPricings.map((item) => {
+            const isAutomatic = item.pricing.pricingMode === "automatic";
+
+            return (
+              <div
+                key={`${item.zone}-${item.element.id}`}
+                className="rounded-md border border-slate-200 bg-white p-2"
+              >
+                <div className="flex justify-between gap-3">
+                  <span>
+                    {zoneLabels[item.zone] ?? item.zone} ·{" "}
+                    {formatTechnique(item.element)}
+                  </span>
+
+                  <span className="font-medium">
+                    {isAutomatic
+                      ? formatMoney(Number(item.pricing.totalPrice || 0))
+                      : "Manual"}
+                  </span>
+                </div>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Tamaño: {item.pricing.requestedSize} →{" "}
+                  {item.pricing.chargedSize || "—"} · Tramo:{" "}
+                  {item.pricing.quantityBracket || "—"} uds
+                </p>
+
+                {!isAutomatic && (
+                  <p className="mt-1 text-xs text-amber-700">
+                    Requiere presupuesto manual: {item.pricing.reason}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="mt-2 text-slate-500">
+          No hay personalizaciones añadidas.
+        </p>
+      )}
+
+      <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold">
+        <span>Total personalización</span>
+        <span>{formatMoney(customizationTotal)}</span>
+      </div>
+    </div>
+
+    <div className="rounded-xl bg-slate-900 p-4 text-white">
+      <div className="flex justify-between text-base font-bold">
+        <span>Total estimado</span>
+        <span>{formatMoney(finalTotal)}</span>
+      </div>
+
+      {hasManualQuote && (
+        <p className="mt-2 text-xs text-slate-300">
+          Hay personalizaciones que requieren presupuesto manual. El total final
+          puede variar.
+        </p>
+      )}
+    </div>
+  </div>
+</div>
+              
+
               <details className="rounded-xl border border-slate-200 bg-white p-4">
                 <summary className="cursor-pointer text-sm font-semibold text-slate-800">
                   Ajustes avanzados
@@ -869,7 +1163,7 @@ export default function ProductCustomizerBase({
                     <Field label="Posición X">
                       <input
                         type="number"
-                        value={selectedElement.x}
+                        value={selectedElement.x ?? 0}
                         onChange={(e) =>
                           updateSelectedElement({ x: Number(e.target.value) })
                         }
@@ -880,7 +1174,7 @@ export default function ProductCustomizerBase({
                     <Field label="Posición Y">
                       <input
                         type="number"
-                        value={selectedElement.y}
+                        value={selectedElement.y ?? 0}
                         onChange={(e) =>
                           updateSelectedElement({ y: Number(e.target.value) })
                         }
@@ -891,7 +1185,7 @@ export default function ProductCustomizerBase({
 
                   <Field label="Notas">
                     <textarea
-                      value={selectedElement.notes || ""}
+                      value={selectedElement.notes ?? ""}
                       onChange={(e) =>
                         updateSelectedElement({ notes: e.target.value })
                       }
@@ -926,21 +1220,58 @@ function Field({
   );
 }
 
+function getTechniqueVariant(element: CustomElement) {
+  if (element.technique === "embroidery") {
+    return element.embroideryType || "mixto";
+  }
+
+  if (element.technique === "screenprint") {
+    return element.screenprintType || "plana";
+  }
+
+  if (element.technique === "vinyl") {
+    return element.vinylType || "textil_flex";
+  }
+
+  if (element.technique === "rhinestones") {
+    return element.rhinestonesType || "6ss";
+  }
+
+  if (element.technique === "patch") {
+    return "";
+  }
+
+  if (element.technique === "dtf") {
+    return "";
+  }
+
+  if (element.technique === "dtg") {
+    return "";
+  }
+
+  return "";
+}
+
 function formatTechnique(el: CustomElement) {
   if (el.technique === "embroidery") {
     return `Bordado${el.embroideryType ? ` · ${humanEmbroidery(el.embroideryType)}` : ""
       }`;
   }
-
   if (el.technique === "screenprint") {
     return `Serigrafía${el.screenprintType ? ` · ${humanScreenprint(el.screenprintType)}` : ""
       }`;
   }
-
   if (el.technique === "dtf") return "DTF";
   if (el.technique === "dtg") return "DTG";
-  if (el.technique === "rhinestones") return "Pedrería";
-  if (el.technique === "vinyl") return "Vinilo";
+  if (el.technique === "rhinestones") {
+    return `Pedrería${el.rhinestonesType ? ` · ${humanRhinestones(el.rhinestonesType)}` : ""
+      }`;
+  }
+
+  if (el.technique === "vinyl") {
+    return `Vinilo${el.vinylType ? ` · ${humanVinyl(el.vinylType)}` : ""}`;
+  }
+  if (el.technique === "patch") return "Parche bordado";
 
   return el.technique;
 }
@@ -956,5 +1287,24 @@ function humanEmbroidery(type: EmbroideryType) {
 function humanScreenprint(type: ScreenprintType) {
   if (type === "plana") return "Plana";
   if (type === "puff") return "Puff";
+  return type;
+}
+
+function humanVinyl(type: string) {
+  if (type === "textil_flex") return "Textil Flex";
+  if (type === "brick_600") return "Brick 600";
+  if (type === "brick_1000") return "Brick 1000";
+  if (type === "electric_holografic") return "Electric / Holografic";
+  if (type === "flock") return "Flock";
+  if (type === "glitter") return "Glitter";
+  if (type === "reflectante") return "Reflectante";
+  return type;
+}
+
+function humanRhinestones(type: string) {
+  if (type === "6ss") return "6SS / 2 mm";
+  if (type === "10ss") return "10SS / 3 mm";
+  if (type === "16ss") return "16SS / 4 mm";
+  if (type === "20ss") return "20SS / 5 mm";
   return type;
 }
