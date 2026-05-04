@@ -200,8 +200,7 @@ export default function ProductGallery({ product }) {
                     <div className="mt-2 text-3xl font-semibold">
                         {price ? (
                             <>
-                                {Number(price.unit).toFixed(2)} €
-                                <span className="ml-2 text-sm opacity-60">(base price)</span>
+                                {Number(price.gt10).toFixed(2)} €
                             </>
                         ) : (
                             <span className="text-sm opacity-60">
