@@ -27,6 +27,73 @@ type EmbroideryType =
 
 type ScreenprintType = "plana" | "puff";
 
+const RESIZE_HANDLE_STYLES = {
+  top: {
+    height: "8px",
+    top: "-4px",
+    cursor: "ns-resize",
+  },
+  right: {
+    width: "8px",
+    right: "-4px",
+    cursor: "ew-resize",
+  },
+  bottom: {
+    height: "8px",
+    bottom: "-4px",
+    cursor: "ns-resize",
+  },
+  left: {
+    width: "8px",
+    left: "-4px",
+    cursor: "ew-resize",
+  },
+  topRight: {
+    width: "12px",
+    height: "12px",
+    right: "-6px",
+    top: "-6px",
+    borderRadius: "9999px",
+    background: "#2563eb",
+    border: "2px solid white",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.25)",
+    cursor: "nesw-resize",
+  },
+  bottomRight: {
+    width: "12px",
+    height: "12px",
+    right: "-6px",
+    bottom: "-6px",
+    borderRadius: "9999px",
+    background: "#2563eb",
+    border: "2px solid white",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.25)",
+    cursor: "nwse-resize",
+  },
+  bottomLeft: {
+    width: "12px",
+    height: "12px",
+    left: "-6px",
+    bottom: "-6px",
+    borderRadius: "9999px",
+    background: "#2563eb",
+    border: "2px solid white",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.25)",
+    cursor: "nesw-resize",
+  },
+  topLeft: {
+    width: "12px",
+    height: "12px",
+    left: "-6px",
+    top: "-6px",
+    borderRadius: "9999px",
+    background: "#2563eb",
+    border: "2px solid white",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.25)",
+    cursor: "nwse-resize",
+  },
+};
+
 const SIZE_OPTIONS_BY_TECHNIQUE: Record<Technique, { value: string; label: string }[]> = {
   embroidery: [
     { value: "5x5", label: "5x5 cm" },
@@ -75,9 +142,9 @@ const SIZE_OPTIONS_BY_TECHNIQUE: Record<Technique, { value: string; label: strin
   ],
 
   screenprint: [
-  { value: "a4", label: "A4 (21x29,7 cm, centrado)" },
-  { value: "a3", label: "A3 (29,7x42 cm, centrado)" },
-],
+    { value: "a4", label: "A4 (21x29,7 cm, centrado)" },
+    { value: "a3", label: "A3 (29,7x42 cm, centrado)" },
+  ],
 
   vinyl: [
     { value: "5x5", label: "5x5 cm" },
@@ -741,6 +808,21 @@ export default function ProductCustomizerBase({
                     bounds="parent"
                     size={{ width: el.width, height: el.height }}
                     position={{ x: el.x, y: el.y }}
+                    enableResizing={
+                      isSelected
+                        ? {
+                          top: true,
+                          right: true,
+                          bottom: true,
+                          left: true,
+                          topRight: true,
+                          bottomRight: true,
+                          bottomLeft: true,
+                          topLeft: true,
+                        }
+                        : false
+                    }
+                    resizeHandleStyles={isSelected ? RESIZE_HANDLE_STYLES : {}}
                     onDragStart={() => setSelectedElementId(el.id)}
                     onMouseDown={() => setSelectedElementId(el.id)}
                     onDragStop={(e, d) => {
@@ -774,15 +856,14 @@ export default function ProductCustomizerBase({
                     }}
                     className={isSelected ? "z-10" : "z-1"}
                     style={{
-                      border: isSelected
-                        ? "2px solid #3b82f6"
-                        : "1px dashed #94a3b8",
-                      background: "rgba(255,255,255,0.82)",
-                      overflow: "hidden",
+                      background: "transparent",
+                      border: "none",
+                      overflow: "visible",
                     }}
                   >
                     <div
-                      className="flex h-full w-full items-center justify-center p-2 text-center"
+                      className={`flex h-full w-full items-center justify-center p-2 text-center ${isSelected ? "ring-2 ring-blue-500/70 ring-offset-2 ring-offset-white" : ""
+                        }`}
                       style={{
                         transform: `rotate(${el.rotation}deg)`,
                         transformOrigin: "center center",
