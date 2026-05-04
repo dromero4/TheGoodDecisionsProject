@@ -9,6 +9,8 @@ export default function Personalization({ product,
   basePriceBreakdown = [], 
   garmentBaseTotal = 0 
 }) {
+
+  console.log(product.variants[0].prices);
   const [open, setOpen] = useState(false);
 
   const normalize = (value) =>
