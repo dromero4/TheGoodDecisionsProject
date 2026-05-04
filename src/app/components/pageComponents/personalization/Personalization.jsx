@@ -9,9 +9,9 @@ export default function Personalization({ product,
   basePriceBreakdown = [], 
   garmentBaseTotal = 0 
 }) {
-
-  console.log(product.variants[0].prices);
   const [open, setOpen] = useState(false);
+
+  const isDisabled = !quantity || quantity < 10;
 
   const normalize = (value) =>
     String(value ?? "").trim().toLowerCase();
@@ -73,41 +73,55 @@ export default function Personalization({ product,
   return (
     <>
       <button
-        id="personalize"
-        onClick={() => setOpen(true)}
-        className="my-3 rounded-md bg-blue-500 px-5 py-3 font-semibold text-white transition hover:bg-blue-700"
-      >
-        Personalize {product.category}
-      </button>
+  id="personalize"
+  disabled={isDisabled}
+  onClick={() => {
+    if (isDisabled) return;
+    setOpen(true);
+  }}
+  className={`my-3 rounded-md px-5 py-3 font-semibold text-white transition ${
+    isDisabled
+      ? "cursor-not-allowed bg-slate-300"
+      : "bg-blue-500 hover:bg-blue-700"
+  }`}
+>
+  Personalize {product.category}
+</button>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="relative h-[90vh] w-full max-w-350 overflow-hidden rounded-2xl bg-white shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute right-4 top-4 z-20 rounded-md bg-white px-3 py-1 text-sm font-medium text-slate-700 shadow hover:bg-slate-100"
-            >
-              ✕
-            </button>
+{isDisabled && (
+  <p className="text-sm text-slate-500">
+    Selecciona al menos 10 unidades para poder personalizar.
+  </p>
+)}
 
-            <div className="h-full overflow-y-auto p-4 md:p-6">
-              <ProductCustomizerBase
-                zoneImages={zoneImages}
-                category={product.category}
-                quantity={quantity}
-                basePriceBreakdown={basePriceBreakdown}
-                garmentBaseTotal={garmentBaseTotal}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <div
+  className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6 ${
+    open ? "block" : "hidden"
+  }`}
+  onClick={() => setOpen(false)}
+>
+  <div
+    className="relative h-[90vh] w-full max-w-350 overflow-hidden rounded-2xl bg-white shadow-2xl"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <button
+      onClick={() => setOpen(false)}
+      className="absolute right-4 top-4 z-20 rounded-md bg-white px-3 py-1 text-sm font-medium text-slate-700 shadow hover:bg-slate-100"
+    >
+      ✕
+    </button>
+
+    <div className="h-full overflow-y-auto p-4 md:p-6">
+      <ProductCustomizerBase
+        zoneImages={zoneImages}
+        category={product.category}
+        quantity={quantity}
+        basePriceBreakdown={basePriceBreakdown}
+        garmentBaseTotal={garmentBaseTotal}
+      />
+    </div>
+  </div>
+</div>
     </>
   );
 }
