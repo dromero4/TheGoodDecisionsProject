@@ -94,41 +94,47 @@ const RESIZE_HANDLE_STYLES = {
   },
 };
 
+const EMBROIDERY_3D_SIZE_OPTIONS = [
+  { value: "3x3", label: "3x3 cm" },
+  { value: "5x5", label: "5x5 cm" },
+  { value: "7x7", label: "7x7 cm" },
+  { value: "10x10", label: "10x10 cm" },
+  { value: "15x15", label: "15x15 cm" },
+];
+
 const SIZE_OPTIONS_BY_TECHNIQUE: Record<Technique, { value: string; label: string }[]> = {
   embroidery: [
+    { value: "3x3", label: "3x3 cm" },
     { value: "5x5", label: "5x5 cm" },
+    { value: "7x7", label: "7x7 cm" },
     { value: "10x10", label: "10x10 cm" },
-    { value: "14x15", label: "14x15 cm" },
-    { value: "14x20", label: "14x20 cm" },
     { value: "15x15", label: "15x15 cm" },
-    { value: "15x20", label: "15x20 cm" },
-    { value: "20x27", label: "20x27 cm" },
     { value: "25x25", label: "25x25 cm" },
+    { value: "27x27", label: "27x27 cm" },
   ],
 
   patch: [
     { value: "5x5", label: "5x5 cm" },
     { value: "5x10", label: "5x10 cm" },
     { value: "10x10", label: "10x10 cm" },
-    { value: "10x20", label: "10x20 cm" },
-    { value: "10x30", label: "10x30 cm" },
-    { value: "10x40", label: "10x40 cm" },
-    { value: "14x15", label: "14x15 cm" },
-    { value: "14x20", label: "14x20 cm" },
+    { value: "10x15", label: "10x15 cm" },
     { value: "15x15", label: "15x15 cm" },
     { value: "15x20", label: "15x20 cm" },
-    { value: "20x27", label: "20x27 cm" },
+    { value: "20x20", label: "20x20 cm" },
     { value: "20x30", label: "20x30 cm" },
+    { value: "25x25", label: "25x25 cm" },
+    { value: "25x35", label: "25x35 cm" },
     { value: "27x40", label: "27x40 cm" },
+    { value: "30x30", label: "30x30 cm" },
+    { value: "35x35", label: "35x35 cm" },
+    { value: "40x40", label: "40x40 cm" },
   ],
 
   dtf: [
     { value: "5x5", label: "5x5 cm" },
     { value: "5x10", label: "5x10 cm" },
     { value: "10x10", label: "10x10 cm" },
-    { value: "10x20", label: "10x20 cm" },
-    { value: "10x30", label: "10x30 cm" },
-    { value: "10x40", label: "10x40 cm" },
+    { value: "10x14", label: "10x14 cm" },
     { value: "14x20", label: "14x20 cm" },
     { value: "20x27", label: "20x27 cm" },
     { value: "27x40", label: "27x40 cm" },
@@ -150,14 +156,9 @@ const SIZE_OPTIONS_BY_TECHNIQUE: Record<Technique, { value: string; label: strin
     { value: "5x5", label: "5x5 cm" },
     { value: "5x10", label: "5x10 cm" },
     { value: "10x10", label: "10x10 cm" },
-    { value: "10x15", label: "10x15 cm" },
-    { value: "10x20", label: "10x20 cm" },
-    { value: "10x30", label: "10x30 cm" },
-    { value: "10x40", label: "10x40 cm" },
-    { value: "15x20", label: "15x20 cm" },
-    { value: "20x27", label: "20x27 cm" },
-    { value: "20x30", label: "20x30 cm" },
-    { value: "30x40", label: "30x40 cm" },
+    { value: "15x10", label: "15x10 cm" },
+    { value: "20x15", label: "20x15 cm" },
+    { value: "30x20", label: "30x20 cm" },
     { value: "40x30", label: "40x30 cm" },
   ],
 
@@ -294,6 +295,7 @@ type ProductCustomizerBaseProps = {
     total: number;
   }[];
   garmentBaseTotal?: number;
+  onApplyCustomization?: (payload: any) => void;
 };
 
 const PRODUCT_ZONES: Record<ProductType, ProductZone[]> = {
@@ -442,6 +444,7 @@ export default function ProductCustomizerBase({
   quantity = 1,
   basePriceBreakdown = [],
   garmentBaseTotal = 0,
+  onApplyCustomization
 }: ProductCustomizerBaseProps) {
   const inferredConfig = useMemo(() => {
     return inferProductConfigFromCategory(category);
@@ -649,9 +652,58 @@ export default function ProductCustomizerBase({
     setSelectedElementId(null);
   }
 
-  const selectedSizeOptions = selectedElement
-    ? SIZE_OPTIONS_BY_TECHNIQUE[selectedElement.technique] ?? SIZE_OPTIONS
-    : SIZE_OPTIONS;
+  const selectedSizeOptions =
+    selectedElement?.technique === "embroidery" &&
+      selectedElement?.embroideryType === "bordado_3d"
+      ? EMBROIDERY_3D_SIZE_OPTIONS
+      : selectedElement
+        ? SIZE_OPTIONS_BY_TECHNIQUE[selectedElement.technique] ?? SIZE_OPTIONS
+        : SIZE_OPTIONS;
+
+  function handleApplyCustomization() {
+    if (allPlacementPricings.length === 0) {
+      alert("Añade al menos una personalización antes de aplicar.");
+      return;
+    }
+
+    const payload = {
+      category,
+      quantity,
+      basePriceBreakdown,
+      garmentBaseTotal,
+      placements: allPlacementPricings.map((item) => ({
+        zone: item.zone,
+        zoneLabel: zoneLabels[item.zone] ?? item.zone,
+        elementId: item.element.id,
+        elementName: item.element.name,
+        elementType: item.element.type,
+        technique: item.element.technique,
+        techniqueLabel: formatTechnique(item.element),
+        requestedSize: item.pricing.requestedSize,
+        chargedSize: item.pricing.chargedSize,
+        quantityBracket: item.pricing.quantityBracket,
+        unitPrice: item.pricing.unitPrice,
+        totalPrice: item.pricing.totalPrice,
+        pricingMode: item.pricing.pricingMode,
+        position: {
+          x: item.element.x,
+          y: item.element.y,
+          width: item.element.width,
+          height: item.element.height,
+          rotation: item.element.rotation,
+        },
+        notes: item.element.notes ?? "",
+      })),
+      customizationTotal,
+      finalTotal,
+      hasManualQuote,
+      createdAt: new Date().toISOString(),
+    };
+
+
+
+    onApplyCustomization?.(payload);
+  }
 
   return (
     <div className="w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-6">
@@ -1047,11 +1099,17 @@ export default function ProductCustomizerBase({
                     <Field label="Tipo de bordado">
                       <select
                         value={selectedElement.embroideryType || "mixto"}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          const nextEmbroideryType = e.target.value as EmbroideryType;
+
                           updateSelectedElement({
-                            embroideryType: e.target.value as EmbroideryType,
-                          })
-                        }
+                            embroideryType: nextEmbroideryType,
+                            sizeLabel:
+                              nextEmbroideryType === "bordado_3d"
+                                ? "15x15"
+                                : selectedElement.sizeLabel || "10x10",
+                          });
+                        }}
                         className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
                       >
                         <option value="matizado">Bordado matizado</option>
@@ -1372,6 +1430,14 @@ export default function ProductCustomizerBase({
                     )}
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleApplyCustomization}
+                  className="mt-4 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.99]"
+                >
+                  Aplicar personalización
+                </button>
               </div>
 
 
@@ -1423,6 +1489,7 @@ export default function ProductCustomizerBase({
       </div>
     </div>
   );
+
 }
 
 function HelpTooltip() {
