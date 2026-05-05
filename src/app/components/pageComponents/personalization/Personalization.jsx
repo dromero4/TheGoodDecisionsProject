@@ -32,7 +32,6 @@ const IMAGE_INDEX_MAP_BY_CATEGORY = {
   },
 };
 
-
 function normalizeCategory(category) {
   return String(category || "")
     .trim()
@@ -70,6 +69,7 @@ export default function Personalization({ product,
   garmentBaseTotal = 0 
 }) {
   const [open, setOpen] = useState(false);
+  const [appliedCustomization, setAppliedCustomization] = useState(null);
 
   const isDisabled = !quantity || quantity < 10;
 
@@ -145,6 +145,32 @@ const zoneImages = buildZoneImages(fallbackImages, product?.category);
       ✕
     </button>
 
+    {appliedCustomization && (
+  <div className="mt-3 border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+    <p className="font-semibold">Personalización aplicada</p>
+
+    <p className="mt-1">
+      {appliedCustomization.placements.length} elemento(s) personalizados
+    </p>
+
+    <p className="mt-1">
+      Total personalización:{" "}
+      <strong>
+        {Number(appliedCustomization.customizationTotal || 0).toFixed(2)} €
+      </strong>
+    </p>
+
+    <p>
+      Total estimado:{" "}
+      <strong>
+        {Number(appliedCustomization.finalTotal || 0).toFixed(2)} €
+      </strong>
+    </p>
+
+    
+  </div>
+)}
+
 
     <div className="h-full overflow-y-auto p-4 md:p-6">
       <ProductCustomizerBase
@@ -153,6 +179,10 @@ const zoneImages = buildZoneImages(fallbackImages, product?.category);
         quantity={quantity}
         basePriceBreakdown={basePriceBreakdown}
         garmentBaseTotal={garmentBaseTotal}
+        onApplyCustomization={(payload) => {
+          setAppliedCustomization(payload);
+          setOpen(false);
+        }}
       />
     </div>
   </div>

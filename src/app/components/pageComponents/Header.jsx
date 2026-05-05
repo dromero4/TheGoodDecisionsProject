@@ -17,9 +17,9 @@ export default function Header() {
                     className="mt-5"></Image>
                 <h1 className="xl:text-5xl sm:text-3xl mb-10"><span className="font-bold">Customization</span> Market</h1>
             </header>
-            <aside className="absolute top-0 right-0 m-6">
+            {/* <aside className="absolute top-0 right-0 m-6">
                 <UserRound />
-            </aside>
+            </aside> */}
             
             <main className="text-center mb-5">
                 <hr />
