@@ -109,7 +109,7 @@ function renderOrderEmail({ order, session }) {
 }
 
 export async function POST(request) {
-    console.log("WEBHOOK ROUTE HIT");
+    
 
     const signature = request.headers.get("stripe-signature");
 
@@ -136,9 +136,7 @@ export async function POST(request) {
         if (event.type === "checkout.session.completed") {
 
             const session = event.data.object;
-            console.log("CUSTOMER DETAILS:", session.customer_details);
-            console.log("CUSTOMER EMAIL:", session.customer_details?.email);
-            console.log("SESSION EMAIL:", session.customer_email);
+           
 
             const order = safeJsonParse(session.metadata?.order, []);
 
@@ -155,10 +153,7 @@ export async function POST(request) {
                 console.warn("No customer email found. Email not sent.");
                 return Response.json({ received: true });
             }
-            console.log("SENDING EMAIL TO:", customerEmail);
-            console.log("RESEND API KEY EXISTS:", Boolean(process.env.RESEND_API_KEY));
-            console.log("ORDER_EMAIL_FROM:", process.env.ORDER_EMAIL_FROM);
-            console.log("SENDING EMAIL TO:", customerEmail);
+            
 
             const emailResult = await resend.emails.send({
                 from: process.env.ORDER_EMAIL_FROM,
@@ -168,7 +163,6 @@ export async function POST(request) {
                 html: renderOrderEmail({ order, session }),
             });
 
-            console.log("RESEND RESULT:", emailResult);
 
             if (emailResult.error) {
   console.error("RESEND_SEND_ERROR:", emailResult.error);
