@@ -86,11 +86,16 @@ saveOrder(orderId, {
 
     return Response.json({ url: session.url });
   } catch (error) {
-    console.error("STRIPE_CHECKOUT_ERROR:", error);
+  console.error("STRIPE_CHECKOUT_ERROR:", error);
 
-    return Response.json(
-      { error: "Error creando la sesión de pago." },
-      { status: 500 }
-    );
-  }
+  return Response.json(
+    {
+      error: "Error creando la sesión de pago.",
+      message: error.message,
+      type: error.type,
+      code: error.code,
+    },
+    { status: 500 }
+  );
+}
 }

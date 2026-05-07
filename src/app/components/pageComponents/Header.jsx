@@ -142,12 +142,12 @@ export default function Header() {
                                             const data = await response.json();
 
                                             if (!response.ok) {
-                                                alert(data.error || "Error creando el pago.");
+                                                console.error("CHECKOUT ERROR:", data);
+                                                alert(data.message || data.error || "Error creando el pago.");
                                                 return;
                                             }
 
                                             sessionStorage.setItem("lastStripeCheckoutUrl", data.url);
-
                                             window.location.href = data.url;
                                         }}
                                     >
