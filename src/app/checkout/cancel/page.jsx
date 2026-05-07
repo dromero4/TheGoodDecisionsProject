@@ -24,7 +24,7 @@ export default function CheckoutCancelPage() {
         </div>
 
         <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-amber-600">
-          Payment cancelled
+          Pago cancelado
         </p>
 
         <h1 className="text-3xl font-bold text-slate-950">

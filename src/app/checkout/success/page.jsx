@@ -9,28 +9,27 @@ export default function CheckoutSuccessPage() {
         </div>
 
         <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-green-600">
-          Payment completed
+          Pago confirmado
         </p>
 
         <h1 className="text-3xl font-bold text-slate-950">
-          Your order has been confirmed
+          Tu pedido ha sido confirmado.
         </h1>
 
         <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600">
-          The payment was completed successfully in test mode. We have received
-          your order information and the production details linked to your
-          customized product.
+          El pago fue completado con éxito. 
+          Hemos recibido la información de tu pedido y los detalles de producción 
+          vinculados a tu producto personalizado.
         </p>
 
         <div className="mt-8 w-full rounded-2xl bg-slate-50 p-5 text-left">
           <p className="text-sm font-semibold text-slate-900">
-            What happens next?
+            ¿Qué sucede a continuación?
           </p>
 
           <ul className="mt-3 space-y-2 text-sm text-slate-600">
-            <li>• The order summary has been generated.</li>
-            <li>• Product quantities and customization details are included.</li>
-            <li>• In a real environment, this step would trigger order processing.</li>
+            <li>• Se ha generado el resumen del pedido.</li>
+            <li>• Se incluyen las cantidades de productos y los detalles de personalización.</li>
           </ul>
         </div>
 
@@ -39,14 +38,14 @@ export default function CheckoutSuccessPage() {
             href="/"
             className="flex-1 rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
           >
-            Back to store
+            Volver a la tienda
           </Link>
 
           <Link
             href="/"
             className="flex-1 rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
           >
-            Continue shopping
+            Continuar comprando
           </Link>
         </div>
       </section>

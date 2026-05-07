@@ -30,7 +30,7 @@ export default function ToptexProducts({ products = [] }) {
                   className="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-500"
                   aria-label={alt}
                 >
-                  No image
+                  Sin imagen
                 </div>
               )}
             </div>

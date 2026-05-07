@@ -145,14 +145,11 @@ export async function POST(request) {
                 session.customer_email;
 
             if (!customerEmail) {
-                console.warn("No customer email found. Email not sent.");
+                console.warn("No hemos encontrado el email del cliente. No se ha enviado el correo.");
                 return Response.json({ received: true });
             }
 
-            if (!customerEmail) {
-                console.warn("No customer email found. Email not sent.");
-                return Response.json({ received: true });
-            }
+            
             
 
             const emailResult = await resend.emails.send({

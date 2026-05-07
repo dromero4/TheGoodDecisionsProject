@@ -249,7 +249,7 @@ const canAddToCart = totalUnits >= 10;
                             </>
                         ) : (
                             <span className="text-sm opacity-60">
-                                Please, select the size and the color first
+                                Por favor, selecciona el tamaño y el color primero
                             </span>
                         )}
                     </div>
@@ -274,12 +274,12 @@ const canAddToCart = totalUnits >= 10;
                                 {primarySize && (
                                     <>
                                         {" "}
-                                        · Primary size: <strong>{primarySize}</strong>
+                                        · Talla principal: <strong>{primarySize}</strong>
                                     </>
                                 )}
                             </>
                         ) : (
-                            "The bare minimum to go ahead with the order is 10."
+                            "El mínimo necesario para proceder con el pedido es 10."
                         )}
                     </div>
 
@@ -294,7 +294,7 @@ const canAddToCart = totalUnits >= 10;
                             }}
                             className="text-xs px-3 py-1.5 rounded-full border border-black/10 hover:bg-black/3 transition"
                         >
-                            Clear
+                            Limpiar selección
                         </button>
                     )}
                 </div>
@@ -413,11 +413,11 @@ const canAddToCart = totalUnits >= 10;
                 <section className="mt-6">
                     <div className="flex items-center justify-between mb-3">
                         <span className="text-sm font-semibold tracking-wide uppercase opacity-80">
-                            Bulk discount
+                            Descuento por volumen
                         </span>
                         {primarySize && selectedSizes.length > 1 && (
                             <span className="text-xs text-black/50">
-                                Showing tiers for: <strong>{primarySize}</strong>
+                                Mostrando niveles para: <strong>{primarySize}</strong>
                             </span>
                         )}
                     </div>
@@ -427,10 +427,10 @@ const canAddToCart = totalUnits >= 10;
                             <thead className="bg-black/3">
                                 <tr>
                                     <th className="px-4 py-3 text-left font-semibold text-black/70">
-                                        Quantity
+                                        Cantidad
                                     </th>
                                     <th className="px-4 py-3 text-right font-semibold text-black/70">
-                                        Price
+                                        Precio
                                     </th>
                                 </tr>
                             </thead>
@@ -450,7 +450,7 @@ const canAddToCart = totalUnits >= 10;
                                 ) : (
                                     <tr>
                                         <td className="px-4 py-4 text-sm text-black/50" colSpan={2}>
-                                            Select a color and size to see bulk prices.
+                                            Selecciona un color y talla para ver los precios por volumen.
                                         </td>
                                     </tr>
                                 )}
@@ -459,7 +459,7 @@ const canAddToCart = totalUnits >= 10;
                     </div>
 
                     <p className="mt-2 text-xs text-black/50">
-                        Prices shown per unit. Final price depends on variant and availability.
+                        Precios mostrados por unidad. El precio final depende de la variante y su disponibilidad.
                     </p>
 
 

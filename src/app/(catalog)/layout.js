@@ -2,9 +2,9 @@ import { vaud } from '@/app/fonts';
 import "../globals.css";
 
 import Header from "../components/pageComponents/Header";
-import AsideFilters from "../components/pageComponents/AsideFilters";
 import TopFilters from "../components/pageComponents/TopFilters";
 import { CartProvider } from '../context/CartContext';
+import AsideFilters from '../components/pageComponents/AsideFilters';
 
 
 export const metadata = {

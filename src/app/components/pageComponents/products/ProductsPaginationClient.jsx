@@ -21,7 +21,7 @@ function ProductCard({ product }) {
           />
         ) : (
           <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">
-            No image
+            Sin imagen
           </div>
         )}
       </div>
