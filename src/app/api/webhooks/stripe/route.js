@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { Resend } from "resend";
+import { getOrder } from "@/app/lib/orderStore";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -138,7 +139,9 @@ export async function POST(request) {
             const session = event.data.object;
            
 
-            const order = safeJsonParse(session.metadata?.order, []);
+            const orderId = session.metadata?.orderId;
+const storedOrder = orderId ? getOrder(orderId) : null;
+const order = storedOrder?.items || [];
 
             const customerEmail =
                 session.customer_details?.email ||

@@ -1,4 +1,6 @@
 import Stripe from "stripe";
+import { randomUUID } from "crypto";
+import { saveOrder } from "@/app/lib/orderStore";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -60,6 +62,14 @@ export async function POST(request) {
 
     const orderSummary = buildOrderSummary(items);
 
+    const orderId = randomUUID();
+
+saveOrder(orderId, {
+  items: orderSummary,
+  cartTotal: items.reduce((sum, item) => sum + Number(item.finalTotal || 0), 0),
+  createdAt: new Date().toISOString(),
+});
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: lineItems,
@@ -70,7 +80,7 @@ export async function POST(request) {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel`,
 
       metadata: {
-        order: JSON.stringify(orderSummary).slice(0, 4900),
+        orderId,
       },
     });
 
