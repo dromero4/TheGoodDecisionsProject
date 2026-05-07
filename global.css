@@ -1,0 +1,22 @@
+:root,
+html,
+body {
+  color-scheme: light;
+  background: #ffffff;
+  color: #111827;
+}
+
+input,
+select,
+textarea,
+button {
+  color-scheme: light;
+}
+
+input,
+select,
+textarea {
+  background-color: #ffffff;
+  color: #111827;
+}
+
