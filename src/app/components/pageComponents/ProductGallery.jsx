@@ -6,12 +6,19 @@ import ColorSelector from "../ColorSelector";
 import ProductAccordion from "../ProductAccordion";
 import Personalization from "./personalization/Personalization";
 import ProductCustomizerBase from "./personalization/ProductCustomizerBase";
+import { useCart } from "../../context/CartContext";
 
 export default function ProductGallery({ product }) {
+    const { addToCart, cartItems, cartTotal, removeFromCart } = useCart();
+    const [appliedCustomization, setAppliedCustomization] = useState(null);
+
+    const [cartFeedback, setCartFeedback] = useState(null);
+
     const images = useMemo(() => product?.images ?? [], [product?.images]);
 
 
     function setQty(size, value) {
+        setAppliedCustomization(null);
         const n = Math.max(0, Math.floor(Number(value) || 0));
 
         setSizeQty(prev => {
@@ -113,16 +120,22 @@ export default function ProductGallery({ product }) {
     }, [price]);
 
     function selectSize(size) {
+        setAppliedCustomization(null);
+
         setActiveSize(size);
         setSizeQty((prev) => (prev[size] ? prev : { ...prev, [size]: 1 }));
     }
 
     function inc(size) {
+        setAppliedCustomization(null);
+
         setActiveSize(size);
         setSizeQty((prev) => ({ ...prev, [size]: (prev[size] ?? 0) + 1 }));
     }
 
     function dec(size) {
+        setAppliedCustomization(null);
+
         setSizeQty((prev) => {
             const next = { ...prev };
             const n = (next[size] ?? 0) - 1;
@@ -183,6 +196,38 @@ export default function ProductGallery({ product }) {
         return basePriceBreakdown.reduce((sum, item) => sum + item.total, 0);
     }, [basePriceBreakdown]);
 
+    function getCartItemSignature(item) {
+        const sizesSignature = (item.sizes || [])
+            .map((sizeItem) => `${sizeItem.size}:${sizeItem.quantity}`)
+            .sort()
+            .join("|");
+
+
+
+        const customizationSignature = item.customization
+            ? JSON.stringify({
+                placements: item.customization.placements?.map((placement) => ({
+                    zone: placement.zone,
+                    technique: placement.technique,
+                    techniqueLabel: placement.techniqueLabel,
+                    requestedSize: placement.requestedSize,
+                    chargedSize: placement.chargedSize,
+                    totalPrice: placement.totalPrice,
+                })),
+                customizationTotal: item.customization.customizationTotal,
+            })
+            : "no-customization";
+
+        return [
+            item.productId,
+            item.selectedColor,
+            sizesSignature,
+            customizationSignature,
+        ].join("::");
+    }
+
+
+const canAddToCart = totalUnits >= 10;
     return (
         <main className="flex justify-evenly">
             <section>
@@ -245,6 +290,7 @@ export default function ProductGallery({ product }) {
                                 setSizeQty({});
                                 setActiveSize(null);
                                 setQtyDraft({});
+                                setAppliedCustomization(null);
                             }}
                             className="text-xs px-3 py-1.5 rounded-full border border-black/10 hover:bg-black/3 transition"
                         >
@@ -419,14 +465,88 @@ export default function ProductGallery({ product }) {
 
 
                 </section>
-                
+
                 <Personalization
                     product={product}
                     selectedColor={selectedColor}
                     quantity={totalUnits}
                     basePriceBreakdown={basePriceBreakdown}
                     garmentBaseTotal={garmentBaseTotal}
+                    appliedCustomization={appliedCustomization}
+                    onCustomizationApplied={setAppliedCustomization}
                 />
+
+                {totalUnits < 10 && (
+                    <p className="mt-2 text-sm text-slate-500 underline">
+                        Selecciona al menos 10 unidades para añadir el producto al carrito.
+                    </p>
+                )}
+
+                
+
+                <button
+                    type="button"
+                    disabled={!canAddToCart}
+                    onClick={() => {
+                        const cartItem = {
+                            productId: product?.externalId,
+                            productName: product?.name,
+                            category: product?.category,
+                            selectedColor,
+                            sizes: sizeSummary.map(([size, qty]) => ({
+                                size,
+                                quantity: Number(qty),
+                            })),
+                            totalUnits,
+                            basePriceBreakdown,
+                            garmentBaseTotal,
+                            customization: appliedCustomization,
+                            customizationTotal: appliedCustomization?.customizationTotal || 0,
+                            finalTotal: appliedCustomization?.finalTotal ?? garmentBaseTotal,
+                        };
+
+                        const cartItemSignature = getCartItemSignature(cartItem);
+
+                        const alreadyExists = cartItems.some(
+                            (item) => getCartItemSignature(item) === cartItemSignature
+                        );
+
+                        if (alreadyExists) {
+                           setCartFeedback("Este producto con la misma configuración ya está en el carrito.");
+
+                            setTimeout(() => {
+                                setCartFeedback(null);
+                            }, 5000);
+
+                            return;
+                        }
+
+                        addToCart(cartItem);
+
+                        setCartFeedback(
+  appliedCustomization
+    ? "Producto personalizado añadido al carrito."
+    : "Producto añadido al carrito sin personalización."
+);
+
+                        setTimeout(() => {
+                            setCartFeedback(null);
+                        }, 5000);
+                    }}
+                    className={`mt-4 w-full rounded-xl px-4 py-3 font-semibold text-white transition ${!canAddToCart
+                            ? "cursor-not-allowed bg-slate-300"
+                            : "bg-slate-900 hover:bg-slate-800"
+                        }`}
+                >
+                    Añadir al carrito
+                </button>
+
+                {cartFeedback && (
+                    <div className="animate-slide-in-top transition-all fixed left-1/2 top-5 z-[9999] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-800 shadow-2xl">
+                        {cartFeedback}
+                    </div>
+                )}
+
             </section>
 
         </main>

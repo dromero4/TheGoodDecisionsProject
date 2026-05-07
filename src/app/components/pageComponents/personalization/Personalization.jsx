@@ -62,14 +62,15 @@ function buildZoneImages(fallbackImages, category) {
   return result;
 }
 
-export default function Personalization({ product, 
-  selectedColor, 
-  quantity, 
-  basePriceBreakdown = [], 
-  garmentBaseTotal = 0 
+export default function Personalization({ product,
+  selectedColor,
+  quantity,
+  basePriceBreakdown = [],
+  garmentBaseTotal = 0,
+  appliedCustomization,
+  onCustomizationApplied,
 }) {
   const [open, setOpen] = useState(false);
-  const [appliedCustomization, setAppliedCustomization] = useState(null);
 
   const isDisabled = !quantity || quantity < 10;
 
@@ -84,7 +85,7 @@ export default function Personalization({ product,
 
   const fallbackImages = filteredImages.length ? filteredImages : images;
 
-const zoneImages = buildZoneImages(fallbackImages, product?.category);
+  const zoneImages = buildZoneImages(fallbackImages, product?.category);
 
   useEffect(() => {
     function handleEsc(e) {
@@ -107,86 +108,84 @@ const zoneImages = buildZoneImages(fallbackImages, product?.category);
   return (
     <>
       <button
-  id="personalize"
-  disabled={isDisabled}
-  onClick={() => {
-    if (isDisabled) return;
-    setOpen(true);
-  }}
-  className={`my-3 rounded-md px-5 py-3 font-semibold text-white transition ${
-    isDisabled
-      ? "cursor-not-allowed bg-slate-300"
-      : "bg-blue-500 hover:bg-blue-700"
-  }`}
->
-  Personalize {product?.category}
-</button>
+        id="personalize"
+        disabled={isDisabled}
+        onClick={() => {
+          if (isDisabled) return;
+          setOpen(true);
+        }}
+        className={`my-3 rounded-md px-5 py-3 font-semibold text-white transition ${isDisabled
+            ? "cursor-not-allowed bg-slate-300"
+            : "bg-blue-500 hover:bg-blue-700"
+          }`}
+      >
+        Personalize {product?.category}
+      </button>
 
-{isDisabled && (
-  <p className="text-sm text-slate-500">
-    Selecciona al menos 10 unidades para poder personalizar.
-  </p>
-)}
+      {isDisabled && (
+        <p className="text-sm text-slate-500">
+          Selecciona al menos 10 unidades para poder personalizar.
+        </p>
+      )}
 
       <div
-  className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6 ${
-    open ? "block" : "hidden"
-  }`}
-  onClick={() => setOpen(false)}
->
-  <div
-    className="relative h-[90vh] w-full max-w-350 overflow-hidden rounded-2xl bg-white shadow-2xl"
-    onClick={(e) => e.stopPropagation()}
-  >
-    <button
-      onClick={() => setOpen(false)}
-      className="absolute right-4 top-4 z-20 rounded-md bg-white px-3 py-1 text-sm font-medium text-slate-700 shadow hover:bg-slate-100"
-    >
-      ✕
-    </button>
+        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6 ${open ? "block" : "hidden"
+          }`}
+        onClick={() => setOpen(false)}
+      >
+        <div
+          className="relative h-[90vh] w-full max-w-350 overflow-hidden rounded-2xl bg-white shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => setOpen(false)}
+            className="absolute right-4 top-4 z-20 rounded-md bg-white px-3 py-1 text-sm font-medium text-slate-700 shadow hover:bg-slate-100"
+          >
+            ✕
+          </button>
 
-    {appliedCustomization && (
-  <div className="mt-3 border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-    <p className="font-semibold">Personalización aplicada</p>
+          {appliedCustomization && (
+            <div className="mt-3 border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+              <p className="font-semibold">Personalización aplicada</p>
 
-    <p className="mt-1">
-      {appliedCustomization.placements.length} elemento(s) personalizados
-    </p>
+              <p className="mt-1">
+                {appliedCustomization.placements.length} elemento(s) personalizados
+              </p>
 
-    <p className="mt-1">
-      Total personalización:{" "}
-      <strong>
-        {Number(appliedCustomization.customizationTotal || 0).toFixed(2)} €
-      </strong>
-    </p>
+              <p className="mt-1">
+                Total personalización:{" "}
+                <strong>
+                  {Number(appliedCustomization.customizationTotal || 0).toFixed(2)} €
+                </strong>
+              </p>
 
-    <p>
-      Total estimado:{" "}
-      <strong>
-        {Number(appliedCustomization.finalTotal || 0).toFixed(2)} €
-      </strong>
-    </p>
-
-    
-  </div>
-)}
+              <p>
+                Total estimado:{" "}
+                <strong>
+                  {Number(appliedCustomization.finalTotal || 0).toFixed(2)} €
+                </strong>
+              </p>
 
 
-    <div className="h-full overflow-y-auto p-4 md:p-6">
-      <ProductCustomizerBase
-        zoneImages={zoneImages}
-        category={product?.category}
-        quantity={quantity}
-        basePriceBreakdown={basePriceBreakdown}
-        garmentBaseTotal={garmentBaseTotal}
-        onApplyCustomization={(payload) => {
-          setAppliedCustomization(payload);
-          setOpen(false);
-        }}
-      />
-    </div>
-  </div>
-</div>
+            </div>
+          )}
+
+
+          <div className="h-full overflow-y-auto p-4 md:p-6">
+            <ProductCustomizerBase
+              zoneImages={zoneImages}
+              category={product?.category}
+              quantity={quantity}
+              basePriceBreakdown={basePriceBreakdown}
+              garmentBaseTotal={garmentBaseTotal}
+              onApplyCustomization={(payload) => {
+                onCustomizationApplied?.(payload);
+                setOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }

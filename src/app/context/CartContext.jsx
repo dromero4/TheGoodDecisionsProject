@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext } from "react";
+import { useState, useContext, createContext, useMemo } from "react";
 
 /* Contexto del carrito de compra.
     Creamos el contexto del carrito, que se encargará de almacenar la información del carrito de compras 

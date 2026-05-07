@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import Header from "../components/pageComponents/Header";
 import { vaud } from "../fonts";
+import { CartProvider } from "../context/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,13 +21,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${vaud.variable} ${vaud.variable} antialiased`}
-        >
-        <Header/>
-          {children}
-      </body>
-    </html>
+     <>
+      <Header />
+      {children}
+    </>
   );
 }

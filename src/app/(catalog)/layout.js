@@ -4,6 +4,7 @@ import "../globals.css";
 import Header from "../components/pageComponents/Header";
 import AsideFilters from "../components/pageComponents/AsideFilters";
 import TopFilters from "../components/pageComponents/TopFilters";
+import { CartProvider } from '../context/CartContext';
 
 
 export const metadata = {
@@ -12,21 +13,15 @@ export const metadata = {
 };
 
 
-export default async function RootLayout({ children }) {
-  
-
+export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${vaud.variable} ${vaud.variable} antialiased`}
-      >
-        <Header />
-          <TopFilters />
-          <div className="flex">
-            <AsideFilters />
-            {children}
-          </div>
-      </body>
-    </html>
+    <>
+      <Header />
+      <TopFilters />
+      <div className="flex">
+        <AsideFilters />
+        {children}
+      </div>
+    </>
   );
 }
