@@ -146,6 +146,8 @@ export default function Header() {
                                                 return;
                                             }
 
+                                            sessionStorage.setItem("lastStripeCheckoutUrl", data.url);
+
                                             window.location.href = data.url;
                                         }}
                                     >
