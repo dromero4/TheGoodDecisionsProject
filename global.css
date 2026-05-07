@@ -1,22 +1,31 @@
-:root,
-html,
-body {
-  color-scheme: light;
-  background: #ffffff;
-  color: #111827;
+:root {
+  color-scheme: light !important;
 }
 
-input,
-select,
-textarea,
-button {
+html,
+body {
+  color-scheme: light !important;
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+* {
   color-scheme: light;
 }
 
 input,
 select,
 textarea {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #d1d5db;
+}
+
+button {
+  color-scheme: light;
+}
+
+option {
   background-color: #ffffff;
   color: #111827;
 }
-

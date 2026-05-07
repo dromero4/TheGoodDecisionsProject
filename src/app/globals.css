@@ -1,9 +1,10 @@
-@import "tailwindcss";
+@import "tailwindcss"; 
 @plugin '@midudev/tailwind-animations';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -13,15 +14,27 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Forzamos modo claro aunque el sistema/navegador esté en dark mode */
+html,
+body {
+  background: #ffffff;
+  color: #171717;
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: var(--font-vaud), Helvetica, sans-serif;
+}
+
+input,
+select,
+textarea {
+  background-color: #ffffff;
+  color: #171717;
+  color-scheme: light;
+}
+
+option {
+  background-color: #ffffff;
+  color: #171717;
 }
