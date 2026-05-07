@@ -1,7 +1,9 @@
+export const dynamic = "force-dynamic";
 import { getProducts } from "../lib/products.server";
 import { getNormalizedToptexProducts } from "../scripts/toptex/get-normalized-toptex";
 import { getNormalizedRolyProducts } from "../scripts/roly/get-normalized-roly";
 import ProductsPaginationClient from "../components/pageComponents/products/ProductsPaginationClient";
+
 
 function normalizeStanley(products = []) {
   return products.map((product) => ({
