@@ -6,6 +6,7 @@ import logo from '../../../../public/images/logo.svg'
 import { useState } from "react";
 import { useCart } from "@/app/context/CartContext";
 import Link from "next/link";
+import axios from "axios";
 
 export default function Header() {
 
@@ -129,6 +130,24 @@ export default function Header() {
                                     <button
                                         type="button"
                                         className="mt-4 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+                                        onClick={async () => {
+                                            const response = await fetch("/api/checkout", {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json",
+                                                },
+                                                body: JSON.stringify({ items: cartItems }),
+                                            });
+
+                                            const data = await response.json();
+
+                                            if (!response.ok) {
+                                                alert(data.error || "Error creando el pago.");
+                                                return;
+                                            }
+
+                                            window.location.href = data.url;
+                                        }}
                                     >
                                         Continuar
                                     </button>
