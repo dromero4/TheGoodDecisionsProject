@@ -22,19 +22,21 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-    "@prisma/client",
-    "@prisma/engines",
-    "prisma",
-    "sharp"
-  ]
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "sharp"
+    ]
   },
   "dependencies": {
     "@midudev/tailwind-animations": "^0.2.0",
     "@prisma/client": "^6.19.2",
     "axios": "^1.13.2",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "framer-motion": "^12.24.10",
     "fs": "0.0.1-security",
+    "jose": "^6.2.3",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
     "prisma": "^6.19.2",

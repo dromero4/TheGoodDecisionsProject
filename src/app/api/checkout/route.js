@@ -34,6 +34,7 @@ export async function POST(request) {
     const body = await request.json();
     const items = body.items || [];
     const customerEmail = body.customerEmail || "";
+    const shippingAddress = body.shippingAddress || null;
 
     if (!items.length) {
       return Response.json(
@@ -68,6 +69,7 @@ saveOrder(orderId, {
   items: orderSummary,
   cartTotal: items.reduce((sum, item) => sum + Number(item.finalTotal || 0), 0),
   createdAt: new Date().toISOString(),
+  shippingAddress,
 });
 
     const session = await stripe.checkout.sessions.create({

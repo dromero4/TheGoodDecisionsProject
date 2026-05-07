@@ -19,7 +19,7 @@ function safeJsonParse(value, fallback = null) {
     }
 }
 
-function renderOrderEmail({ order, session }) {
+function renderOrderEmail({ order, session, shippingAddress }) {
     const totalPaid = formatMoney((session.amount_total || 0) / 100);
 
     const itemsHtml = order
@@ -98,6 +98,26 @@ function renderOrderEmail({ order, session }) {
             <strong style="color:#0f172a;font-size:18px;">${totalPaid}</strong>
           </p>
         </div>
+        ${shippingAddress ? `
+  <div style="margin:20px 0;padding:16px;border-radius:16px;background:#f8fafc;border:1px solid #e2e8f0;">
+    <h2 style="margin:0 0 10px;color:#0f172a;font-size:16px;">
+      Dirección de entrega
+    </h2>
+
+    <p style="margin:0;color:#475569;font-size:14px;line-height:1.6;">
+      <strong>${shippingAddress.fullName || "-"}</strong><br/>
+      ${shippingAddress.street || ""} ${shippingAddress.number || ""} ${shippingAddress.floorDoor || ""}<br/>
+      ${shippingAddress.postalCode || ""} ${shippingAddress.city || ""}, ${shippingAddress.province || ""}<br/>
+      ${shippingAddress.country || ""}<br/>
+      Tel: ${shippingAddress.phone || "-"}
+      ${
+        shippingAddress.additionalInfo
+          ? `<br/>Notas: ${shippingAddress.additionalInfo}`
+          : ""
+      }
+    </p>
+  </div>
+` : ""}
 
         ${itemsHtml}
 
@@ -106,6 +126,7 @@ function renderOrderEmail({ order, session }) {
         </p>
       </div>
     </div>
+    
   `;
 }
 
@@ -142,6 +163,7 @@ export async function POST(request) {
             const orderId = session.metadata?.orderId;
 const storedOrder = orderId ? getOrder(orderId) : null;
 const order = storedOrder?.items || [];
+const shippingAddress = storedOrder?.shippingAddress || null;
 
             const customerEmail =
                 session.customer_details?.email ||
@@ -160,7 +182,7 @@ const order = storedOrder?.items || [];
                 to: customerEmail,
                 bcc: process.env.ORDER_EMAIL_TO || undefined,
                 subject: `Pedido confirmado - ${session.id}`,
-                html: renderOrderEmail({ order, session }),
+                html: renderOrderEmail({ order, session, shippingAddress }),
             });
 
 

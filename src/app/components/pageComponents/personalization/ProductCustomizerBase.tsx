@@ -661,10 +661,7 @@ export default function ProductCustomizerBase({
         : SIZE_OPTIONS;
 
   function handleApplyCustomization() {
-    if (allPlacementPricings.length === 0) {
-      alert("Añade al menos una personalización antes de aplicar.");
-      return;
-    }
+    
 
     const payload = {
       category,
