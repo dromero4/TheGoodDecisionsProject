@@ -1,6 +1,7 @@
 import Stripe from "stripe";
-import { randomUUID } from "crypto";
-import { saveOrder } from "@/app/lib/orderStore";
+import { prisma } from "@/app/lib/prisma";
+
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -17,14 +18,14 @@ function buildOrderSummary(items) {
     finalTotal: item.finalTotal,
     customization: item.customization
       ? {
-          placements: item.customization.placements?.map((placement) => ({
-            zoneLabel: placement.zoneLabel,
-            techniqueLabel: placement.techniqueLabel,
-            requestedSize: placement.requestedSize,
-            chargedSize: placement.chargedSize,
-            totalPrice: placement.totalPrice,
-          })),
-        }
+        placements: item.customization.placements?.map((placement) => ({
+          zoneLabel: placement.zoneLabel,
+          techniqueLabel: placement.techniqueLabel,
+          requestedSize: placement.requestedSize,
+          chargedSize: placement.chargedSize,
+          totalPrice: placement.totalPrice,
+        })),
+      }
       : null,
   }));
 }
@@ -61,16 +62,24 @@ export async function POST(request) {
       },
     }));
 
+
     const orderSummary = buildOrderSummary(items);
 
-    const orderId = randomUUID();
+    const cartTotal = items.reduce((sum, item) => {
+      return sum + Number(item.finalTotal || 0);
+    }, 0);
 
-saveOrder(orderId, {
-  items: orderSummary,
-  cartTotal: items.reduce((sum, item) => sum + Number(item.finalTotal || 0), 0),
-  createdAt: new Date().toISOString(),
-  shippingAddress,
-});
+    const order = await prisma.order.create({
+      data: {
+        customerEmail: customerEmail || null,
+        items: orderSummary,
+        shippingAddress,
+        cartTotal,
+        paymentStatus: "pending",
+      },
+    });
+
+
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -82,22 +91,31 @@ saveOrder(orderId, {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel`,
 
       metadata: {
-        orderId,
+        orderId: order.id,
+      },
+    });
+
+    await prisma.order.update({
+      where: {
+        id: order.id,
+      },
+      data: {
+        stripeSessionId: session.id,
       },
     });
 
     return Response.json({ url: session.url });
   } catch (error) {
-  console.error("STRIPE_CHECKOUT_ERROR:", error);
+    console.error("STRIPE_CHECKOUT_ERROR:", error);
 
-  return Response.json(
-    {
-      error: "Error creando la sesión de pago.",
-      message: error.message,
-      type: error.type,
-      code: error.code,
-    },
-    { status: 500 }
-  );
-}
+    return Response.json(
+      {
+        error: "Error creando la sesión de pago.",
+        message: error.message,
+        type: error.type,
+        code: error.code,
+      },
+      { status: 500 }
+    );
+  }
 }

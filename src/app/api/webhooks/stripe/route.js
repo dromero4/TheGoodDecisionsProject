@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { Resend } from "resend";
-import { getOrder } from "@/app/lib/orderStore";
+
+import { prisma } from "@/app/lib/prisma";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -8,45 +9,37 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export const runtime = "nodejs";
 
 function formatMoney(value) {
-    return `${Number(value || 0).toFixed(2)} €`;
-}
-
-function safeJsonParse(value, fallback = null) {
-    try {
-        return JSON.parse(value);
-    } catch {
-        return fallback;
-    }
+  return `${Number(value || 0).toFixed(2)} €`;
 }
 
 function renderOrderEmail({ order, session, shippingAddress }) {
-    const totalPaid = formatMoney((session.amount_total || 0) / 100);
+  const totalPaid = formatMoney((session.amount_total || 0) / 100);
 
-    const itemsHtml = order
-        .map((item) => {
-            const sizes = item.sizes
-                ?.map((size) => `${size.size} x${size.quantity}`)
-                .join(", ");
+  const itemsHtml = order
+    .map((item) => {
+      const sizes = item.sizes
+        ?.map((size) => `${size.size} x${size.quantity}`)
+        .join(", ");
 
-            const customizationHtml = item.customization?.placements?.length
-                ? `
+      const customizationHtml = item.customization?.placements?.length
+        ? `
           <ul style="margin:8px 0 0;padding-left:18px;color:#475569;">
             ${item.customization.placements
-                    .map(
-                        (placement) => `
+          .map(
+            (placement) => `
                   <li>
                     ${placement.zoneLabel || "Zona"} · ${placement.techniqueLabel || "Personalización"}
                     · tamaño ${placement.requestedSize || "-"}
                     · ${formatMoney(placement.totalPrice)}
                   </li>
                 `
-                    )
-                    .join("")}
+          )
+          .join("")}
           </ul>
         `
-                : `<p style="margin:8px 0 0;color:#64748b;">Sin personalización</p>`;
+        : `<p style="margin:8px 0 0;color:#64748b;">Sin personalización</p>`;
 
-            return `
+      return `
         <div style="border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;background:#ffffff;">
           <h3 style="margin:0 0 8px;font-size:16px;color:#0f172a;">
             ${item.productId || ""} - ${item.productName || "Producto"}
@@ -74,10 +67,10 @@ function renderOrderEmail({ order, session, shippingAddress }) {
           </div>
         </div>
       `;
-        })
-        .join("");
+    })
+    .join("");
 
-    return `
+  return `
     <div style="font-family:Arial, sans-serif;background:#f8fafc;padding:32px;">
       <div style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:24px;padding:28px;border:1px solid #e2e8f0;">
         <h1 style="margin:0;color:#0f172a;font-size:24px;">
@@ -110,10 +103,9 @@ function renderOrderEmail({ order, session, shippingAddress }) {
       ${shippingAddress.postalCode || ""} ${shippingAddress.city || ""}, ${shippingAddress.province || ""}<br/>
       ${shippingAddress.country || ""}<br/>
       Tel: ${shippingAddress.phone || "-"}
-      ${
-        shippingAddress.additionalInfo
-          ? `<br/>Notas: ${shippingAddress.additionalInfo}`
-          : ""
+      ${shippingAddress.additionalInfo
+        ? `<br/>Notas: ${shippingAddress.additionalInfo}`
+        : ""
       }
     </p>
   </div>
@@ -131,83 +123,108 @@ function renderOrderEmail({ order, session, shippingAddress }) {
 }
 
 export async function POST(request) {
-    
-
-    const signature = request.headers.get("stripe-signature");
-
-    let event;
-
-    try {
-        const rawBody = await request.text();
-
-        event = stripe.webhooks.constructEvent(
-            rawBody,
-            signature,
-            process.env.STRIPE_WEBHOOK_SECRET
-        );
-    } catch (error) {
-        console.error("STRIPE_WEBHOOK_SIGNATURE_ERROR:", error.message);
-
-        return Response.json(
-            { error: "Invalid webhook signature" },
-            { status: 400 }
-        );
-    }
-
-    try {
-        if (event.type === "checkout.session.completed") {
-
-            const session = event.data.object;
-           
-
-            const orderId = session.metadata?.orderId;
-const storedOrder = orderId ? getOrder(orderId) : null;
-const order = storedOrder?.items || [];
-const shippingAddress = storedOrder?.shippingAddress || null;
-
-            const customerEmail =
-                session.customer_details?.email ||
-                session.customer_email;
-
-            if (!customerEmail) {
-                console.warn("No hemos encontrado el email del cliente. No se ha enviado el correo.");
-                return Response.json({ received: true });
-            }
-
-            
-            
-
-            const emailResult = await resend.emails.send({
-                from: process.env.ORDER_EMAIL_FROM,
-                to: customerEmail,
-                bcc: process.env.ORDER_EMAIL_TO || undefined,
-                subject: `Pedido confirmado - ${session.id}`,
-                html: renderOrderEmail({ order, session, shippingAddress }),
-            });
 
 
-            if (emailResult.error) {
-  console.error("RESEND_SEND_ERROR:", emailResult.error);
+  const signature = request.headers.get("stripe-signature");
 
-  return Response.json({
-    received: true,
-    emailSent: false,
-    resendError: emailResult.error.message,
-  });
-}
+  let event;
+
+  try {
+    const rawBody = await request.text();
+
+    event = stripe.webhooks.constructEvent(
+      rawBody,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (error) {
+    console.error("STRIPE_WEBHOOK_SIGNATURE_ERROR:", error.message);
+
+    return Response.json(
+      { error: "Invalid webhook signature" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    if (event.type === "checkout.session.completed") {
+
+      const session = event.data.object;
 
 
+      const orderId = session.metadata?.orderId;
 
-            console.log("ORDER_CONFIRMATION_EMAIL_SENT:", customerEmail);
-        }
-
+      if (!orderId) {
+        console.error("No orderId found in Stripe metadata.");
         return Response.json({ received: true });
-    } catch (error) {
-        console.error("STRIPE_WEBHOOK_HANDLER_ERROR:", error);
+      }
 
-        return Response.json(
-            { error: "Webhook handler failed" },
-            { status: 500 }
-        );
+      const storedOrder = await prisma.order.findUnique({
+        where: {
+          id: orderId,
+        },
+      });
+
+      if (!storedOrder) {
+        console.error("Order not found:", orderId);
+        return Response.json({ received: true });
+      }
+
+      const order = Array.isArray(storedOrder.items) ? storedOrder.items : [];
+      const shippingAddress = storedOrder.shippingAddress || null;
+
+      const customerEmail =
+        session.customer_details?.email ||
+        session.customer_email;
+
+      if (!customerEmail) {
+        console.warn("No hemos encontrado el email del cliente. No se ha enviado el correo.");
+        return Response.json({ received: true });
+      }
+
+
+
+
+      const emailResult = await resend.emails.send({
+        from: process.env.ORDER_EMAIL_FROM,
+        to: customerEmail,
+        bcc: process.env.ORDER_EMAIL_TO || undefined,
+        subject: `Pedido confirmado - ${session.id}`,
+        html: renderOrderEmail({ order, session, shippingAddress }),
+      });
+
+
+      if (emailResult.error) {
+        console.error("RESEND_SEND_ERROR:", emailResult.error);
+
+        return Response.json({
+          received: true,
+          emailSent: false,
+          resendError: emailResult.error.message,
+        });
+      }
+
+      await prisma.order.update({
+        where: {
+          id: orderId,
+        },
+        data: {
+          paymentStatus: "paid",
+          emailSent: true,
+        },
+      });
+
+
+      console.log("ORDER_CONFIRMATION_EMAIL_SENT:", customerEmail);
     }
+
+    return Response.json({ received: true });
+  } catch (error) {
+    console.error("STRIPE_WEBHOOK_HANDLER_ERROR:", error);
+
+    return Response.json(
+      { error: "Webhook handler failed" },
+      { status: 500 }
+    );
+  }
 }
