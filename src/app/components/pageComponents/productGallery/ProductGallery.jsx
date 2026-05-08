@@ -5,7 +5,6 @@ import ProductImages from "../../ProductImages";
 import ColorSelector from "../../ColorSelector";
 import ProductAccordion from "../../ProductAccordion";
 import Personalization from "../personalization/Personalization";
-import ProductCustomizerBase from "../personalization/ProductCustomizerBase";
 import { useCart } from "../../../context/CartContext";
 
 import {
@@ -18,6 +17,9 @@ import { getCartItemSignature } from "./cartSignature";
 import ProductSelectionSummary from "./ProductSelectionSummary";
 import SizeSelector from "./SizeSelector";
 import BulkDiscountTable from "./BulkDiscountTable";
+
+import SelectedSizesSummary from "./SelectedSizesSummary";
+import AddToCartButton from "./addToCartButton";
 
 export default function ProductGallery({ product }) {
     const { addToCart, cartItems, cartTotal, removeFromCart } = useCart();
@@ -229,6 +231,54 @@ export default function ProductGallery({ product }) {
 
 
     const canAddToCart = totalUnits >= 10;
+    function handleAddToCart() {
+        const cartItem = {
+            productId: product?.externalId,
+            productName: product?.name,
+            category: product?.category,
+            selectedColor,
+            sizes: sizeSummary.map(([size, qty]) => ({
+                size,
+                quantity: Number(qty),
+            })),
+            totalUnits,
+            basePriceBreakdown,
+            garmentBaseTotal,
+            customization: appliedCustomization,
+            customizationTotal: appliedCustomization?.customizationTotal || 0,
+            finalTotal: appliedCustomization?.finalTotal ?? garmentBaseTotal,
+        };
+
+        const cartItemSignature = getCartItemSignature(cartItem);
+
+        const alreadyExists = cartItems.some(
+            (item) => getCartItemSignature(item) === cartItemSignature
+        );
+
+        if (alreadyExists) {
+            setCartFeedback(
+                "Este producto con la misma configuración ya está en el carrito."
+            );
+
+            setTimeout(() => {
+                setCartFeedback(null);
+            }, 5000);
+
+            return;
+        }
+
+        addToCart(cartItem);
+
+        setCartFeedback(
+            appliedCustomization
+                ? "Producto personalizado añadido al carrito."
+                : "Producto añadido al carrito sin personalización."
+        );
+
+        setTimeout(() => {
+            setCartFeedback(null);
+        }, 5000);
+    }
     return (
         <main className="flex justify-evenly">
             <section>
@@ -296,19 +346,10 @@ export default function ProductGallery({ product }) {
 
 
 
-                {totalUnits > 0 && sizeSummary.length > 0 && (
-                    <div className="mt-5 flex gap-2 text-xs">
-                        {sizeSummary.map(([size, qty]) => (
-                            <span
-                                key={size}
-                                className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-2.5 py-1"
-                            >
-                                <span className="font-semibold">{size}</span>
-                                <span className="tabular-nums font-semibold">{qty}</span>
-                            </span>
-                        ))}
-                    </div>
-                )}
+                <SelectedSizesSummary
+                    totalUnits={totalUnits}
+                    sizeSummary={sizeSummary}
+                />
 
                 <hr className="mt-5" />
 
@@ -337,62 +378,11 @@ export default function ProductGallery({ product }) {
 
 
 
-                <button
-                    type="button"
-                    disabled={!canAddToCart}
-                    onClick={() => {
-                        const cartItem = {
-                            productId: product?.externalId,
-                            productName: product?.name,
-                            category: product?.category,
-                            selectedColor,
-                            sizes: sizeSummary.map(([size, qty]) => ({
-                                size,
-                                quantity: Number(qty),
-                            })),
-                            totalUnits,
-                            basePriceBreakdown,
-                            garmentBaseTotal,
-                            customization: appliedCustomization,
-                            customizationTotal: appliedCustomization?.customizationTotal || 0,
-                            finalTotal: appliedCustomization?.finalTotal ?? garmentBaseTotal,
-                        };
-
-                        const cartItemSignature = getCartItemSignature(cartItem);
-
-                        const alreadyExists = cartItems.some(
-                            (item) => getCartItemSignature(item) === cartItemSignature
-                        );
-
-                        if (alreadyExists) {
-                            setCartFeedback("Este producto con la misma configuración ya está en el carrito.");
-
-                            setTimeout(() => {
-                                setCartFeedback(null);
-                            }, 5000);
-
-                            return;
-                        }
-
-                        addToCart(cartItem);
-
-                        setCartFeedback(
-                            appliedCustomization
-                                ? "Producto personalizado añadido al carrito."
-                                : "Producto añadido al carrito sin personalización."
-                        );
-
-                        setTimeout(() => {
-                            setCartFeedback(null);
-                        }, 5000);
-                    }}
-                    className={`mt-4 w-full rounded-xl px-4 py-3 font-semibold text-white transition ${!canAddToCart
-                        ? "cursor-not-allowed bg-slate-300"
-                        : "bg-slate-900 hover:bg-slate-800"
-                        }`}
-                >
-                    Añadir al carrito
-                </button>
+                <AddToCartButton
+                    canAddToCart={canAddToCart}
+                    onAddToCart={handleAddToCart}
+                    cartFeedback={cartFeedback}
+                />
 
                 {cartFeedback && (
                     <div className="animate-slide-in-top transition-all fixed left-1/2 top-5 z-[9999] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-800 shadow-2xl">
