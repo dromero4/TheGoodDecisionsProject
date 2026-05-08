@@ -11,20 +11,20 @@ export default function Header() {
   const [cartOpen, setCartOpen] = useState(false);
 
   const [accountUser, setAccountUser] = useState(null);
-const [loadingUser, setLoadingUser] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
 
-const [shippingAddress, setShippingAddress] = useState({
-  fullName: "",
-  phone: "",
-  street: "",
-  number: "",
-  floorDoor: "",
-  postalCode: "",
-  city: "",
-  province: "",
-  country: "Spain",
-  additionalInfo: "",
-});
+  const [shippingAddress, setShippingAddress] = useState({
+    fullName: "",
+    phone: "",
+    street: "",
+    number: "",
+    floorDoor: "",
+    postalCode: "",
+    city: "",
+    province: "",
+    country: "Spain",
+    additionalInfo: "",
+  });
 
   const {
     cartItems,
@@ -35,130 +35,130 @@ const [shippingAddress, setShippingAddress] = useState({
   } = useCart();
 
   useEffect(() => {
-  if (!cartOpen) return;
+    if (!cartOpen) return;
 
-  async function loadAccountUser() {
-    setLoadingUser(true);
+    async function loadAccountUser() {
+      setLoadingUser(true);
 
-    try {
-      const response = await fetch("/api/me");
+      try {
+        const response = await fetch("/api/me");
 
-      if (response.status === 401) {
+        if (response.status === 401) {
+          setAccountUser(null);
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setAccountUser(null);
+          return;
+        }
+
+        setAccountUser(data.user);
+
+        if (data.user?.address) {
+          setShippingAddress({
+            fullName: data.user.address.fullName || "",
+            phone: data.user.address.phone || "",
+            street: data.user.address.street || "",
+            number: data.user.address.number || "",
+            floorDoor: data.user.address.floorDoor || "",
+            postalCode: data.user.address.postalCode || "",
+            city: data.user.address.city || "",
+            province: data.user.address.province || "",
+            country: data.user.address.country || "Spain",
+            additionalInfo: data.user.address.additionalInfo || "",
+          });
+        }
+      } catch {
         setAccountUser(null);
-        return;
+      } finally {
+        setLoadingUser(false);
       }
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setAccountUser(null);
-        return;
-      }
-
-      setAccountUser(data.user);
-
-      if (data.user?.address) {
-        setShippingAddress({
-          fullName: data.user.address.fullName || "",
-          phone: data.user.address.phone || "",
-          street: data.user.address.street || "",
-          number: data.user.address.number || "",
-          floorDoor: data.user.address.floorDoor || "",
-          postalCode: data.user.address.postalCode || "",
-          city: data.user.address.city || "",
-          province: data.user.address.province || "",
-          country: data.user.address.country || "Spain",
-          additionalInfo: data.user.address.additionalInfo || "",
-        });
-      }
-    } catch {
-      setAccountUser(null);
-    } finally {
-      setLoadingUser(false);
     }
+
+    loadAccountUser();
+  }, [cartOpen]);
+
+  function updateShippingField(field, value) {
+    setShippingAddress((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
+  function getMissingShippingFields(address) {
+    const requiredFields = [
+      { key: "fullName", label: "nombre completo" },
+      { key: "phone", label: "teléfono" },
+      { key: "street", label: "calle" },
+      { key: "number", label: "número" },
+      { key: "postalCode", label: "código postal" },
+      { key: "city", label: "ciudad" },
+      { key: "province", label: "provincia" },
+      { key: "country", label: "país" },
+    ];
+
+    return requiredFields.filter((field) => {
+      return !String(address?.[field.key] || "").trim();
+    });
   }
 
-  loadAccountUser();
-}, [cartOpen]);
-
-function updateShippingField(field, value) {
-  setShippingAddress((prev) => ({
-    ...prev,
-    [field]: value,
-  }));
-}
-function getMissingShippingFields(address) {
-  const requiredFields = [
-    { key: "fullName", label: "nombre completo" },
-    { key: "phone", label: "teléfono" },
-    { key: "street", label: "calle" },
-    { key: "number", label: "número" },
-    { key: "postalCode", label: "código postal" },
-    { key: "city", label: "ciudad" },
-    { key: "province", label: "provincia" },
-    { key: "country", label: "país" },
-  ];
-
-  return requiredFields.filter((field) => {
-    return !String(address?.[field.key] || "").trim();
-  });
-}
-
-function hasCompleteShippingAddress(address) {
-  return getMissingShippingFields(address).length === 0;
-}
+  function hasCompleteShippingAddress(address) {
+    return getMissingShippingFields(address).length === 0;
+  }
 
 
 
   async function handleCheckout() {
-  const missingFields = getMissingShippingFields(shippingAddress);
+    const missingFields = getMissingShippingFields(shippingAddress);
 
-  if (missingFields.length > 0) {
-    alert(
-      `Completa la dirección de entrega antes de continuar. Falta: ${missingFields
-        .map((field) => field.label)
-        .join(", ")}.`
-    );
-    return;
+    if (missingFields.length > 0) {
+      alert(
+        `Completa la dirección de entrega antes de continuar. Falta: ${missingFields
+          .map((field) => field.label)
+          .join(", ")}.`
+      );
+      return;
+    }
+
+    if (cartItems.length > 10) {
+      alert(
+        "El pedido tiene demasiados productos diferentes. Reduce el carrito o solicita presupuesto manual."
+      );
+      return;
+    }
+
+    if (cartQuantity > 300) {
+      alert(
+        "Para pedidos de más de 300 unidades, solicita presupuesto manual."
+      );
+      return;
+    }
+
+    const response = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        items: cartItems,
+        shippingAddress,
+        customerEmail: accountUser?.email || "",
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("CHECKOUT ERROR:", data);
+      alert(data.message || data.error || "Error creando el pago.");
+      return;
+    }
+
+    sessionStorage.setItem("lastStripeCheckoutUrl", data.url);
+    window.location.href = data.url;
   }
-
-  if (cartItems.length > 10) {
-    alert(
-      "El pedido tiene demasiados productos diferentes. Reduce el carrito o solicita presupuesto manual."
-    );
-    return;
-  }
-
-  if (cartQuantity > 300) {
-    alert(
-      "Para pedidos de más de 300 unidades, solicita presupuesto manual."
-    );
-    return;
-  }
-
-  const response = await fetch("/api/checkout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      items: cartItems,
-      shippingAddress,
-      customerEmail: accountUser?.email || "",
-    }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    console.error("CHECKOUT ERROR:", data);
-    alert(data.message || data.error || "Error creando el pago.");
-    return;
-  }
-
-  sessionStorage.setItem("lastStripeCheckoutUrl", data.url);
-  window.location.href = data.url;
-}
 
   return (
     <>
@@ -168,9 +168,9 @@ function hasCompleteShippingAddress(address) {
           onClick={() => setCartOpen(false)}
         >
           <aside
-  className="absolute right-0 top-0 flex h-screen w-full max-w-lg flex-col bg-white p-5 shadow-2xl"
-  onClick={(e) => e.stopPropagation()}
->
+            className="absolute right-0 top-0 flex h-dvh w-full max-w-lg flex-col bg-white p-4 shadow-2xl sm:p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
               <div>
                 <p className="text-xl font-bold text-slate-950">Carrito</p>
@@ -201,191 +201,186 @@ function hasCompleteShippingAddress(address) {
               </div>
             ) : (
               <>
-                <div className="min-h-[125px] max-h-[38vh] space-y-3 overflow-y-auto pr-1">
-                  {cartItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="font-semibold text-slate-950">
-                            {item.productId} - {item.productName}
-                          </p>
+                <div className="flex-1 overflow-y-auto pr-1">
+                  <div className="space-y-3">
+                    {cartItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-slate-950">
+                              {item.productId} - {item.productName}
+                            </p>
 
-                          <p className="mt-1 text-xs text-slate-500">
-                            Color: {item.selectedColor} · {item.totalUnits} uds
-                          </p>
-
-                          <p className="mt-1 text-xs text-slate-500">
-                            Tallas:{" "}
-                            {item.sizes
-                              ?.map((s) => `${s.size} x${s.quantity}`)
-                              .join(", ")}
-                          </p>
-
-                          {item.customization ? (
                             <p className="mt-1 text-xs text-slate-500">
-                              Personalización:{" "}
-                              {item.customization.placements.length} elemento(s)
+                              Color: {item.selectedColor} · {item.totalUnits} uds
                             </p>
-                          ) : (
-                            <p className="mt-1 text-xs text-slate-400">
-                              Sin personalización
+
+                            <p className="mt-1 text-xs text-slate-500">
+                              Tallas:{" "}
+                              {item.sizes
+                                ?.map((s) => `${s.size} x${s.quantity}`)
+                                .join(", ")}
                             </p>
-                          )}
+
+                            {item.customization ? (
+                              <p className="mt-1 text-xs text-slate-500">
+                                Personalización: {item.customization.placements.length} elemento(s)
+                              </p>
+                            ) : (
+                              <p className="mt-1 text-xs text-slate-400">
+                                Sin personalización
+                              </p>
+                            )}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => removeFromCart(item.id)}
+                            className="shrink-0 rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
+                          >
+                            Eliminar
+                          </button>
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => removeFromCart(item.id)}
-                          className="shrink-0 rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
-                        >
-                          Eliminar
-                        </button>
+                        <div className="mt-4 space-y-1 border-t border-slate-200 pt-3">
+                          <div className="flex justify-between text-xs text-slate-600">
+                            <span>Prendas</span>
+                            <span>{Number(item.garmentBaseTotal || 0).toFixed(2)} €</span>
+                          </div>
+
+                          <div className="flex justify-between text-xs text-slate-600">
+                            <span>Personalización</span>
+                            <span>
+                              {item.customization
+                                ? `${Number(item.customizationTotal || 0).toFixed(2)} €`
+                                : "No aplicada"}
+                            </span>
+                          </div>
+
+                          <div className="mt-2 flex justify-between text-sm font-bold text-slate-950">
+                            <span>Total</span>
+                            <span>{Number(item.finalTotal || 0).toFixed(2)} €</span>
+                          </div>
+                        </div>
                       </div>
+                    ))}
+                  </div>
 
-                      <div className="mt-4 space-y-1 border-t border-slate-200 pt-3">
-                        <div className="flex justify-between text-xs text-slate-600">
-                          <span>Prendas</span>
-                          <span>
-                            {Number(item.garmentBaseTotal || 0).toFixed(2)} €
-                          </span>
-                        </div>
+                  <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
+                    <div className="mb-4">
+                      <p className="text-sm font-bold text-slate-950">
+                        Dirección de entrega
+                      </p>
 
-                        <div className="flex justify-between text-xs text-slate-600">
-                          <span>Personalización</span>
-                          <span>
-                            {item.customization
-                              ? `${Number(item.customizationTotal || 0).toFixed(
-                                  2
-                                )} €`
-                              : "No aplicada"}
-                          </span>
-                        </div>
-
-                        <div className="mt-2 flex justify-between text-sm font-bold text-slate-950">
-                          <span>Total</span>
-                          <span>
-                            {Number(item.finalTotal || 0).toFixed(2)} €
-                          </span>
-                        </div>
-                      </div>
+                      {loadingUser ? (
+                        <p className="mt-1 text-xs text-slate-500">
+                          Cargando dirección...
+                        </p>
+                      ) : accountUser?.address ? (
+                        <p className="mt-1 text-xs text-slate-500">
+                          Usaremos la dirección guardada en tu perfil. Puedes editarla aquí antes de pagar.
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-xs text-slate-500">
+                          Añade una dirección para poder continuar con el pago.
+                        </p>
+                      )}
                     </div>
-                  ))}
+
+                    <div className="grid grid-cols-1 gap-3">
+                      <input
+                        type="text"
+                        value={shippingAddress.fullName}
+                        onChange={(e) => updateShippingField("fullName", e.target.value)}
+                        placeholder="Nombre completo"
+                        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                      />
+
+                      <input
+                        type="tel"
+                        value={shippingAddress.phone}
+                        onChange={(e) => updateShippingField("phone", e.target.value)}
+                        placeholder="Teléfono"
+                        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                      />
+
+                      <div className="grid grid-cols-[1fr_70px] gap-3">
+                        <input
+                          type="text"
+                          value={shippingAddress.street}
+                          onChange={(e) => updateShippingField("street", e.target.value)}
+                          placeholder="Calle"
+                          className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                        />
+
+                        <input
+                          type="text"
+                          value={shippingAddress.number}
+                          onChange={(e) => updateShippingField("number", e.target.value)}
+                          placeholder="Nº"
+                          className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                        />
+                      </div>
+
+                      <input
+                        type="text"
+                        value={shippingAddress.floorDoor}
+                        onChange={(e) => updateShippingField("floorDoor", e.target.value)}
+                        placeholder="Piso / puerta / local"
+                        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                      />
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          value={shippingAddress.postalCode}
+                          onChange={(e) => updateShippingField("postalCode", e.target.value)}
+                          placeholder="Código postal"
+                          className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                        />
+
+                        <input
+                          type="text"
+                          value={shippingAddress.city}
+                          onChange={(e) => updateShippingField("city", e.target.value)}
+                          placeholder="Ciudad"
+                          className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          value={shippingAddress.province}
+                          onChange={(e) => updateShippingField("province", e.target.value)}
+                          placeholder="Provincia"
+                          className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                        />
+
+                        <input
+                          type="text"
+                          value={shippingAddress.country}
+                          onChange={(e) => updateShippingField("country", e.target.value)}
+                          placeholder="País"
+                          className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                        />
+                      </div>
+
+                      <textarea
+                        value={shippingAddress.additionalInfo}
+                        onChange={(e) => updateShippingField("additionalInfo", e.target.value)}
+                        placeholder="Información adicional para la entrega"
+                        rows={3}
+                        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
-  <div className="mb-4">
-    <p className="text-sm font-bold text-slate-950">
-      Dirección de entrega
-    </p>
-
-    {loadingUser ? (
-      <p className="mt-1 text-xs text-slate-500">
-        Cargando dirección...
-      </p>
-    ) : accountUser?.address ? (
-      <p className="mt-1 text-xs text-slate-500">
-        Usaremos la dirección guardada en tu perfil. Puedes editarla aquí antes de pagar.
-      </p>
-    ) : (
-      <p className="mt-1 text-xs text-slate-500">
-        Añade una dirección para poder continuar con el pago.
-      </p>
-    )}
-  </div>
-
-  <div className="grid grid-cols-1 gap-3">
-    <input
-      type="text"
-      value={shippingAddress.fullName}
-      onChange={(e) => updateShippingField("fullName", e.target.value)}
-      placeholder="Nombre completo"
-      className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-    />
-
-    <input
-      type="tel"
-      value={shippingAddress.phone}
-      onChange={(e) => updateShippingField("phone", e.target.value)}
-      placeholder="Teléfono"
-      className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-    />
-
-    <div className="grid grid-cols-[1fr_70px] gap-3">
-      <input
-        type="text"
-        value={shippingAddress.street}
-        onChange={(e) => updateShippingField("street", e.target.value)}
-        placeholder="Calle"
-        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-      />
-
-      <input
-        type="text"
-        value={shippingAddress.number}
-        onChange={(e) => updateShippingField("number", e.target.value)}
-        placeholder="Nº"
-        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-      />
-    </div>
-
-    <input
-      type="text"
-      value={shippingAddress.floorDoor}
-      onChange={(e) => updateShippingField("floorDoor", e.target.value)}
-      placeholder="Piso / puerta / local"
-      className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-    />
-
-    <div className="grid grid-cols-2 gap-3">
-      <input
-        type="text"
-        value={shippingAddress.postalCode}
-        onChange={(e) => updateShippingField("postalCode", e.target.value)}
-        placeholder="Código postal"
-        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-      />
-
-      <input
-        type="text"
-        value={shippingAddress.city}
-        onChange={(e) => updateShippingField("city", e.target.value)}
-        placeholder="Ciudad"
-        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-      />
-    </div>
-
-    <div className="grid grid-cols-2 gap-3">
-      <input
-        type="text"
-        value={shippingAddress.province}
-        onChange={(e) => updateShippingField("province", e.target.value)}
-        placeholder="Provincia"
-        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-      />
-
-      <input
-        type="text"
-        value={shippingAddress.country}
-        onChange={(e) => updateShippingField("country", e.target.value)}
-        placeholder="País"
-        className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-      />
-    </div>
-
-    <textarea
-      value={shippingAddress.additionalInfo}
-      onChange={(e) => updateShippingField("additionalInfo", e.target.value)}
-      placeholder="Información adicional para la entrega"
-      rows={3}
-      className="rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-900"
-    />
-  </div>
-</div>
-
-                <div className="mt-5 border-t border-slate-200 pt-5">
+                <div className="shrink-0 border-t border-slate-200 bg-white pt-4">
                   <div className="flex justify-between text-base font-bold text-slate-950">
                     <span>Total carrito</span>
                     <span>{Number(cartTotal || 0).toFixed(2)} €</span>
