@@ -182,7 +182,7 @@ function hasCompleteShippingAddress(address) {
               </div>
             ) : (
               <>
-                <div className="min-h-[150px] max-h-[38vh] space-y-3 overflow-y-auto pr-1">
+                <div className="min-h-[125px] max-h-[38vh] space-y-3 overflow-y-auto pr-1">
                   {cartItems.map((item) => (
                     <div
                       key={item.id}
