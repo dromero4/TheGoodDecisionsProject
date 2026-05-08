@@ -6,9 +6,6 @@ import { calculatePlacementPrice } from "../pricing/calculatePlacementPrice.js";
 
 import type {
   ZoneId,
-  Technique,
-  EmbroideryType,
-  ScreenprintType,
   CustomElement,
   ProductState,
   ProductCustomizerBaseProps,
@@ -18,12 +15,9 @@ import {
   EMBROIDERY_3D_SIZE_OPTIONS,
   SIZE_OPTIONS_BY_TECHNIQUE,
   SIZE_OPTIONS,
-  VINYL_VARIANTS,
-  RHINESTONES_VARIANTS,
 } from "./customizerConstants";
 
 import {
-  formatMoney,
   getProductZones,
   createEmptyState,
   createId,
@@ -32,13 +26,15 @@ import {
   formatTechnique,
 } from "./customizerHelpers";
 
-import Field from "./Field";
-
 import ElementListPanel from "./ElementListPanel";
 import PreviewPanel from "./PreviewPanel";
 
 import ElementContentSettings from "./ElementContentSettings";
 import TechniqueSettings from "./TechniqueSettings";
+
+import SelectedElementPricingCard from "./SelectedElementPricingCard";
+import CustomizationSummary from "./CustomizationSummary";
+import AdvancedElementSettings from "./AdvancedElementSettings";
 
 export default function ProductCustomizerBase({
   productType,
@@ -395,233 +391,30 @@ export default function ProductCustomizerBase({
                 onUpdateElement={updateSelectedElement}
               />
 
-              {selectedElementPricing && (
-                <div className="rounded-xl border border-slate-200 bg-white p-4">
-                  <p className="mb-3 text-sm font-semibold text-slate-800">
-                    Precio de esta personalización
-                  </p>
+              <SelectedElementPricingCard
+                selectedElementPricing={selectedElementPricing}
+              />
 
-                  {selectedElementPricing.pricingMode === "automatic" ? (
-                    <div className="space-y-1 text-sm text-slate-600">
-                      <p>
-                        Tamaño solicitado:{" "}
-                        <span className="font-medium">
-                          {selectedElementPricing.requestedSize}
-                        </span>
-                      </p>
-
-                      <p>
-                        Tamaño cobrado:{" "}
-                        <span className="font-medium">
-                          {selectedElementPricing.chargedSize}
-                        </span>
-                      </p>
+              <CustomizationSummary
+                basePriceBreakdown={basePriceBreakdown}
+                garmentBaseTotal={garmentBaseTotal}
+                allPlacementPricings={allPlacementPricings}
+                zoneLabels={zoneLabels}
+                customizationTotal={customizationTotal}
+                finalTotal={finalTotal}
+                hasManualQuote={hasManualQuote}
+                onApplyCustomization={handleApplyCustomization}
+              />
 
 
-
-                      {selectedElementPricing.inkCount && (
-                        <p>
-                          Tintas:{" "}
-                          <span className="font-medium">
-                            {selectedElementPricing.inkCount}
-                          </span>
-                        </p>
-                      )}
-
-                      <p>
-                        Precio unitario:{" "}
-                        <span className="font-medium">
-                          {Number(selectedElementPricing.unitPrice).toFixed(2)} €
-                        </span>
-                      </p>
-
-                      <p>
-                        Total:{" "}
-                        <span className="font-semibold text-slate-900">
-                          {Number(selectedElementPricing.totalPrice).toFixed(2)} €
-                        </span>
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
-                      <p className="font-medium">Presupuesto manual</p>
-                      <p className="mt-1">
-                        Motivo: {selectedElementPricing.reason || "No disponible"}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="rounded-xl border border-slate-200 bg-white p-4">
-                <p className="mb-3 text-sm font-semibold text-slate-800">
-                  Resumen final
-                </p>
-
-                <div className="space-y-3 text-sm">
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <p className="font-semibold text-slate-800">Prendas base</p>
-
-                    {basePriceBreakdown.length > 0 ? (
-                      <div className="mt-2 space-y-1 text-slate-600">
-                        {basePriceBreakdown.map((item) => (
-                          <div
-                            key={item.size}
-                            className="flex justify-between gap-3"
-                          >
-                            <span>
-                              Talla {item.size}: {item.quantity} uds ×{" "}
-                              {formatMoney(item.unitPrice)}
-                            </span>
-                            <span className="font-medium">
-                              {formatMoney(item.total)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="mt-2 text-slate-500">
-                        No hay prendas seleccionadas.
-                      </p>
-                    )}
-
-                    <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold">
-                      <span>Total prendas</span>
-                      <span>{formatMoney(garmentBaseTotal)}</span>
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg bg-slate-50 p-3">
-                    <p className="font-semibold text-slate-800">Personalizaciones</p>
-
-                    {allPlacementPricings.length > 0 ? (
-                      <div className="mt-2 space-y-2 text-slate-600 max-h-75 overflow-auto">
-                        {allPlacementPricings.map((item) => {
-                          const isAutomatic = item.pricing.pricingMode === "automatic";
-
-                          return (
-                            <div
-                              key={`${item.zone}-${item.element.id}`}
-                              className="rounded-md border border-slate-200 bg-white p-2"
-                            >
-                              <div className="flex justify-between gap-3">
-                                <span>
-                                  {zoneLabels[item.zone] ?? item.zone} ·{" "}
-                                  {formatTechnique(item.element)}
-                                </span>
-
-                                <span className="font-medium">
-                                  {isAutomatic
-                                    ? formatMoney(Number(item.pricing.totalPrice || 0))
-                                    : "Manual"}
-                                </span>
-                              </div>
-
-                              <p className="mt-1 text-xs text-slate-500">
-                                Tamaño: {item.pricing.requestedSize} →{" "}
-                                {item.pricing.chargedSize || "—"} · Tramo:{" "}
-                                {item.pricing.quantityBracket || "—"} uds
-                              </p>
-
-                              {!isAutomatic && (
-                                <p className="mt-1 text-xs text-amber-700">
-                                  Requiere presupuesto manual: {item.pricing.reason}
-                                </p>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className="mt-2 text-slate-500">
-                        No hay personalizaciones añadidas.
-                      </p>
-                    )}
-
-                    <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 font-semibold">
-                      <span>Total personalización</span>
-                      <span>{formatMoney(customizationTotal)}</span>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl bg-slate-900 p-4 text-white">
-                    <div className="flex justify-between text-base font-bold">
-                      <span>Total estimado</span>
-                      <span>{formatMoney(finalTotal)}</span>
-                    </div>
-
-                    {hasManualQuote && (
-                      <p className="mt-2 text-xs text-slate-300">
-                        Hay personalizaciones que requieren presupuesto manual. El total final
-                        puede variar.
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleApplyCustomization}
-                  className="mt-4 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.99]"
-                >
-                  Aplicar personalización
-                </button>
-              </div>
-
-
-              <details className="rounded-xl border border-slate-200 bg-white p-4">
-                <summary className="cursor-pointer text-sm font-semibold text-slate-800">
-                  Ajustes avanzados
-                </summary>
-
-                <div className="mt-4 space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <Field label="Posición X">
-                      <input
-                        type="number"
-                        value={selectedElement.x ?? 0}
-                        onChange={(e) =>
-                          updateSelectedElement({ x: Number(e.target.value) })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      />
-                    </Field>
-
-                    <Field label="Posición Y">
-                      <input
-                        type="number"
-                        value={selectedElement.y ?? 0}
-                        onChange={(e) =>
-                          updateSelectedElement({ y: Number(e.target.value) })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      />
-                    </Field>
-                  </div>
-
-                  <Field label="Notas">
-                    <textarea
-                      value={selectedElement.notes ?? ""}
-                      onChange={(e) =>
-                        updateSelectedElement({ notes: e.target.value })
-                      }
-                      rows={4}
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                    />
-                  </Field>
-                </div>
-              </details>
+              <AdvancedElementSettings
+                selectedElement={selectedElement}
+                onUpdateElement={updateSelectedElement}
+              />
             </div>
           )}
         </aside>
       </div>
     </div>
   );
-
 }
-
-
-
-
-
-
