@@ -56,6 +56,14 @@ export default function LoginPage() {
     <main className="min-h-screen bg-slate-50 px-6 py-16 text-slate-950">
       <section className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-8 text-center">
+          <p className="mb-1.5 text-sm text-slate-500 max-w-20 border border-slate-400 rounded-2xl">
+            <button
+            className="text-slate-500 hover:text-slate-700"
+            onClick={() => router.push("/")}
+            >
+              Volver
+            </button>
+          </p>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
             Área cliente
           </p>

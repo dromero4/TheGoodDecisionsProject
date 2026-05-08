@@ -133,7 +133,7 @@ export default function AccountPage() {
       method: "POST",
     });
 
-    router.push("/");
+    router.push("/login");
     router.refresh();
   }
 
