@@ -20,6 +20,7 @@ export async function getProductById(id) {
             variants: {
                 include: {
                     prices: true,
+                    
                 },
             },
         },

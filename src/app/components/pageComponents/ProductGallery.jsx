@@ -16,15 +16,37 @@ export default function ProductGallery({ product }) {
 
     const images = useMemo(() => product?.images ?? [], [product?.images]);
 
+    function getStockForSize(size) {
+        const variant = (product?.variants ?? []).find(
+            (variant) =>
+                variant.color === selectedColor &&
+                variant.size === size
+        );
+
+        return Number(variant?.stock || 0);
+    }
 
     function setQty(size, value) {
         setAppliedCustomization(null);
+
+        const stock = getStockForSize(size);
         const n = Math.max(0, Math.floor(Number(value) || 0));
 
-        setSizeQty(prev => {
+
+        console.log("PRODUCT VARIANTS:", product?.variants);
+console.log("FIRST VARIANT:", product?.variants?.[0]);
+
+        if (n > stock) {
+            alert(`Solo hay ${stock} unidades disponibles en la talla ${size}.`);
+            return;
+        }
+
+        setSizeQty((prev) => {
             const next = { ...prev };
+
             if (n <= 0) delete next[size];
             else next[size] = n;
+
             return next;
         });
     }
@@ -120,17 +142,45 @@ export default function ProductGallery({ product }) {
     }, [price]);
 
     function selectSize(size) {
+        const stock = getStockForSize(size);
+
+        if (stock <= 0) {
+            alert(`La talla ${size} no tiene stock disponible.`);
+            return;
+        }
+
         setAppliedCustomization(null);
-
         setActiveSize(size);
-        setSizeQty((prev) => (prev[size] ? prev : { ...prev, [size]: 1 }));
-    }
 
+        setSizeQty((prev) => {
+            if (prev[size]) return prev;
+
+            return {
+                ...prev,
+                [size]: 1,
+            };
+        });
+    }
     function inc(size) {
         setAppliedCustomization(null);
-
         setActiveSize(size);
-        setSizeQty((prev) => ({ ...prev, [size]: (prev[size] ?? 0) + 1 }));
+
+        const stock = getStockForSize(size);
+
+        setSizeQty((prev) => {
+            const currentQty = prev[size] ?? 0;
+            const nextQty = currentQty + 1;
+
+            if (nextQty > stock) {
+                alert(`Solo hay ${stock} unidades disponibles en la talla ${size}.`);
+                return prev;
+            }
+
+            return {
+                ...prev,
+                [size]: nextQty,
+            };
+        });
     }
 
     function dec(size) {
@@ -227,7 +277,7 @@ export default function ProductGallery({ product }) {
     }
 
 
-const canAddToCart = totalUnits >= 10;
+    const canAddToCart = totalUnits >= 10;
     return (
         <main className="flex justify-evenly">
             <section>
@@ -306,22 +356,38 @@ const canAddToCart = totalUnits >= 10;
                     {sizesForColor.map((size) => {
                         const qty = sizeQty[size] ?? 0;
                         const active = primarySize === size;
+                        const stock = getStockForSize(size);
+                        const outOfStock = stock <= 0;
 
                         return (
                             <div
                                 key={size}
                                 type="button"
-                                onClick={() => selectSize(size)}
+                                onClick={() => {
+                                    if (outOfStock) return;
+                                    selectSize(size);
+                                }}
                                 className={[
                                     "group relative flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition-all",
-                                    "active:scale-[0.98] cursor-pointer",
-                                    qty > 0
+                                    outOfStock
+                                        ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+                                        : "active:scale-[0.98] cursor-pointer",
+                                    !outOfStock && qty > 0
                                         ? "border-black/20 bg-black/2"
-                                        : "border-black/10 bg-white hover:bg-black/2",
-                                    active ? "ring-2 ring-black/30" : "ring-0",
+                                        : !outOfStock
+                                            ? "border-black/10 bg-white hover:bg-black/2"
+                                            : "",
+                                    active && !outOfStock ? "ring-2 ring-black/30" : "ring-0",
                                 ].join(" ")}
                             >
-                                <span className="font-medium">{size}</span>
+
+                                
+                                <div className="flex flex-col leading-tight">
+                                    <span className="font-medium">{size}</span>
+                                    <span className="text-[10px] text-slate-400">
+                                        {stock > 0 ? `${stock} disp.` : "Sin stock"}
+                                    </span>
+                                </div>
                                 {/* Pill con stepper (solo si qty > 0) */}
                                 {qty > 0 && (
                                     <div
@@ -482,7 +548,7 @@ const canAddToCart = totalUnits >= 10;
                     </p>
                 )}
 
-                
+
 
                 <button
                     type="button"
@@ -512,7 +578,7 @@ const canAddToCart = totalUnits >= 10;
                         );
 
                         if (alreadyExists) {
-                           setCartFeedback("Este producto con la misma configuración ya está en el carrito.");
+                            setCartFeedback("Este producto con la misma configuración ya está en el carrito.");
 
                             setTimeout(() => {
                                 setCartFeedback(null);
@@ -524,18 +590,18 @@ const canAddToCart = totalUnits >= 10;
                         addToCart(cartItem);
 
                         setCartFeedback(
-  appliedCustomization
-    ? "Producto personalizado añadido al carrito."
-    : "Producto añadido al carrito sin personalización."
-);
+                            appliedCustomization
+                                ? "Producto personalizado añadido al carrito."
+                                : "Producto añadido al carrito sin personalización."
+                        );
 
                         setTimeout(() => {
                             setCartFeedback(null);
                         }, 5000);
                     }}
                     className={`mt-4 w-full rounded-xl px-4 py-3 font-semibold text-white transition ${!canAddToCart
-                            ? "cursor-not-allowed bg-slate-300"
-                            : "bg-slate-900 hover:bg-slate-800"
+                        ? "cursor-not-allowed bg-slate-300"
+                        : "bg-slate-900 hover:bg-slate-800"
                         }`}
                 >
                     Añadir al carrito
