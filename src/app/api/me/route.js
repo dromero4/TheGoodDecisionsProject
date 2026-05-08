@@ -1,6 +1,10 @@
+// Endpoint para obtenet y/o actualizar el perfil del usuario autenticado.
+
 import { getCurrentUser } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/prisma";
 
+// Devuelve el perfil del usuario. En caso de no estar autenticado, devuelve un error 401 que posteriormente
+// será manejado por el cliente para redirigir al usuario a la página de login.
 export async function GET() {
   const user = await getCurrentUser();
 
@@ -11,6 +15,7 @@ export async function GET() {
   return Response.json({ user });
 }
 
+// Actualiza los datos del perfil del usuario. Requiere autenticación. En caso de no estar autenticado, devuelve un error 401.
 export async function PATCH(request) {
   const user = await getCurrentUser();
 
@@ -19,6 +24,7 @@ export async function PATCH(request) {
   }
 
   try {
+    // Recuperamos los datos del cuerpo de la petición
     const body = await request.json();
 
     const updatedUser = await prisma.user.update({
@@ -29,6 +35,7 @@ export async function PATCH(request) {
         name: body.name ?? null,
         phone: body.phone ?? null,
         address: {
+          // UPSERT: Sirve para crear (si no esta creado) o actualizar (si ya existe) la dirección del usuario.
           upsert: {
             create: {
               fullName: body.address?.fullName ?? null,

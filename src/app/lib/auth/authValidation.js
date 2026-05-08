@@ -1,3 +1,5 @@
+// Validaciones para los datos de autenticación, tanto login como registro.
+
 export function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
 }

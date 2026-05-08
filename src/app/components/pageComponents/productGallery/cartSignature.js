@@ -1,3 +1,8 @@
+// Usamos esta funcion para evitar duplicados de productos en el carrito.
+// Generamos una firma única para cada item del carrito basada en su producto, color, 
+// tallas y personalización.
+
+// Se podria denominar tambien como un contrato.
 export function getCartItemSignature(item) {
   const sizesSignature = (item.sizes || [])
     .map((sizeItem) => `${sizeItem.size}:${sizeItem.quantity}`)

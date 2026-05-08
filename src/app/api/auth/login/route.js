@@ -1,3 +1,6 @@
+// Endpoint para iniciar sesión.
+// Valida las credenciales, crea una sesión y devuelve la información del usuario.
+
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
@@ -24,6 +27,7 @@ export async function POST(request) {
 
     validateLoginPayload({ email, password });
 
+    // Recuperamos el usuario de la base de datos mediante el correo
     const user = await prisma.user.findUnique({
       where: { email },
       include: {
@@ -31,6 +35,7 @@ export async function POST(request) {
       },
     });
 
+    // En caso de no haber encontrado el usuario o la contraseña no coincida, devolvemos un error genérico
     if (!user) {
       return Response.json(
         { error: "Credenciales incorrectas." },
@@ -38,6 +43,7 @@ export async function POST(request) {
       );
     }
 
+    // Recuperamos el hash de la contraseña y lo comparamos con la contraseña proporcionada
     const passwordIsValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!passwordIsValid) {
@@ -47,6 +53,7 @@ export async function POST(request) {
       );
     }
 
+    // Creamos el token JWT para la sesión del usuario
     const token = await createSessionToken(user.id);
 
     const response = NextResponse.json({

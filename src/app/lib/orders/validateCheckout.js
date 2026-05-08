@@ -1,19 +1,16 @@
+/*
+Validaciones de seguridad para el proceso del checkout / pago
+para evitar errores comunes que puedan surgir al crear la sesión de Stripe.
+
+Se validan en el backend para no depender de la integridad de los datos que vienen del frontend.
+*/
+
 export function validateCheckoutPayload({ items, shippingAddress }) {
+
+  // Evitamos poder crear la sesión de Stripe con un carrito vacío
   if (!Array.isArray(items) || items.length === 0) {
     throw new Error("El carrito está vacío.");
   }
-
-  if (items.length > 10) {
-    throw new Error(
-      "El pedido tiene demasiados productos diferentes. Reduce el carrito o solicita presupuesto manual."
-    );
-  }
-
-  const totalUnits = items.reduce((sum, item) => {
-    return sum + Number(item.totalUnits || 0);
-  }, 0);
-
- 
 
   const requiredAddressFields = [
     "fullName",
@@ -26,6 +23,7 @@ export function validateCheckoutPayload({ items, shippingAddress }) {
     "country",
   ];
 
+  // Verificamos que los datos esten completos y no sean solo espacios en blanco.
   const missingFields = requiredAddressFields.filter((field) => {
     return !String(shippingAddress?.[field] || "").trim();
   });

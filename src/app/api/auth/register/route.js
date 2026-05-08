@@ -1,3 +1,6 @@
+// Endpoint de registro de usuario.
+// Crea el usuario, hashea la contraseña y te loguea automaticamente.
+
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
@@ -19,16 +22,19 @@ export async function POST(request) {
   try {
     const body = await request.json();
 
-    const email = normalizeEmail(body.email);
+    const email = normalizeEmail(body.email); // Normaliza el email para evitar problemas de mayúsculas o espacios.
     const password = String(body.password || "");
     const name = String(body.name || "").trim();
 
+    // Verificaciones básicas. Si el email o la contraseña no son válidos, 
+    // se lanzará un error que será capturado en el catch.
     validateRegisterPayload({ email, password });
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
+    // Verificaciones por si el usuario ya existe.
     if (existingUser) {
       return Response.json(
         { error: "Ya existe una cuenta con este email." },
@@ -36,6 +42,7 @@ export async function POST(request) {
       );
     }
 
+    // Momento de hashear el password y crear el usuario en la base de datos.
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -49,6 +56,7 @@ export async function POST(request) {
       },
     });
 
+    // Creamos el token de sesión JWT con el ID del usuario.
     const token = await createSessionToken(user.id);
 
     const response = NextResponse.json({

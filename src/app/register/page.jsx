@@ -7,15 +7,19 @@ import { useRouter } from "next/navigation";
 export default function RegisterPage() {
   const router = useRouter();
 
+  // Formulario controlado para manejar los datos del registro del usuario.
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
   });
 
+  // Estados para manejar la carga y errores durante el proceso.
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+
+  // Funcion para actualizar los campos del formulario de manera controlada.
   function updateField(field, value) {
     setForm((prev) => ({
       ...prev,
@@ -29,6 +33,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      // Llamada al endpoint de registro para crear el usaurio.
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -44,6 +49,7 @@ export default function RegisterPage() {
         return;
       }
 
+      // Si el registro es exitoso, redirige al usuario a su cuenta.
       router.push("/account");
       router.refresh();
     } catch {
@@ -53,6 +59,7 @@ export default function RegisterPage() {
     }
   }
 
+  // Interfaz de registro con los campos necesarios.
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-16 text-slate-950">
       <section className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">

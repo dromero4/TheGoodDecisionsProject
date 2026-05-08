@@ -1,3 +1,6 @@
+// Vista principal del producto
+// Aqui se muestra las imagenes, el color, las tallas de cada uno de los productos...
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -28,6 +31,7 @@ export default function ProductGallery({ product }) {
 
     const [cartFeedback, setCartFeedback] = useState(null);
 
+    // Normalizamos las imagenes para evitar problemas de null / undefined.
     const images = useMemo(() => product?.images ?? [], [product?.images]);
 
     function getStockForSize(size) {
@@ -66,7 +70,7 @@ export default function ProductGallery({ product }) {
     }
 
 
-    // Colores únicos (evita null/undefined)
+    // Colores únicos a partir de las variantes del producto
     const colors = useMemo(() => {
         return [...new Set((product?.variants ?? []).map((v) => v.color).filter(Boolean))];
     }, [product?.variants]);
@@ -175,6 +179,9 @@ export default function ProductGallery({ product }) {
             };
         });
     }
+
+    // Funcion para incrementar la cantidad de la talla, respetando el stock disponible.
+    // En caso de superarse, se controla con un alert.
     function inc(size) {
         setAppliedCustomization(null);
         setActiveSize(size);
@@ -197,6 +204,9 @@ export default function ProductGallery({ product }) {
         });
     }
 
+    // Funcion para decrementar la cantidad de la talla. Si llega a 0, se elimina del resumen y
+    //  se desactiva la talla (si era la activa). Si no hay tallas seleccionadas, 
+    // se limpia la selección de color.
     function dec(size) {
         setAppliedCustomization(null);
 
@@ -227,9 +237,6 @@ export default function ProductGallery({ product }) {
     const garmentBaseTotal = useMemo(() => {
         return getGarmentBaseTotal(basePriceBreakdown);
     }, [basePriceBreakdown]);
-
-
-
 
     const canAddToCart = totalUnits >= 10;
     function handleAddToCart() {
@@ -323,8 +330,7 @@ export default function ProductGallery({ product }) {
                     setQtyDraft={setQtyDraft}
                 />
 
-
-
+{/* Resumen del seleccion de tallas  */}
                 <SelectedSizesSummary
                     totalUnits={totalUnits}
                     sizeSummary={sizeSummary}
@@ -338,8 +344,7 @@ export default function ProductGallery({ product }) {
                     primarySize={primarySize}
                     selectedSizes={selectedSizes}
                 />
-
-                <Personalization
+                 <Personalization
                     product={product}
                     selectedColor={selectedColor}
                     quantity={totalUnits}
