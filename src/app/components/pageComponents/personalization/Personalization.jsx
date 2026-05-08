@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ProductCustomizerBase from "@/app/components/pageComponents/personalization/ProductCustomizerBase";
+import ProductCustomizerBase from "@/app/components/pageComponents/personalization/customizer/ProductCustomizerBase";
 
 const IMAGE_INDEX_MAP_BY_CATEGORY = {
   tees: {

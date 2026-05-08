@@ -35,7 +35,7 @@
     "**/*.mts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/app/components/pageComponents/personalization/customizer/HelpTooltip.jsx"  ],
   "exclude": [
     "node_modules"
   ]
