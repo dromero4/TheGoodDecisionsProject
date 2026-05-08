@@ -111,35 +111,54 @@ function hasCompleteShippingAddress(address) {
 
 
   async function handleCheckout() {
+  const missingFields = getMissingShippingFields(shippingAddress);
 
-    if (!hasCompleteShippingAddress(shippingAddress)) {
-  alert("Completa la dirección de entrega antes de continuar.");
-  return;
-}
-
-    const response = await fetch("/api/checkout", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    items: cartItems,
-    shippingAddress,
-    customerEmail: accountUser?.email || "",
-  }),
-});
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("CHECKOUT ERROR:", data);
-      alert(data.message || data.error || "Error creando el pago.");
-      return;
-    }
-
-    sessionStorage.setItem("lastStripeCheckoutUrl", data.url);
-    window.location.href = data.url;
+  if (missingFields.length > 0) {
+    alert(
+      `Completa la dirección de entrega antes de continuar. Falta: ${missingFields
+        .map((field) => field.label)
+        .join(", ")}.`
+    );
+    return;
   }
+
+  if (cartItems.length > 10) {
+    alert(
+      "El pedido tiene demasiados productos diferentes. Reduce el carrito o solicita presupuesto manual."
+    );
+    return;
+  }
+
+  if (cartQuantity > 300) {
+    alert(
+      "Para pedidos de más de 300 unidades, solicita presupuesto manual."
+    );
+    return;
+  }
+
+  const response = await fetch("/api/checkout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      items: cartItems,
+      shippingAddress,
+      customerEmail: accountUser?.email || "",
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("CHECKOUT ERROR:", data);
+    alert(data.message || data.error || "Error creando el pago.");
+    return;
+  }
+
+  sessionStorage.setItem("lastStripeCheckoutUrl", data.url);
+  window.location.href = data.url;
+}
 
   return (
     <>
