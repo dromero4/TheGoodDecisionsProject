@@ -1,5 +1,5 @@
 import Personalization from "@/app/components/pageComponents/personalization/Personalization";
-import ProductGallery from "@/app/components/pageComponents/ProductGallery";
+import ProductGallery from "@/app/components/pageComponents/productGallery/ProductGallery";
 import { getProductById } from "@/app/lib/products.server";
 import { notFound } from "next/navigation";
 
