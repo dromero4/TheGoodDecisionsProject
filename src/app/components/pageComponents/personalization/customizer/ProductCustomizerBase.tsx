@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Rnd } from "react-rnd";
 
 import { calculatePlacementPrice } from "../pricing/calculatePlacementPrice.js";
 
@@ -17,7 +15,6 @@ import type {
 } from "./customizerTypes";
 
 import {
-  RESIZE_HANDLE_STYLES,
   EMBROIDERY_3D_SIZE_OPTIONS,
   SIZE_OPTIONS_BY_TECHNIQUE,
   SIZE_OPTIONS,
@@ -36,7 +33,12 @@ import {
 } from "./customizerHelpers";
 
 import Field from "./Field";
-import HelpTooltip from "./HelpTooltip.jsx";
+
+import ElementListPanel from "./ElementListPanel";
+import PreviewPanel from "./PreviewPanel";
+
+import ElementContentSettings from "./ElementContentSettings";
+import TechniqueSettings from "./TechniqueSettings";
 
 export default function ProductCustomizerBase({
   productType,
@@ -263,7 +265,7 @@ export default function ProductCustomizerBase({
         : SIZE_OPTIONS;
 
   function handleApplyCustomization() {
-    
+
 
     const payload = {
       category,
@@ -339,227 +341,26 @@ export default function ProductCustomizerBase({
       </div>
 
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[280px_minmax(420px,1fr)_360px]">
-        <aside className="xl:sticky xl:top-4 xl:self-start rounded-xl border border-slate-200 bg-slate-50 p-4">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-slate-900">Elementos</h3>
-            <p className="text-sm text-slate-500">
-              Zona activa:{" "}
-              <span className="font-medium">{zoneLabels[activeZone]}</span>
-            </p>
-            <p className="mt-1 text-xs text-slate-400">
-              Selecciona un elemento, arrástralo y usa los puntos azules para ajustar su tamaño.
-            </p>
-          </div>
+        <ElementListPanel
+          activeZone={activeZone}
+          zoneLabels={zoneLabels}
+          activeZoneElements={activeZoneElements}
+          selectedElementId={selectedElementId}
+          onSelectElement={setSelectedElementId}
+          onRemoveElement={removeElement}
+          onAddTextElement={addTextElement}
+          onAddImageElement={addImageElement}
+        />
 
-          <div className="mb-4 flex gap-2">
-            <button
-              onClick={addTextElement}
-              className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
-            >
-              + Texto
-            </button>
-            <button
-              onClick={addImageElement}
-              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              + Imagen
-            </button>
-          </div>
-
-          <div className="space-y-2">
-            {activeZoneElements.length === 0 && (
-              <div className="rounded-lg border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">
-                No hay elementos en esta zona todavía.
-              </div>
-            )}
-
-            {activeZoneElements.map((el) => {
-              const isSelected = el.id === selectedElementId;
-
-              return (
-                <div
-                  key={el.id}
-                  className={`rounded-lg border p-3 transition ${isSelected
-                    ? "border-blue-600 bg-blue-50"
-                    : "border-slate-200 bg-white"
-                    }`}
-                >
-                  <button
-                    onClick={() => setSelectedElementId(el.id)}
-                    className="w-full text-left"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-medium text-slate-900">{el.name}</p>
-                        <p className="text-xs text-slate-500">
-                          {el.type === "text" ? "Texto" : "Imagen"} ·{" "}
-                          {formatTechnique(el)}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      onClick={() => setSelectedElementId(el.id)}
-                      className="rounded-md border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => removeElement(el.id)}
-                      className="rounded-md border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </aside>
-
-        <section className="xl:sticky xl:top-4 xl:self-start rounded-xl border border-slate-200 bg-slate-50 p-4 xl:max-h-[calc(90vh-5rem)]">
-          <div className="mb-4">
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-semibold text-slate-900">Preview</h3>
-              <HelpTooltip />
-            </div>
-            <p className="text-sm text-slate-500">
-              Vista de la zona:{" "}
-              <span className="font-medium">{zoneLabels[activeZone]}</span>
-            </p>
-          </div>
-
-          <div className="flex justify-center">
-            <div className="relative h-140 w-full max-w-130 overflow-hidden rounded-2xl border border-slate-300 bg-white">
-              <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_center,#f8fafc_0%,#eef2f7_100%)]">
-                {previewImage ? (
-                  <Image
-                    src={previewImage}
-                    alt={zoneLabels[activeZone]}
-                    fill
-                    unoptimized
-                    sizes="(max-width: 1280px) 100vw, 520px"
-                    className="object-contain"
-                    draggable={false}
-                  />
-                ) : (
-                  <div className="text-center">
-                    <p className="text-xl font-semibold text-slate-700">
-                      Prenda preview
-                    </p>
-                    <p className="text-sm text-slate-400">
-                      {zoneLabels[activeZone]}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {activeZoneElements.map((el) => {
-                const isSelected = el.id === selectedElementId;
-
-                return (
-                  <Rnd
-                    key={el.id}
-                    bounds="parent"
-                    size={{ width: el.width, height: el.height }}
-                    position={{ x: el.x, y: el.y }}
-                    enableResizing={
-                      isSelected
-                        ? {
-                          top: true,
-                          right: true,
-                          bottom: true,
-                          left: true,
-                          topRight: true,
-                          bottomRight: true,
-                          bottomLeft: true,
-                          topLeft: true,
-                        }
-                        : false
-                    }
-                    resizeHandleStyles={isSelected ? RESIZE_HANDLE_STYLES : {}}
-                    onDragStart={() => setSelectedElementId(el.id)}
-                    onMouseDown={() => setSelectedElementId(el.id)}
-                    onDragStop={(e, d) => {
-                      setSelectedElementId(el.id);
-
-                      updateZoneElements(activeZone, (elements) =>
-                        elements.map((item) =>
-                          item.id === el.id ? { ...item, x: d.x, y: d.y } : item
-                        )
-                      );
-                    }}
-                    onResizeStop={(e, direction, ref, delta, position) => {
-                      setSelectedElementId(el.id);
-
-                      const newWidth = parseInt(ref.style.width, 10);
-                      const newHeight = parseInt(ref.style.height, 10);
-
-                      updateZoneElements(activeZone, (elements) =>
-                        elements.map((item) =>
-                          item.id === el.id
-                            ? {
-                              ...item,
-                              width: newWidth,
-                              height: newHeight,
-                              x: position.x,
-                              y: position.y,
-                            }
-                            : item
-                        )
-                      );
-                    }}
-                    className={isSelected ? "z-10" : "z-1"}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      overflow: "visible",
-                    }}
-                  >
-                    <div
-                      className={`flex h-full w-full items-center justify-center p-2 text-center ${isSelected ? "ring-2 ring-blue-500/70 ring-offset-2 ring-offset-white" : ""
-                        }`}
-                      style={{
-                        transform: `rotate(${el.rotation}deg)`,
-                        transformOrigin: "center center",
-                      }}
-                    >
-                      {el.type === "text" ? (
-                        <span
-                          style={{
-                            color: el.textColor || "#111111",
-                            fontSize: `${el.fontSize || 24}px`,
-                            lineHeight: 1.1,
-                            whiteSpace: "pre-wrap",
-                          }}
-                          className="wrap-break-word font-semibold"
-                        >
-                          {el.text ?? "TEXT"}
-                        </span>
-                      ) : el.imageUrl ? (
-                        <Image
-                          src={el.imageUrl}
-                          alt={el.name}
-                          width={el.width || 120}
-                          height={el.height || 120}
-                          unoptimized
-                          className="h-full w-full object-contain"
-                          draggable={false}
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
-                          Sin imagen
-                        </div>
-                      )}
-                    </div>
-                  </Rnd>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <PreviewPanel
+          activeZone={activeZone}
+          activeZoneElements={activeZoneElements}
+          selectedElementId={selectedElementId}
+          previewImage={previewImage}
+          zoneLabels={zoneLabels}
+          onSelectElement={setSelectedElementId}
+          onUpdateZoneElements={updateZoneElements}
+        />
 
         <aside className="rounded-xl border border-slate-200 bg-slate-50 p-4">
           <div className="mb-4">
@@ -582,289 +383,17 @@ export default function ProductCustomizerBase({
               key={`${selectedElement.id}-${selectedElement.type}`}
               className="space-y-5"
             >
-              <div className="rounded-xl border border-slate-200 bg-white p-4">
-                <p className="mb-3 text-sm font-semibold text-slate-800">
-                  Contenido del elemento
-                </p>
+              <ElementContentSettings
+                selectedElement={selectedElement}
+                onUpdateElement={updateSelectedElement}
+                onImageUpload={handleSelectedImageUpload}
+              />
 
-                {selectedElement.type === "text" ? (
-                  <div className="space-y-4">
-                    <Field label="Texto">
-                      <input
-                        type="text"
-                        value={selectedElement.text ?? ""}
-                        onChange={(e) =>
-                          updateSelectedElement({
-                            text: e.target.value,
-                            name: e.target.value || "Texto",
-                          })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      />
-                    </Field>
-
-                    <Field label="Color del texto">
-                      <input
-                        type="color"
-                        value={selectedElement.textColor ?? "#111111"}
-                        onChange={(e) =>
-                          updateSelectedElement({ textColor: e.target.value })
-                        }
-                        className="h-11 w-full rounded-lg border border-slate-300 bg-white px-2 py-1"
-                      />
-                    </Field>
-
-                    <Field label="Tamaño de tipografía">
-                      <input
-                        type="number"
-                        value={selectedElement.fontSize ?? 24}
-                        onChange={(e) =>
-                          updateSelectedElement({
-                            fontSize: Number(e.target.value),
-                          })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      />
-                    </Field>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <Field label="Nombre interno">
-                      <input
-                        type="text"
-                        value={selectedElement.name ?? ""}
-                        onChange={(e) =>
-                          updateSelectedElement({ name: e.target.value })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      />
-                    </Field>
-
-                    <Field label="Subir imagen">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            handleSelectedImageUpload(file);
-                          }
-                        }}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500 file:mr-3 file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-2 file:text-white"
-                      />
-                    </Field>
-
-                    {selectedElement.imageUrl && (
-                      <p className="text-xs text-slate-500">
-                        Imagen cargada: {selectedElement.name}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="rounded-xl border border-slate-200 bg-white p-4">
-                <p className="mb-3 text-sm font-semibold text-slate-800">
-                  Técnica de personalización
-                </p>
-
-                <div className="space-y-4">
-                  <Field label="Técnica">
-                    <select
-                      value={selectedElement.technique}
-                      onChange={(e) => {
-                        const nextTechnique = e.target.value as Technique;
-                        const nextSize =
-                          SIZE_OPTIONS_BY_TECHNIQUE[nextTechnique]?.[0]?.value ?? "10x10";
-
-                        updateSelectedElement({
-                          technique: nextTechnique,
-                          sizeLabel: nextSize,
-                        });
-                      }}
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                    >
-                      <option value="embroidery">Bordado directo</option>
-                      <option value="patch">Parche bordado</option>
-                      <option value="screenprint">Serigrafía</option>
-                      <option value="dtf">DTF</option>
-                      <option value="dtg">DTG</option>
-                      <option value="rhinestones">Pedrería</option>
-                      <option value="vinyl">Vinilo</option>
-                    </select>
-                  </Field>
-
-                  {selectedElement.technique === "embroidery" && (
-                    <Field label="Tipo de bordado">
-                      <select
-                        value={selectedElement.embroideryType || "mixto"}
-                        onChange={(e) => {
-                          const nextEmbroideryType = e.target.value as EmbroideryType;
-
-                          updateSelectedElement({
-                            embroideryType: nextEmbroideryType,
-                            sizeLabel:
-                              nextEmbroideryType === "bordado_3d"
-                                ? "15x15"
-                                : selectedElement.sizeLabel || "10x10",
-                          });
-                        }}
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      >
-                        <option value="matizado">Bordado matizado</option>
-                        <option value="mixto">Bordado mixto</option>
-                        <option value="salto_puntada">Salto de puntada</option>
-                        <option value="bordado_3d">Bordado 3D</option>
-                      </select>
-                    </Field>
-                  )}
-
-                  {selectedElement.technique === "screenprint" && (
-                    <Field label="Tipo de serigrafía">
-                      <select
-                        value={selectedElement.screenprintType || "plana"}
-                        onChange={(e) =>
-                          updateSelectedElement({
-                            screenprintType: e.target.value as ScreenprintType,
-                          })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      >
-                        <option value="plana">Plana</option>
-                        <option value="puff">Puff</option>
-                      </select>
-                    </Field>
-                  )}
-
-                  {selectedElement.technique === "screenprint" &&
-                    selectedElement.screenprintType === "plana" && (
-                      <Field label="Número de tintas">
-                        <select
-                          value={selectedElement.inkCount || "1"}
-                          onChange={(e) =>
-                            updateSelectedElement({
-                              inkCount: e.target.value,
-                            })
-                          }
-                          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                        >
-                          <option value="1">1 tinta</option>
-                          <option value="2">2 tintas</option>
-                          <option value="3">3 tintas</option>
-                          <option value="4">4 tintas</option>
-                          <option value="5">+4 tintas / presupuesto manual</option>
-                        </select>
-                      </Field>
-                    )}
-
-                  {selectedElement.technique === "vinyl" && (
-                    <Field label="Tipo de vinilo">
-                      <select
-                        value={selectedElement.vinylType || "textil_flex"}
-                        onChange={(e) =>
-                          updateSelectedElement({
-                            vinylType: e.target.value,
-                          })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      >
-                        {VINYL_VARIANTS.map((variant) => (
-                          <option key={variant.value} value={variant.value}>
-                            {variant.label}
-                          </option>
-                        ))}
-                      </select>
-                    </Field>
-                  )}
-
-                  {selectedElement.technique === "rhinestones" && (
-                    <Field label="Tipo de pedrería">
-                      <select
-                        value={selectedElement.rhinestonesType || "6ss"}
-                        onChange={(e) =>
-                          updateSelectedElement({
-                            rhinestonesType: e.target.value,
-                          })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      >
-                        {RHINESTONES_VARIANTS.map((variant) => (
-                          <option key={variant.value} value={variant.value}>
-                            {variant.label}
-                          </option>
-                        ))}
-                      </select>
-                    </Field>
-                  )}
-
-                  <Field label="Tamaño">
-                    <select
-                      value={selectedElement.sizeLabel ?? selectedSizeOptions[0]?.value ?? ""}
-                      onChange={(e) =>
-                        updateSelectedElement({ sizeLabel: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                    >
-                      {selectedSizeOptions.map((size) => (
-                        <option key={size.value} value={size.value}>
-                          {size.label}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                </div>
-              </div>
-              {/* <div className="rounded-xl border border-slate-200 bg-white p-4">
-                <p className="mb-3 text-sm font-semibold text-slate-800">
-                  Transformación visual
-                </p>
-
-                <div className="space-y-4">
-                  <Field label={`Rotación: ${selectedElement.rotation}°`}>
-                    <input
-                      type="range"
-                      min="-180"
-                      max="180"
-                      step="1"
-                      value={selectedElement.rotation}
-                      onChange={(e) =>
-                        updateSelectedElement({
-                          rotation: Number(e.target.value),
-                        })
-                      }
-                      className="w-full"
-                    />
-                  </Field>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <Field label="Ancho">
-                      <input
-                        type="number"
-                        value={selectedElement.width ?? 0}
-                        onChange={(e) =>
-                          updateSelectedElement({
-                            width: Number(e.target.value),
-                          })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      />
-                    </Field>
-
-                    <Field label="Alto">
-                      <input
-                        type="number"
-                        value={selectedElement.height ?? 0}
-                        onChange={(e) =>
-                          updateSelectedElement({
-                            height: Number(e.target.value),
-                          })
-                        }
-                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
-                      />
-                    </Field>
-                  </div>
-                </div>
-              </div> */}
+              <TechniqueSettings
+                selectedElement={selectedElement}
+                selectedSizeOptions={selectedSizeOptions}
+                onUpdateElement={updateSelectedElement}
+              />
 
               {selectedElementPricing && (
                 <div className="rounded-xl border border-slate-200 bg-white p-4">
