@@ -20,6 +20,7 @@ import BulkDiscountTable from "./BulkDiscountTable";
 import SelectedSizesSummary from "./SelectedSizesSummary";
 import AddToCartButton from "./addToCartButton";
 import ProductInfo from "./ProductInfo";
+import ProductNotice from "./ProductNotice";
 
 export default function ProductGallery({ product }) {
     const { addToCart, cartItems, cartTotal, removeFromCart } = useCart();
@@ -348,11 +349,7 @@ export default function ProductGallery({ product }) {
                     onCustomizationApplied={setAppliedCustomization}
                 />
 
-                {totalUnits < 10 && (
-                    <p className="mt-2 text-sm text-slate-500 underline">
-                        Selecciona al menos 10 unidades para añadir el producto al carrito.
-                    </p>
-                )}
+                <ProductNotice totalUnits={totalUnits} />
 
 
 
@@ -363,7 +360,7 @@ export default function ProductGallery({ product }) {
                 />
 
                 {cartFeedback && (
-                    <div className="animate-slide-in-top transition-all fixed left-1/2 top-5 z-[9999] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-800 shadow-2xl">
+                    <div className="animate-slide-in-top transition-all fixed left-1/2 top-5 z-9999 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-800 shadow-2xl">
                         {cartFeedback}
                     </div>
                 )}
