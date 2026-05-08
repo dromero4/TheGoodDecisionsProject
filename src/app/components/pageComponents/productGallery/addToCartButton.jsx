@@ -19,7 +19,7 @@ export default function AddToCartButton({
       </button>
 
       {cartFeedback && (
-        <div className="animate-slide-in-top fixed left-1/2 top-5 z-[9999] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-800 shadow-2xl transition-all">
+        <div className="animate-slide-in-top fixed left-1/2 top-5 z-9999 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-800 shadow-2xl transition-all">
           {cartFeedback}
         </div>
       )}

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import ProductImages from "../../ProductImages";
 import ColorSelector from "../../ColorSelector";
-import ProductAccordion from "../../ProductAccordion";
 import Personalization from "../personalization/Personalization";
 import { useCart } from "../../../context/CartContext";
 
@@ -20,6 +19,7 @@ import BulkDiscountTable from "./BulkDiscountTable";
 
 import SelectedSizesSummary from "./SelectedSizesSummary";
 import AddToCartButton from "./addToCartButton";
+import ProductInfo from "./ProductInfo";
 
 export default function ProductGallery({ product }) {
     const { addToCart, cartItems, cartTotal, removeFromCart } = useCart();
@@ -286,29 +286,7 @@ export default function ProductGallery({ product }) {
             </section>
 
             <section className="max-w-125">
-                <main className="mb-5">
-                    <div className="text-3xl font-bold">
-                        {product?.externalId} - {product?.name}
-                    </div>
-
-                    <div>{product?.shortDescription}</div>
-
-                    <div className="mt-2 text-3xl font-semibold">
-                        {price ? (
-                            <>
-                                {Number(price.gt10).toFixed(2)} €
-                            </>
-                        ) : (
-                            <span className="text-sm opacity-60">
-                                Por favor, selecciona el tamaño y el color primero
-                            </span>
-                        )}
-                    </div>
-
-                    <ProductAccordion title="Description">
-                        {product?.longDescription}
-                    </ProductAccordion>
-                </main>
+                <ProductInfo product={product} price={price} />
 
                 <ColorSelector
                     colors={colors}
