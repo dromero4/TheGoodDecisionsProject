@@ -1,29 +1,29 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
-import { createSessionToken, getAuthCookieName } from "@/app/lib/auth";
+
+import {
+  AUTH_COOKIE_NAME,
+  AUTH_COOKIE_OPTIONS,
+  createSessionToken,
+} from "@/app/lib/auth";
+
+import {
+  normalizeEmail,
+  validateRegisterPayload,
+} from "@/app/lib/auth/authValidation";
+
+import { sanitizeUser } from "@/app/lib/auth/sanitizeUser";
 
 export async function POST(request) {
   try {
     const body = await request.json();
 
-    const email = String(body.email || "").trim().toLowerCase();
+    const email = normalizeEmail(body.email);
     const password = String(body.password || "");
     const name = String(body.name || "").trim();
 
-    if (!email || !password) {
-      return Response.json(
-        { error: "Email y contraseña son obligatorios." },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 6) {
-      return Response.json(
-        { error: "La contraseña debe tener al menos 6 caracteres." },
-        { status: 400 }
-      );
-    }
+    validateRegisterPayload({ email, password });
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -44,32 +44,27 @@ export async function POST(request) {
         passwordHash,
         name: name || null,
       },
+      include: {
+        address: true,
+      },
     });
 
     const token = await createSessionToken(user.id);
 
     const response = NextResponse.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
+      user: sanitizeUser(user),
     });
 
-    response.cookies.set(getAuthCookieName(), token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    });
+    response.cookies.set(AUTH_COOKIE_NAME, token, AUTH_COOKIE_OPTIONS);
 
     return response;
   } catch (error) {
     console.error("REGISTER_ERROR:", error);
 
     return Response.json(
-      { error: "Error creando la cuenta." },
+      {
+        error: error.message || "Error creando la cuenta.",
+      },
       { status: 500 }
     );
   }

@@ -1,35 +1,13 @@
-import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "@/app/lib/prisma";
 
-const AUTH_COOKIE_NAME = "tgd_session";
+import { AUTH_COOKIE_NAME } from "@/app/lib/auth/authCookies";
+import { verifySessionToken } from "@/app/lib/auth/authSession";
+import { sanitizeUser } from "@/app/lib/auth/sanitizeUser";
 
-function getSecret() {
-  const secret = process.env.AUTH_SECRET;
-
-  if (!secret) {
-    throw new Error("AUTH_SECRET is not configured");
-  }
-
-  return new TextEncoder().encode(secret);
-}
-
-export async function createSessionToken(userId) {
-  return new SignJWT({ userId })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("7d")
-    .sign(getSecret());
-}
-
-export async function verifySessionToken(token) {
-  try {
-    const { payload } = await jwtVerify(token, getSecret());
-    return payload;
-  } catch {
-    return null;
-  }
-}
+export { AUTH_COOKIE_NAME };
+export { AUTH_COOKIE_OPTIONS } from "@/app/lib/auth/authCookies";
+export { createSessionToken } from "@/app/lib/auth/authSession";
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
@@ -50,17 +28,5 @@ export async function getCurrentUser() {
     },
   });
 
-  if (!user) return null;
-
-  return {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    phone: user.phone,
-    address: user.address,
-  };
-}
-
-export function getAuthCookieName() {
-  return AUTH_COOKIE_NAME;
+  return sanitizeUser(user);
 }
