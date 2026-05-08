@@ -1,7 +1,7 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import authenticate from "./auth.js";
-import { prisma } from "../prisma.js";
+import { prisma } from "../../prisma.js";
 
 dotenv.config();
 

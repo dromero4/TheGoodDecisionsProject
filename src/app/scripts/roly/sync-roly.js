@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
-import getToken from "../../lib/roly/token.js";
-import { getRolyProducts, groupRolyProducts } from "../../lib/roly/products.js";
+import getToken from "../../lib/Providers/roly/token.js";
+import { getRolyProducts, groupRolyProducts } from "../../lib/Providers/roly/products.js";
 
 export default async function syncRoly() {
   console.log("Starting Roly sync...");

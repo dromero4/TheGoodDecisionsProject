@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { prisma } from "../lib/prisma.js";
-import { getFullProductCatalog } from '../lib/stanley/index.js';
+import { getFullProductCatalog } from '../lib/Providers/stanley/index.js';
 
 async function sync() {
     const products = await getFullProductCatalog();

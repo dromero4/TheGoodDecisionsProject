@@ -1,4 +1,4 @@
-import getFullToptexProductCatalog from "../lib/toptex/index.js";
+import getFullToptexProductCatalog from "../lib/Providers/toptex/index.js";
 
 export default async function test() {
     const products = await getFullToptexProductCatalog();

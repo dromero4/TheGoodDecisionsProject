@@ -1,4 +1,4 @@
-import FRProducts from "../../lib/F&R/test.js";
+import FRProducts from "../../lib/Providers/F&R/test.js";
 
 async function testing() {
     try {

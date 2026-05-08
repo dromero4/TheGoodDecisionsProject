@@ -1,4 +1,4 @@
-import { getFullProductCatalog } from "@/app/lib/stanley";
+import { getFullProductCatalog } from "@/app/lib/Providers/stanley";
 
 export async function GET() {
     try {

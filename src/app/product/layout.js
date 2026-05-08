@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
-import Header from "../components/pageComponents/Header";
+import Header from "../components/pageComponents/header/Header";
 import { vaud } from "../fonts";
 import { CartProvider } from "../context/CartContext";
 
