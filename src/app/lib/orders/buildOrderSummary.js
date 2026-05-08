@@ -1,4 +1,4 @@
-export function buildOrderSummary(items) {
+export function buildOrderSummary(items = []) {
   return items.map((item) => ({
     productId: item.productId,
     productName: item.productName,
@@ -9,7 +9,6 @@ export function buildOrderSummary(items) {
     garmentBaseTotal: item.garmentBaseTotal,
     customizationTotal: item.customizationTotal || 0,
     finalTotal: item.finalTotal,
-
     customization: item.customization
       ? {
           placements: item.customization.placements?.map((placement) => ({

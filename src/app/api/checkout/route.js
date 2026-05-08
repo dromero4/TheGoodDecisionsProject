@@ -1,85 +1,49 @@
 import Stripe from "stripe";
-import { prisma } from "@/app/lib/prisma";
 
-
+import { buildOrderSummary } from "@/app/lib/orders/buildOrderSummary";
+import { buildStripeLineItems } from "@/app/lib/orders/buildStripeLineItems";
+import { validateCheckoutPayload } from "@/app/lib/orders/validateCheckout";
+import {
+  attachStripeSessionToOrder,
+  createPendingOrder,
+} from "@/app/lib/orders/createOrder";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-function buildOrderSummary(items) {
-  return items.map((item) => ({
-    productId: item.productId,
-    productName: item.productName,
-    category: item.category,
-    selectedColor: item.selectedColor,
-    sizes: item.sizes,
-    totalUnits: item.totalUnits,
-    garmentBaseTotal: item.garmentBaseTotal,
-    customizationTotal: item.customizationTotal || 0,
-    finalTotal: item.finalTotal,
-    customization: item.customization
-      ? {
-        placements: item.customization.placements?.map((placement) => ({
-          zoneLabel: placement.zoneLabel,
-          techniqueLabel: placement.techniqueLabel,
-          requestedSize: placement.requestedSize,
-          chargedSize: placement.chargedSize,
-          totalPrice: placement.totalPrice,
-        })),
-      }
-      : null,
-  }));
-}
+export const runtime = "nodejs";
 
 export async function POST(request) {
   try {
     const body = await request.json();
+
     const items = body.items || [];
     const customerEmail = body.customerEmail || "";
     const shippingAddress = body.shippingAddress || null;
 
-    if (!items.length) {
-      return Response.json(
-        { error: "No hay productos en el carrito." },
-        { status: 400 }
-      );
+    validateCheckoutPayload({
+      items,
+      shippingAddress,
+    });
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+    if (!appUrl?.startsWith("http://") && !appUrl?.startsWith("https://")) {
+      throw new Error(`NEXT_PUBLIC_APP_URL inválida. Valor actual: ${appUrl}`);
     }
 
-    const lineItems = items.map((item) => ({
-      quantity: 1,
-      price_data: {
-        currency: "eur",
-        unit_amount: Math.round(Number(item.finalTotal || 0) * 100),
-        product_data: {
-          name: `${item.productId} - ${item.productName}`,
-          description: [
-            `Color: ${item.selectedColor}`,
-            `Unidades: ${item.totalUnits}`,
-            item.customization
-              ? `Personalización: ${item.customization.placements?.length || 0} elemento(s)`
-              : "Sin personalización",
-          ].join(" · "),
-        },
-      },
-    }));
-
-
     const orderSummary = buildOrderSummary(items);
+    const lineItems = buildStripeLineItems(items);
 
     const cartTotal = items.reduce((sum, item) => {
       return sum + Number(item.finalTotal || 0);
     }, 0);
 
-    const order = await prisma.order.create({
-      data: {
-        customerEmail: customerEmail || null,
-        items: orderSummary,
-        shippingAddress,
-        cartTotal,
-        paymentStatus: "pending",
-      },
+    const order = await createPendingOrder({
+      customerEmail,
+      orderSummary,
+      shippingAddress,
+      cartTotal,
     });
-
-
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -87,24 +51,22 @@ export async function POST(request) {
 
       customer_email: customerEmail || undefined,
 
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel`,
+      success_url: `${appUrl}/checkout/success`,
+      cancel_url: `${appUrl}/checkout/cancel`,
 
       metadata: {
         orderId: order.id,
       },
     });
 
-    await prisma.order.update({
-      where: {
-        id: order.id,
-      },
-      data: {
-        stripeSessionId: session.id,
-      },
+    await attachStripeSessionToOrder({
+      orderId: order.id,
+      stripeSessionId: session.id,
     });
 
-    return Response.json({ url: session.url });
+    return Response.json({
+      url: session.url,
+    });
   } catch (error) {
     console.error("STRIPE_CHECKOUT_ERROR:", error);
 
