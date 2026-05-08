@@ -1,24 +1,34 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
-import { createSessionToken, getAuthCookieName } from "@/app/lib/auth";
+
+import {
+  AUTH_COOKIE_NAME,
+  AUTH_COOKIE_OPTIONS,
+  createSessionToken,
+} from "@/app/lib/auth";
+
+import {
+  normalizeEmail,
+  validateLoginPayload,
+} from "@/app/lib/auth/authValidation";
+
+import { sanitizeUser } from "@/app/lib/auth/sanitizeUser";
 
 export async function POST(request) {
   try {
     const body = await request.json();
 
-    const email = String(body.email || "").trim().toLowerCase();
+    const email = normalizeEmail(body.email);
     const password = String(body.password || "");
 
-    if (!email || !password) {
-      return Response.json(
-        { error: "Email y contraseña son obligatorios." },
-        { status: 400 }
-      );
-    }
+    validateLoginPayload({ email, password });
 
     const user = await prisma.user.findUnique({
       where: { email },
+      include: {
+        address: true,
+      },
     });
 
     if (!user) {
@@ -40,27 +50,19 @@ export async function POST(request) {
     const token = await createSessionToken(user.id);
 
     const response = NextResponse.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
+      user: sanitizeUser(user),
     });
 
-    response.cookies.set(getAuthCookieName(), token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    });
+    response.cookies.set(AUTH_COOKIE_NAME, token, AUTH_COOKIE_OPTIONS);
 
     return response;
   } catch (error) {
     console.error("LOGIN_ERROR:", error);
 
     return Response.json(
-      { error: "Error iniciando sesión." },
+      {
+        error: error.message || "Error iniciando sesión.",
+      },
       { status: 500 }
     );
   }
