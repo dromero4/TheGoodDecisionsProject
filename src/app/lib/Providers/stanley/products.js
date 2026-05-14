@@ -18,14 +18,6 @@ export async function GetStanleyProducts() {
                 },
                 id: 1
         });
-
-        console.log("STANLEY ENV:", {
-  db: Boolean(process.env.STANLEY_DB),
-  user: Boolean(process.env.STANLEY_USER),
-  pass: Boolean(process.env.STANLEY_PASS),
-
-  
-});
 if (response.data?.error) {
   console.error("STANLEY API ERROR:", response.data.error);
   throw new Error(response.data.error.message || "Stanley API error");
