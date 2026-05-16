@@ -17,7 +17,7 @@ export default function Header() {
       <header className="relative border-b border-slate-200 bg-white px-5 py-6 text-slate-950">
         <div className="absolute right-5 top-5 flex items-center gap-3">
           <Link
-            href="/account"
+            href="/account/account-settings"
             className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
           >
             Mi cuenta
