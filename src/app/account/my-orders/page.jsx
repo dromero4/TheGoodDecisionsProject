@@ -14,7 +14,7 @@ export default function Pedidos() {
   const [statusFilter, setStatusFilter] = useState("todas");
   const [dateOrder, setDateOrder] = useState("descenso");
 
-  const [deleteFeedback, setDeleteFeedback] = useState(null);
+  const [feedback, setFeedback] = useState(null);
 
   // Momento de hacer fetch a /api/me/my-orders para obtener los pedidos.
   useEffect(() => {
@@ -41,19 +41,39 @@ export default function Pedidos() {
       if (res.status === 200) {
         // Eliminar el pedido de la lista localmente para actualizar la UI
         setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
-        setDeleteFeedback("Pedido eliminado correctamente.");
+        setFeedback("Pedido eliminado correctamente.");
 
         setTimeout(() => {
-                setDeleteFeedback(null);
+                setFeedback(null);
             }, 5000);
       }
     } catch (error) {
       console.error("Error al eliminar el pedido:", error);
-      setDeleteFeedback("Error al eliminar el pedido.");
+      setFeedback("Error al eliminar el pedido.");
 
       setTimeout(() => {
-                setDeleteFeedback(null);
+                setFeedback(null);
             }, 5000);
+    }
+  }
+
+  async function handleResendEmail(orderId) {
+    try {
+      const res = await axios.post(`/api/me/my-orders/${orderId}/resend-email`);
+      if (res.status === 200) {
+        setFeedback("Correo reenviado correctamente.");
+      }
+
+      setTimeout(() => {
+        setFeedback(null);
+      }, 5000);
+    } catch (error) {
+      console.error("Error al reenviar el correo:", error);
+      setFeedback("Error al reenviar el correo.");
+
+      setTimeout(() => {
+        setFeedback(null);
+      }, 5000);
     }
   }
 
@@ -85,9 +105,9 @@ export default function Pedidos() {
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
       <section className="relative">
-        {deleteFeedback && (
-          <div className={`animate-slide-in-top border border-slate-200 absolute shadow-lg left-1/2 -translate-x-1/2 mb-4 rounded-xl px-4 py-3 text-sm ${deleteFeedback.includes("correctamente") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-            {deleteFeedback}
+        {feedback && (
+          <div className={`animate-slide-in-top border border-slate-200 absolute shadow-lg left-1/2 -translate-x-1/2 mb-4 rounded-xl px-4 py-3 text-sm ${feedback.includes("correctamente") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+            {feedback}
           </div>
         )}
       </section>
@@ -116,8 +136,8 @@ export default function Pedidos() {
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
               className="rounded-full border border-slate-900 p-2 text-sm"
-              defaultValue={"todas"}>
-                <option value="" disabled>Estado</option>
+              >
+                <option value="estado" disabled>Estado</option>
                 <option value="todas">Todas las opciones</option>
                 <option value="pendiente">Pendiente</option>
                 <option value="pagado">Pagado</option>
@@ -129,8 +149,8 @@ export default function Pedidos() {
               value={dateOrder}
               onChange={(event) => setDateOrder(event.target.value)}
               className="rounded-full border border-slate-900 p-2 text-sm"
-              defaultValue={"todas"}>
-                <option value="todas" disabled>Fecha</option>
+              >
+                <option value="fecha" disabled>Fecha</option>
                 <option value="ascenso">Asc</option>
                 <option value="descenso">Desc</option>
               </select>
@@ -195,7 +215,11 @@ export default function Pedidos() {
 
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
                             <div className="flex items-center gap-2">
-                              <button className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
+                              <button 
+                              className="rounded-xl border border-slate-300 
+                              bg-white px-4 py-2 text-sm font-semibold text-slate-700 
+                              transition hover:border-slate-400 hover:bg-slate-50"
+                              onClick={() => handleResendEmail(order.id)}>
                                 Reenviar correo
                               </button>
 
