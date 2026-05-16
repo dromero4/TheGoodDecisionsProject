@@ -7,6 +7,7 @@ import {
   attachStripeSessionToOrder,
   createPendingOrder,
 } from "@/app/lib/orders/createOrder";
+import { getCurrentUser } from "@/app/lib/auth";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -20,7 +21,11 @@ export const runtime = "nodejs";
   Finalmente, devuelve la URL de la sesión para redirigir al cliente.
 */
 
+
+
 export async function POST(request) {
+
+  const user = await getCurrentUser();
   try {
     const body = await request.json();
 
@@ -68,6 +73,7 @@ export async function POST(request) {
        - Además, podemos usar esta información para enviar correos de seguimiento o recuperar carritos abandonados.
     */
     const order = await createPendingOrder({
+      userId: user?.id || null,
       customerEmail,
       orderSummary,
       shippingAddress,

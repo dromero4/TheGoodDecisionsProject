@@ -7,6 +7,7 @@ import { prisma } from "@/app/lib/prisma";
 Creamos la orden con estado "pending" antes de crear la sesión de Stripe.
 */
 export async function createPendingOrder({
+  userId,
   customerEmail,
   orderSummary,
   shippingAddress,
@@ -14,6 +15,7 @@ export async function createPendingOrder({
 }) {
   return await prisma.order.create({
     data: {
+      userId: userId || null, // Si no hay usuario logueado, guardamos null
       customerEmail: customerEmail || null,
       items: orderSummary,
       shippingAddress,

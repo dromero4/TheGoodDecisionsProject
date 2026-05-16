@@ -55,6 +55,7 @@ export async function POST(request) {
         address: true,
       },
     });
+    
 
     // Creamos el token de sesión JWT con el ID del usuario.
     const token = await createSessionToken(user.id);
@@ -67,13 +68,6 @@ export async function POST(request) {
 
     return response;
   } catch (error) {
-    console.error("REGISTER_ERROR:", error);
-
-    return Response.json(
-      {
-        error: error.message || "Error creando la cuenta.",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Error creando la cuenta. Por favor, inténtalo de nuevo." }, { status: 500 });
   }
 }

@@ -15,46 +15,46 @@ datasource db {
 
 // Creacion de la tabla para el JSON
 model RawProducts {
-  id  Int @id @default(autoincrement())
-  externalId String @unique
-  payload Json
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  externalId String   @unique
+  payload    Json
+  createdAt  DateTime @default(now())
 }
 
 //Creacion de las tablas de la base de datos
 model Product {
-  id  Int @id @default(autoincrement())
-  externalId String @unique
-  name String
-  createdAt DateTime @default(now())
+  id               Int      @id @default(autoincrement())
+  externalId       String   @unique
+  name             String
+  createdAt        DateTime @default(now())
   shortDescription String?
-  longDescription String?
-  category String?
+  longDescription  String?
+  category         String?
 
-  images Image[]
+  images   Image[]
   variants Variant[]
 }
 
 model Price {
-  id        Int     @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   variantId Int @unique
 
-  unit      Float
-  gt10      Float?
-  gt100     Float?
-  gt500     Float?
-  gt1000    Float?
+  unit   Float
+  gt10   Float?
+  gt100  Float?
+  gt500  Float?
+  gt1000 Float?
 
-  variant   Variant @relation(fields: [variantId], references: [id])
+  variant Variant @relation(fields: [variantId], references: [id])
 }
 
 model Variant {
-  id  Int @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   productId Int
-  size  String
-  category String?
-  color String?
-  sku String?
+  size      String
+  category  String?
+  color     String?
+  sku       String?
 
   stock Int @default(500)
 
@@ -65,11 +65,11 @@ model Variant {
 }
 
 model Image {
-  id  Int @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   productId Int
-  url String
-  type String?
-  color String?
+  url       String
+  type      String?
+  color     String?
 
   product Product @relation(fields: [productId], references: [id])
 
@@ -78,68 +78,68 @@ model Image {
 
 // ROLY
 model RolyProduct {
-  productId     String   @id   // modelcode
-  name          String   // modelname
-  displayName   String?
-  description   String?
-  family        String?
-  familyCode    String?
-  gender        String?
-  genderCode    String?
-  observations  String?
-  weight        Float?
+  productId    String  @id // modelcode
+  name         String // modelname
+  displayName  String?
+  description  String?
+  family       String?
+  familyCode   String?
+  gender       String?
+  genderCode   String?
+  observations String?
+  weight       Float?
 
-  variants      RolyVariant[]
-  images        RolyImage[]
+  variants RolyVariant[]
+  images   RolyImage[]
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RolyVariant {
-  variantId     String   @id   // itemcode
-  productId     String
-  sku           String
-  barcode       String?
+  variantId String  @id // itemcode
+  productId String
+  sku       String
+  barcode   String?
 
-  sizeCode      String?
-  sizeLabel     String?
-  sizeValue     String?
+  sizeCode  String?
+  sizeLabel String?
+  sizeValue String?
 
-  colorCode     String?
-  colorName     String?
+  colorCode String?
+  colorName String?
 
-  rawName       String?
+  rawName String?
 
-  product       RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  product RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@unique([productId, colorCode, sizeCode])
   @@index([productId])
   @@index([productId, colorCode])
   @@index([productId, sizeCode])
-  @@unique([productId, colorCode, sizeCode])
 }
 
 model RolyImage {
-  id            Int      @id @default(autoincrement())
-  productId     String
-  colorCode     String?
-  url           String
+  id        Int     @id @default(autoincrement())
+  productId String
+  colorCode String?
+  url       String
 
-  product       RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  product RolyProduct @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@unique([productId, colorCode, url])
   @@index([productId])
   @@index([productId, colorCode])
-  @@unique([productId, colorCode, url])
 }
 
 model RawTopTexProducts {
-  externalId String @id
+  externalId String   @id
   payload    Json
   source     String?
   updatedAt  DateTime @updatedAt
@@ -147,23 +147,26 @@ model RawTopTexProducts {
 }
 
 model User {
-  id           String       @id @default(cuid())
-  email        String       @unique
+  id           String   @id @default(cuid())
+  email        String   @unique
   passwordHash String
   name         String?
   phone        String?
+  designs      Design[]
 
-  address      UserAddress?
+  address UserAddress?
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model UserAddress {
-  id             String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   fullName       String?
   phone          String?
@@ -173,23 +176,39 @@ model UserAddress {
   postalCode     String?
   city           String?
   province       String?
-  country        String?  @default("Spain")
+  country        String? @default("Spain")
   additionalInfo String?
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Order {
-  id              String   @id @default(cuid())
+  id              String  @id @default(cuid())
   stripeSessionId String?
   customerEmail   String?
   items           Json
   shippingAddress Json?
   cartTotal       Float
-  paymentStatus   String   @default("pending")
-  emailSent       Boolean  @default(false)
+  paymentStatus   String  @default("pending")
+  emailSent       Boolean @default(false)
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Design {
+  id          String  @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  imageUrl    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
