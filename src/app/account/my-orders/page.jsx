@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AccountNavbar from "../account-components/account-navbar";
 import Header from "../account-components/header";
 import axios from "axios";
+import { Trash } from "lucide-react";
 
 export default function Pedidos() {
   const [orders, setOrders] = useState([]);
@@ -85,18 +86,52 @@ export default function Pedidos() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Precio final</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Estado</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"></th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"></th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-slate-200">
                     {
                       orders.map((order) => (
-                        <tr key={order.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{order.id}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{new Date(order.createdAt).toLocaleDateString()}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">${order.cartTotal.toFixed(2)}€</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{order.paymentStatus}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
-                            <button className="text-blue-500 hover:text-blue-700">Ver detalles</button>
+                        <tr
+                          key={order.id}
+                          className="transition hover:bg-slate-50"
+                        >
+                          <td className="max-w-45 truncate px-6 py-4 text-sm font-medium text-slate-900">
+                            {order.id}
+                          </td>
+
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                            {new Date(order.createdAt).toLocaleDateString("es-ES")}
+                          </td>
+
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
+                            {order.cartTotal.toFixed(2)} €
+                          </td>
+
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span
+                              className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${order.paymentStatus === "paid"
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : "bg-amber-100 text-amber-700"
+                                }`}
+                            >
+                              {order.paymentStatus}
+                            </span>
+                          </td>
+
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <div className="flex items-center gap-2">
+                              <button className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
+                                Reenviar correo
+                              </button>
+
+                              <button
+                                className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-red-200 bg-white text-red-500 transition hover:bg-red-50 hover:text-red-600"
+                                title="Eliminar pedido"
+                              >
+                                <Trash size={16} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
