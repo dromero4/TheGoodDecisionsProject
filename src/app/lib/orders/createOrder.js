@@ -20,7 +20,7 @@ export async function createPendingOrder({
       items: orderSummary,
       shippingAddress,
       cartTotal,
-      paymentStatus: "pending",
+      paymentStatus: "Pendiente",
     },
   });
 }

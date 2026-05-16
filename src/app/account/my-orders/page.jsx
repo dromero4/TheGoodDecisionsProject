@@ -82,7 +82,6 @@ export default function Pedidos() {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">ID de pedido</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Fecha</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Unidades</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Precio final</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Estado</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"></th>
@@ -94,9 +93,8 @@ export default function Pedidos() {
                         <tr key={order.id}>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{order.id}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{new Date(order.createdAt).toLocaleDateString()}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{order.quantity}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">${order.cartTotal.toFixed(2)}€</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{order.status}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{order.paymentStatus}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                             <button className="text-blue-500 hover:text-blue-700">Ver detalles</button>
                           </td>

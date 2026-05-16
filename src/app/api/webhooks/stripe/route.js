@@ -230,7 +230,7 @@ export async function POST(request) {
           id: orderId,
         },
         data: {
-          paymentStatus: "paid",
+          paymentStatus: "Pagado",
           emailSent: true,
         },
       });
