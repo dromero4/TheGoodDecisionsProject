@@ -117,10 +117,10 @@ export default function Pedidos() {
               onChange={(event) => setStatusFilter(event.target.value)}
               className="rounded-full border border-slate-900 p-2 text-sm"
               defaultValue={"todas"}>
-                <option value="todas" disabled>Estado</option>
+                <option value="" disabled>Estado</option>
                 <option value="todas">Todas las opciones</option>
-                <option value="pending">En proceso</option>
-                <option value="paid">Completado</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="pagado">Pagado</option>
               </select>
 
               <select 
