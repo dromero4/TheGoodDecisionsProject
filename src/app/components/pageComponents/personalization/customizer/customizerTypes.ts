@@ -84,4 +84,5 @@ export type ProductCustomizerBaseProps = {
   }[];
   garmentBaseTotal?: number;
   onApplyCustomization?: (payload: any) => void;
+  onSaveDesign?: (payload: any) => void;
 };

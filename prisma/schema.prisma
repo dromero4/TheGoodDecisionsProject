@@ -147,16 +147,16 @@ model RawTopTexProducts {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id           String  @id @default(cuid())
+  email        String  @unique
   passwordHash String
   name         String?
   phone        String?
-  designs      Design[]
 
   address UserAddress?
 
-  orders Order[]
+  orders  Order[]
+  designs Design[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -201,14 +201,20 @@ model Order {
 }
 
 model Design {
-  id          String  @id @default(cuid())
-  userId      String
-  name        String
-  description String?
-  imageUrl    String
+  id String @id @default(cuid())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name       String
+  category   String?
+  Size       String?
+  Quantity   Int?
+
+  payload Json
+
+  isPublic Boolean @default(false)
+  likes    Int     @default(0)
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

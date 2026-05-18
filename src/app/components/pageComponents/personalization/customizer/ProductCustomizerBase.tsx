@@ -35,6 +35,7 @@ import TechniqueSettings from "./TechniqueSettings";
 import SelectedElementPricingCard from "./SelectedElementPricingCard";
 import CustomizationSummary from "./CustomizationSummary";
 import AdvancedElementSettings from "./AdvancedElementSettings";
+import axios from "axios";
 
 export default function ProductCustomizerBase({
   productType,
@@ -44,7 +45,8 @@ export default function ProductCustomizerBase({
   quantity = 1,
   basePriceBreakdown = [],
   garmentBaseTotal = 0,
-  onApplyCustomization
+  onApplyCustomization,
+  onSaveDesign,
 }: ProductCustomizerBaseProps) {
   const inferredConfig = useMemo(() => {
     return inferProductConfigFromCategory(category);
@@ -260,10 +262,8 @@ export default function ProductCustomizerBase({
         ? SIZE_OPTIONS_BY_TECHNIQUE[selectedElement.technique] ?? SIZE_OPTIONS
         : SIZE_OPTIONS;
 
-  function handleApplyCustomization() {
-
-
-    const payload = {
+  function getPayload() {
+    return {
       category,
       quantity,
       basePriceBreakdown,
@@ -295,12 +295,28 @@ export default function ProductCustomizerBase({
       finalTotal,
       hasManualQuote,
       createdAt: new Date().toISOString(),
-    };
+    }
+  }
 
-
+  function handleApplyCustomization() {
+    const payload = getPayload();
 
     onApplyCustomization?.(payload);
   }
+
+  async function handleSaveDesign(name?: string) {
+    const payload = getPayload();
+
+    await axios.post("/api/me/my-designs", {
+      name: name || "Diseño guardado",
+      category: payload.category,
+      size: payload.basePriceBreakdown?.[0]?.size || null,
+      quantity: payload.basePriceBreakdown?.[0]?.quantity || payload.quantity || null,
+      isPublic: false,
+      data_payload: payload,
+    });
+  }
+
 
   return (
     <div className="w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-6">
@@ -404,6 +420,7 @@ export default function ProductCustomizerBase({
                 finalTotal={finalTotal}
                 hasManualQuote={hasManualQuote}
                 onApplyCustomization={handleApplyCustomization}
+                onSaveDesign={handleSaveDesign}
               />
 
 

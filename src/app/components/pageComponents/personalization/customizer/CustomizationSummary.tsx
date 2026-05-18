@@ -1,5 +1,8 @@
 import type { CustomElement } from "./customizerTypes";
 import { formatMoney, formatTechnique } from "./customizerHelpers";
+import { useState } from "react";
+
+
 
 type CustomizationSummaryProps = {
   basePriceBreakdown: {
@@ -19,6 +22,7 @@ type CustomizationSummaryProps = {
   finalTotal: number;
   hasManualQuote: boolean;
   onApplyCustomization: () => void;
+  onSaveDesign?: (name: string) => void;
 };
 
 export default function CustomizationSummary({
@@ -30,7 +34,10 @@ export default function CustomizationSummary({
   finalTotal,
   hasManualQuote,
   onApplyCustomization,
+  onSaveDesign,
 }: CustomizationSummaryProps) {
+  const [designName, setDesignName] = useState("");
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
       <p className="mb-3 text-sm font-semibold text-slate-800">
@@ -139,10 +146,29 @@ export default function CustomizationSummary({
       <button
         type="button"
         onClick={onApplyCustomization}
-        className="mt-4 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.99]"
+        className="mt-4 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.99] hover:cursor-pointer"
       >
         Aplicar personalización
       </button>
+
+      <hr  className="my-5 opacity-10"/>
+
+      <div className="max-w-100">
+        <input
+          type="text"
+          placeholder="Introduce el nombre de tu diseño"
+          className="border border-slate-950 bg-slate-200 py-2 px-1 mt-1 rounded-xl w-full" 
+          value={designName}
+          onChange={(e) => setDesignName(e.target.value)}
+        />
+        <button
+          type="button"
+          onClick={() => onSaveDesign(designName)}
+          className="mt-4 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.99] hover:cursor-pointer"
+        >
+          Guardar diseño
+        </button>
+      </div>
     </div>
   );
 }
