@@ -36,6 +36,7 @@
     "dotenv": "^17.2.3",
     "framer-motion": "^12.24.10",
     "fs": "0.0.1-security",
+    "html2canvas": "^1.4.1",
     "jose": "^6.2.3",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",

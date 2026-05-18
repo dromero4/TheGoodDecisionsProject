@@ -24,7 +24,7 @@ export async function POST(request) {
                 Quantity: res.quantity,
                 isPublic: res.isPublic,
                 payload: res.data_payload,
-
+                previewImage: res.previewImage,
                 userId: user.id
             }
         });
@@ -71,7 +71,7 @@ export async function GET() {
                 "Content-Type": "application/json"
             }
         });
-        
+
     } catch (error) {
         console.error("Error al obtener los diseños:", error);
         return new Response(JSON.stringify({ message: "Error al obtener los diseños" }), {

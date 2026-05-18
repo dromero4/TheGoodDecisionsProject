@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import html2canvas from "html2canvas";
 
 import { calculatePlacementPrice } from "../pricing/calculatePlacementPrice.js";
 
@@ -48,6 +49,10 @@ export default function ProductCustomizerBase({
   onApplyCustomization,
   onSaveDesign,
 }: ProductCustomizerBaseProps) {
+
+  const reference = useRef(null);
+
+
   const inferredConfig = useMemo(() => {
     return inferProductConfigFromCategory(category);
   }, [category]);
@@ -304,8 +309,28 @@ export default function ProductCustomizerBase({
     onApplyCustomization?.(payload);
   }
 
+  const [isCapturing, setIsCapturing] = useState(false);
+
   async function handleSaveDesign(name?: string) {
     const payload = getPayload();
+
+    if(!reference.current) {
+      console.error("No se pudo generar la vista previa para guardar el diseño.");
+      return;
+    }
+
+    setIsCapturing(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const canvas = await html2canvas(reference.current, {
+      backgroundColor: "#ffffff",
+      useCORS: true,
+    });
+
+    const previewImage = canvas.toDataURL("image/png");
+
+    setIsCapturing(false);
 
     await axios.post("/api/me/my-designs", {
       name: name || "Diseño guardado",
@@ -313,6 +338,7 @@ export default function ProductCustomizerBase({
       size: payload.basePriceBreakdown?.[0]?.size || null,
       quantity: payload.basePriceBreakdown?.[0]?.quantity || payload.quantity || null,
       isPublic: false,
+      previewImage,
       data_payload: payload,
     });
   }
@@ -372,6 +398,8 @@ export default function ProductCustomizerBase({
           zoneLabels={zoneLabels}
           onSelectElement={setSelectedElementId}
           onUpdateZoneElements={updateZoneElements}
+          reference={reference}
+          isCapturing={isCapturing}
         />
 
         <aside className="rounded-xl border border-slate-200 bg-slate-50 p-4">
