@@ -82,3 +82,41 @@ export async function GET() {
         });
     }
 }
+
+export async function DELETE(id) {
+    try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+            return new Response(JSON.stringify({ message: "Usuario no autenticado" }), {
+                status: 401,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+        }
+
+
+        await prisma.design.deleteMany({
+            where: {
+                id: id,
+                userId: user.id
+            }
+        });
+
+        return new Response(JSON.stringify({ message: "Diseño eliminado correctamente" }), {
+            status: 200,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    } catch (error) {
+        console.error("Error al eliminar el diseño:", error);
+        return new Response(JSON.stringify({ message: "Error al eliminar el diseño" }), {
+            status: 500,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    }
+}
