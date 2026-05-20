@@ -50,7 +50,7 @@ export default function RegisterPage() {
       }
 
       // Si el registro es exitoso, redirige al usuario a su cuenta.
-      router.push("/account");
+      router.push("/account/my-account");
       router.refresh();
     } catch {
       setError("Error inesperado creando la cuenta.");

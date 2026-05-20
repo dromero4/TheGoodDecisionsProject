@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { handleLogout } from "../helpers/account-helpers";
+import { useRouter } from "next/navigation";
 
 export default function Header({ title, subtitle }) {
+    const router = useRouter();
     return (
         <div className="mb-6 flex flex-col justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:flex-row md:items-center">
             <div>
@@ -26,7 +28,7 @@ export default function Header({ title, subtitle }) {
 
                 <button
                     type="button"
-                    onClick={handleLogout}
+                    onClick={() => handleLogout(router)}
                     className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
                 >
                     Cerrar sesión
