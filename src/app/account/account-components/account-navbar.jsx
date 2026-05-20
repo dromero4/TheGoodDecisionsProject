@@ -4,7 +4,7 @@ export default function AccountNavbar() {
     return (
         <section>
             <div className="mb-6 flex gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:flex-row md:items-center">
-                <Link href="/account/">
+                <Link href="/account/my-account">
                     <span className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 hover:text-gray-900">Mi cuenta</span>
                 </Link>
                 <Link href="/account/my-orders">

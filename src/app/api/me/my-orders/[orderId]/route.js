@@ -1,7 +1,8 @@
 import { getCurrentUser } from "@/app/lib/auth";
 import { deleteOrder } from "@/app/lib/orders/deleteOrder";
+import { prisma } from "@/app/lib/prisma";
 
-export async function DELETE(request, { params }) {
+export async function DELETE({ params }) {
   try {
     const user = await getCurrentUser();
 

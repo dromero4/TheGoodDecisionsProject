@@ -91,8 +91,8 @@ export default function Pedidos() {
     return matchesSearch && matchesStatus;
   })
   .sort((a, b) => {
-    const dateA = newDate(a.createdAt);
-    const dateB = newDate(b.createdAt);
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
 
     if(dateOrder === "ascenso") {
       return dateA - dateB;
