@@ -337,7 +337,7 @@ export default function ProductCustomizerBase({
       category: payload.category,
       size: payload.basePriceBreakdown?.[0]?.size || null,
       quantity: payload.basePriceBreakdown?.[0]?.quantity || payload.quantity || null,
-      isPublic: false,
+      isPublic: true,
       previewImage,
       data_payload: payload,
     });

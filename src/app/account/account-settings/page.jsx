@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { handleLogout } from "../helpers/account-helpers";
 import AccountNavbar from "../account-components/account-navbar";
 import Header from "../account-components/header";
 

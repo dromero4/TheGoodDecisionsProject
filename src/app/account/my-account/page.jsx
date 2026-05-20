@@ -73,7 +73,7 @@ export default function Account() {
                         ) : (
                             recentOrders.length !== 0 ? (
                                 <>
-                                    <table className="mt-4 w-full overflow-hidden text-sm">
+                                    <table className="my-3 w-full overflow-hidden text-sm">
                                         <tbody className="divide-y divide-slate-100">
                                             {recentOrders.map((order) => (
                                                 <tr
