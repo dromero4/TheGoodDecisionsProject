@@ -328,7 +328,7 @@ export default function ProductCustomizerBase({
       useCORS: true,
     });
 
-    const previewImage = canvas.toDataURL("image/png");
+    const previewImage = canvas.toDataURL("image/webp", 0.7);
 
     setIsCapturing(false);
 
