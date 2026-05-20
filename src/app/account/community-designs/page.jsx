@@ -116,14 +116,17 @@ export default function CommunityDesigns() {
                                         </div>
 
                                         <div className="mt-4 flex items-center justify-between">
-                                            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                                            <span className="pointer-events-none rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
                                                 Público
                                             </span>
 
-                                            <button className="hover:cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
+                                            <button className=" hover:cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
                                                 Ver diseño
                                             </button>
                                         </div>
+                                        <p className="mt-2 text-sm opacity-60">
+                                            {design.user.email}
+                                        </p>
                                     </div>
                                 </article>
                             ))}

@@ -37,6 +37,7 @@ export async function POST(request) {
 
     // En caso de no haber encontrado el usuario o la contraseña no coincida, devolvemos un error genérico
     if (!user) {
+      
       return Response.json(
         { error: "Credenciales incorrectas." },
         { status: 401 }

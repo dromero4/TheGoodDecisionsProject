@@ -6,6 +6,9 @@ export async function GET() {
             where: {
                 isPublic: true
             },
+            include: {
+                user: true
+            },
             orderBy: {
                 createdAt: "desc",
             },

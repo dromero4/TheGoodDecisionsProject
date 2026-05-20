@@ -43,7 +43,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/account");
+      router.push("/account/my-account");
       router.refresh();
     } catch {
       setError("Error inesperado iniciando sesión.");
