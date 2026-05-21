@@ -157,6 +157,7 @@ model User {
 
   orders  Order[]
   designs Design[]
+  likes   DesignLike[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -206,11 +207,13 @@ model Design {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  name       String
-  category   String?
-  Size       String?
-  Quantity   Int?
+  name         String
+  category     String?
+  Size         String?
+  Quantity     Int?
   previewImage String? @db.Text
+
+  userLiked DesignLike[]
 
   payload Json
 
@@ -218,4 +221,18 @@ model Design {
   likes    Int     @default(0)
 
   createdAt DateTime @default(now())
+}
+
+model DesignLike {
+  id String @id @default(cuid())
+
+  userId   String
+  designId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  design Design @relation(fields: [designId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, designId])
 }
