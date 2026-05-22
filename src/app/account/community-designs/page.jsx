@@ -5,18 +5,13 @@ import axios from "axios";
 
 import AccountNavbar from "../account-components/account-navbar";
 import Header from "../account-components/header";
-import Image from "next/image";
-import { ThumbsUp } from "lucide-react";
-import { Heart } from "lucide-react";
 import CardDesign from "@/app/components/pageComponents/community-designs/card-design";
 
 export default function CommunityDesigns() {
-    const [communityDesigns, setCommunityDesigns] = useState();
+    const [communityDesigns, setCommunityDesigns] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-
-
         async function getCommunityDesigns() {
             try {
                 const res = await axios.get("/api/me/community-designs");

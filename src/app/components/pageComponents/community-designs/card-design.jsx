@@ -1,18 +1,37 @@
+import axios from "axios";
 import { Heart } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
 export default function CardDesign({ design }) {
-    let [likes, setLikes] = useState(design.likes);
-    const [hasLiked, setHasLiked] = useState(false)
+    const [likes, setLikes] = useState(design.likesCount || 0)
+    const [hasLiked, setHasLiked] = useState(design.hasLiked || false)
 
-    function handleLike() {
+    async function handleLike(id) {
         if (hasLiked) {
             setLikes((prevLikes) => prevLikes - 1);
             setHasLiked(false);
+
+            try {
+                const res = await axios.delete(`/api/me/${id}`);
+
+                setLikes(res.data.likesCount)
+                setHasLiked(res.data.hasLiked)
+            } catch (error) {
+                console.error("Ha habido un error", error)
+            }
         } else {
+
             setLikes((prevLikes) => prevLikes + 1);
             setHasLiked(true);
+            try {
+                const res = await axios.post(`/api/me/${id}`);
+
+                setLikes(res.data.likesCount)
+                setHasLiked(res.data.hasLiked)
+            } catch (error) {
+                console.error("Ha habido un error", error)
+            }
         }
     }
 
@@ -60,7 +79,7 @@ export default function CardDesign({ design }) {
                     </div>
 
                     <div className="pointer-events-none shrink-0 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                        {likes || 0} likes
+                        {likes} likes
                     </div>
                 </div>
 
@@ -80,12 +99,13 @@ export default function CardDesign({ design }) {
                     </p>
                     <button
                         className="absolute right-0 mt-2 "
+                        onClick={() => handleLike(design.id)}
                     >
                         <Heart
-                                    onClick={handleLike}
-                                    className={hasLiked ? "fill-red-500 text-red-500 hover:cursor-pointer hover:scale-105 transition-all" : "fill-transparent text-slate-500 hover:cursor-pointer hover:scale-105 transition-all"}
-                                    
-                                />
+                            
+                            className={hasLiked ? "fill-red-500 text-red-500 hover:cursor-pointer hover:scale-105 transition-all" : "fill-transparent text-slate-500 hover:cursor-pointer hover:scale-105 transition-all"}
+
+                        />
 
                     </button>
                 </div>

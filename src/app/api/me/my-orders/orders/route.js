@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/app/lib/auth";
 
-export async function GET({ request, qty }){
+export async function GET(){
   try {
     const user = await getCurrentUser();
 
