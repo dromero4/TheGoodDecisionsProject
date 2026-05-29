@@ -1,48 +1,44 @@
 import { describe, it, expect } from "vitest";
-import { validateLoginInput } from "./loginValidation";
+import { validateLogin } from "./authValidation";
 
 describe("validateLoginInput", () => {
-    it("Debería fallar si falta el email", () => {
-        const result = validateLoginInput({
+    it("Deberia fallar si el correo está vacío", () => {
+        const result = validateLogin({
             email: "",
             password: "123456"
         })
 
-        expect(result.valid).toBe(false);
-        expect(result.message).toBe("Faltan datos obligatorios")
+        expect(result.valid).toBe(false)
+        expect(result.message).toBe("Email y contraseña son obligatorios")
     });
 
-    it("Debería fallar si falta la contraseña", () =>{
-        const result = validateLoginInput({
-            email: "test@test.es",
+    it("Deberia fallar si la contraseña está vacía", () => {
+        const result = validateLogin({
+            email: "d.romero@sapalomera.cat",
             password: ""
-        });
+        })
 
         expect(result.valid).toBe(false)
-        expect(result.message).toBe("Faltan datos obligatorios")
+        expect(result.message).toBe("Email y contraseña son obligatorios")
     });
 
-    it("Debería fallar si el email no tiene '@'", () =>{
-        const result = validateLoginInput({
-            email: "test2test.es",
-            password: ""
-        });
+    it("Deberia fallar si el correo contiene '@'", () => {
+        const result = validateLogin({
+            email: "d.romero2sapalomera.cat",
+            password: "123456"
+        })
 
         expect(result.valid).toBe(false)
         expect(result.message).toBe("El email no es valido")
-    });   
-    
-    it("Debería pasar si email y password son correctos", () =>{
-        const result = validateLoginInput({
-            email: "test@test.es",
-            password: "davidD1234%"
-        });
+    });
+
+    it("Deberia pasar si esta todo correcto", () => {
+        const result = validateLogin({
+            email: "d.romero@sapalomera.cat",
+            password: "123456"
+        })
 
         expect(result.valid).toBe(true)
         expect(result.message).toBe(null)
     });
-
-    // it("Deberia fallar si el email y password son incorrectos", () => {
-        
-    // })
 })

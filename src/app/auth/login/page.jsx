@@ -4,22 +4,33 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Field from "../../components/inputComponent";
+import { validateLogin } from "@/app/lib/validations/authValidation";
 
 export default function LoginPage() {
   const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
   async function handleSubmit(e) {
     e.preventDefault();
+
     setError("");
     setLoading(true);
+
+    //VALIDACION FRONTEND ANTES DE ENVIAR EL FORMULARIO AL BACKEND
+    const validation = validateLogin(form);
+    
+    if(!validation.valid) {
+      setError(validation.message)
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/auth/login", {

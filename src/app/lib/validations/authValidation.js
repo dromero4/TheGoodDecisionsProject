@@ -13,7 +13,7 @@ export function validateLogin({ email, password }) {
     }
   }
 
-  if (!email.contains("@")) {
+  if (!email.includes("@")) {
     return {
       valid: false,
       message: "El email no es valido"
@@ -48,7 +48,7 @@ export function validateRegister({ email, name, password }) {
     }
   }
 
-  if (!email.contains("@")) {
+  if (!email.includes("@")) {
     return {
       valid: false,
       message: "El email no es valido"

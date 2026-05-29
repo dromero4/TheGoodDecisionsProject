@@ -22,9 +22,9 @@ export async function POST(request) {
     const body = await request.json();
 
     const email = body.email
-    const password = String(body.password || "");
+    const password = body.password
 
-    validateLogin({ email, password });
+    //Verificacion /services
 
     // Recuperamos el usuario de la base de datos mediante el correo
     const user = await prisma.user.findUnique({
