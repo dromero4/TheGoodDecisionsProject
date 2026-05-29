@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { validateLogin } from "./authValidation";
 
-describe("validateLoginInput", () => {
+describe("validateLogin", () => {
     it("Deberia fallar si el correo está vacío", () => {
         const result = validateLogin({
             email: "",
