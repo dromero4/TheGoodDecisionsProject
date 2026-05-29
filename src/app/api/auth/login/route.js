@@ -12,9 +12,8 @@ import {
 } from "@/app/lib/auth";
 
 import {
-  normalizeEmail,
-  validateLoginPayload,
-} from "@/app/lib/auth/authValidation";
+  validateLogin,
+} from "@/app/lib/validations/authValidation";
 
 import { sanitizeUser } from "@/app/lib/auth/sanitizeUser";
 
@@ -22,10 +21,10 @@ export async function POST(request) {
   try {
     const body = await request.json();
 
-    const email = normalizeEmail(body.email);
+    const email = body.email
     const password = String(body.password || "");
 
-    validateLoginPayload({ email, password });
+    validateLogin({ email, password });
 
     // Recuperamos el usuario de la base de datos mediante el correo
     const user = await prisma.user.findUnique({
@@ -37,7 +36,6 @@ export async function POST(request) {
 
     // En caso de no haber encontrado el usuario o la contraseña no coincida, devolvemos un error genérico
     if (!user) {
-      
       return Response.json(
         { error: "Credenciales incorrectas." },
         { status: 401 }

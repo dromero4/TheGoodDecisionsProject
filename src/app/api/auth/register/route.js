@@ -12,9 +12,8 @@ import {
 } from "@/app/lib/auth";
 
 import {
-  normalizeEmail,
-  validateRegisterPayload,
-} from "@/app/lib/auth/authValidation";
+  validateRegister,
+} from "@/app/lib/validations/authValidation";
 
 import { sanitizeUser } from "@/app/lib/auth/sanitizeUser";
 
@@ -22,13 +21,13 @@ export async function POST(request) {
   try {
     const body = await request.json();
 
-    const email = normalizeEmail(body.email); // Normaliza el email para evitar problemas de mayúsculas o espacios.
+    const email = String(body.email);
     const password = String(body.password || "");
     const name = String(body.name || "").trim();
 
     // Verificaciones básicas. Si el email o la contraseña no son válidos, 
     // se lanzará un error que será capturado en el catch.
-    validateRegisterPayload({ email, password });
+    validateRegister({ email, password });
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -41,6 +40,12 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+
+    //Verificamos si el correo es correcto
+    if(!email.contains("@")) return Response.json({
+      error: "El email no es valido",
+      status: 400
+    });
 
     // Momento de hashear el password y crear el usuario en la base de datos.
     const passwordHash = await bcrypt.hash(password, 10);

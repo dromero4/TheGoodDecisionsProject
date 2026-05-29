@@ -35,7 +35,7 @@ export async function POST(request) {
                 expiresAt
             }
         })
-        const RESET_URL = process.env.NEXT_PUBLIC_APP_URL + `/reestablecer-password?token=${token}`
+        const RESET_URL = process.env.NEXT_PUBLIC_APP_URL + `/auth/reestablecer-password?token=${token}`
 
         //RESEND
         const resend = new Resend(process.env.RESEND_API_KEY);
