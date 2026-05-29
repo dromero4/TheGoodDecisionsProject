@@ -14,7 +14,7 @@ export default function RecuperarPassword() {
         e.preventDefault();
 
         try {
-            const res = await axios.post("api/auth/recuperarPassword", {
+            const res = await axios.post("/api/auth/recuperarPassword", {
                 email
             });
 

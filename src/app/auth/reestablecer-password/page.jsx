@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Field from "../../components/inputComponent";
-import { prisma } from "../../lib/prisma";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { validatePasswordRecovery } from "@/app/lib/validations/authValidation";
 
 export default function ReestablecerPassword() {
     const [password, setPassword] = useState("");
@@ -22,6 +22,14 @@ export default function ReestablecerPassword() {
         //CONSEGUIMOS EL TOKEN MEDIANTE LA URL
         const token = searchParams.get("token");
 
+        //VERIFICAMOS CONTRASEÑAS ANTES DE ENVIARLAS
+        const validation = validatePasswordRecovery({password, confirmPassword})
+
+        if(!validation.valid) {
+            setError(validation.message)
+            return;
+        }
+        
         //LLAMADA AL ENDPOINT
         const res = await axios.post("/api/auth/reestablecerPassword", {
             token,

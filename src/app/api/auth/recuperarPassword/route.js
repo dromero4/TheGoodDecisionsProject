@@ -47,6 +47,7 @@ export async function POST(request) {
             html: emailTemplate(RESET_URL),
         });
 
+
         return new Response(JSON.stringify({
             status: 200,
             message: `Enviando correo a ${email}`

@@ -61,7 +61,36 @@ export function validateRegister({ email, name, password }) {
   }
 }
 
+// --- REESTABLECER CONTRASEÑA
+/*
+ * Verifica que los campos no estén vacíos
+ * Verifica que las contraseñas coincidan
+ * Verifica que la contraseña tenga más de 6 carácteres
+*/
 export function validatePasswordRecovery({ password, confirmedPassword }){
-  
+  if (!password || !confirmedPassword) {
+    return {
+      valid: false,
+      message: "Los campos son obligatorios"
+    }
+  }
+  if (password !== confirmedPassword) {
+    return {
+      valid: false,
+      message: "Las contraseñas no coinciden, vuelve a intentarlo"
+    }
+  }
+
+  if (password.length < 5 || confirmedPassword.length < 5) {
+    return {
+      valid: false,
+      message: "La contraseña tiene que tener 6 carácteres o más"
+    }
+  }
+
+  return {
+    valid: true,
+    message: null
+  }
 }
 

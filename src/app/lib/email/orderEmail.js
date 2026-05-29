@@ -140,7 +140,8 @@ export async function sendOrderConfirmationEmail({
 }
 
 export const emailTemplate = (RESET_URL) => {
-  `
+  return (
+    `
         <div style="margin:0; padding:0; background-color:#f8fafc; font-family:Arial, Helvetica, sans-serif;">
             <div style="max-width:560px; margin:0 auto; padding:40px 20px;">
                 <div style="background-color:#ffffff; border:1px solid #e2e8f0; border-radius:24px; padding:32px; box-shadow:0 10px 30px rgba(15, 23, 42, 0.06);">
@@ -186,4 +187,5 @@ export const emailTemplate = (RESET_URL) => {
             </div>
         </div>
     `
+  )
 }
