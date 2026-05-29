@@ -85,7 +85,8 @@ export default function RegisterPage() {
               onChange={(e) => updateField("name", e.target.value)}
               className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-slate-900"
               placeholder="Tu nombre"
-            />
+              required
+              />
           </Field>
 
           <Field label="Email">

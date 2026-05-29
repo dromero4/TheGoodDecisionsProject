@@ -38,7 +38,7 @@ export async function POST(request) {
     if (existingUser) {
       return Response.json(
         { error: "Ya existe una cuenta con este email." },
-        { status: 409 }
+        { status: 400 }
       );
     }
 
@@ -49,7 +49,7 @@ export async function POST(request) {
       data: {
         email,
         passwordHash,
-        name: name || null,
+        name: name,
       },
       include: {
         address: true,

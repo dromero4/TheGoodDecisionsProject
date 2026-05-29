@@ -51,7 +51,7 @@ export default function CardDesign({ design }) {
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">
-                        Sin preview
+                        Sin vista previa
                     </div>
                 )}
             </div>

@@ -103,19 +103,19 @@ export default function LoginPage() {
             />
           </Field>
 
-          {error && (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
 
           <button
             type="submit"
             disabled={loading}
             className="w-full rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+            >
             {loading ? "Entrando..." : "Entrar"}
           </button>
+            {error && (
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-500">

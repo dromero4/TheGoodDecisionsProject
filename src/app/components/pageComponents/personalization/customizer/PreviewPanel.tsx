@@ -43,7 +43,7 @@ export default function PreviewPanel({
             className="text-lg font-semibold"
             style={{ color: "#0f172a" }}
           >
-            Preview
+            Vista previa
           </h3>
           <HelpTooltip />
         </div>
@@ -86,7 +86,7 @@ export default function PreviewPanel({
                   className="text-xl font-semibold"
                   style={{ color: "#334155" }}
                 >
-                  Prenda preview
+                  Vista previa de la prenda
                 </p>
                 <p
                   className="text-sm"

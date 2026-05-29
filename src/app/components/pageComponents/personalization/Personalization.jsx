@@ -119,7 +119,7 @@ export default function Personalization({ product,
             : "bg-blue-500 hover:bg-blue-700"
           }`}
       >
-        Personalize {product?.category}
+        Personalizar {product?.category}
       </button>
 
       {isDisabled && (
