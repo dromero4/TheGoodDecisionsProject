@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Field from "../components/inputComponent";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,12 +16,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  function updateField(field, value) {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  }
+  
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -50,6 +46,13 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function updateField(field, value) {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   }
 
   return (
@@ -121,18 +124,14 @@ export default function LoginPage() {
             Crear cuenta
           </Link>
         </p>
+        <p className="mt-3 text-center text-sm text-slate-500">
+          Has olvidado la contraseña?
+          <Link href="/recuperar-password" className="font-semibold text-slate-950 underline ml-1">
+            Recupérala!
+          </Link>
+        </p>
       </section>
     </main>
   );
 }
 
-function Field({ label, children }) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-slate-700">
-        {label}
-      </span>
-      {children}
-    </label>
-  );
-}

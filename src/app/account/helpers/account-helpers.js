@@ -9,5 +9,6 @@ export async function handleLogout(router) {
   } catch (error) {
     console.log("Ha habido un error a la hora de desloguearte", error)
   }
-    
-  }
+
+}
+

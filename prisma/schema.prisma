@@ -159,6 +159,8 @@ model User {
   designs Design[]
   likes   DesignLike[]
 
+  passwordResetToken PasswordResetToken[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -235,4 +237,18 @@ model DesignLike {
   createdAt DateTime @default(now())
 
   @@unique([userId, designId])
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+
+  token  String @unique
+  userId String
+
+  expiresAt DateTime
+  used      Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
