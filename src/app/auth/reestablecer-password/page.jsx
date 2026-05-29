@@ -107,7 +107,7 @@ export default function ReestablecerPassword() {
                 </aside>
                 <footer className="text-center flex justify-center mt-5 underline">
                     <Link
-                    href="/login">
+                    href="/auth/login">
                         Iniciar sesión
                         </Link>
                 </footer>

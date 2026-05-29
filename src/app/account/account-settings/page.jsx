@@ -39,7 +39,7 @@ export default function AccountPage() {
             const response = await fetch("/api/me");
 
             if (response.status === 401) {
-                router.push("/login");
+                router.push("/auth/login");
                 return;
             }
 

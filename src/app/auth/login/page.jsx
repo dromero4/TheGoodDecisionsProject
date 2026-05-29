@@ -16,8 +16,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  
-
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -120,13 +118,13 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-slate-500">
           ¿No tienes cuenta?{" "}
-          <Link href="/register" className="font-semibold text-slate-950 underline">
+          <Link href="/auth/register" className="font-semibold text-slate-950 underline">
             Crear cuenta
           </Link>
         </p>
         <p className="mt-3 text-center text-sm text-slate-500">
           Has olvidado la contraseña?
-          <Link href="/recuperar-password" className="font-semibold text-slate-950 underline ml-1">
+          <Link href="/auth/recuperar-password" className="font-semibold text-slate-950 underline ml-1">
             Recupérala!
           </Link>
         </p>
