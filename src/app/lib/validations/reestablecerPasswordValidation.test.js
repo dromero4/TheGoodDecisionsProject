@@ -51,4 +51,14 @@ describe("validatePasswordRecovery", () => {
         expect(result.valid).toBe(false)
         expect(result.message).toBe("La contraseña tiene que tener 6 carácteres o más")
     });
+
+    it("Debería pasar si está todo correcto", () => {
+        const result = validatePasswordRecovery({
+            password: "1234567890",
+            confirmedPassword: "1234567890"
+        });
+
+        expect(result.valid).toBe(true)
+        expect(result.message).toBe(null)
+    });
 })

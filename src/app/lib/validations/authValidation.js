@@ -94,3 +94,27 @@ export function validatePasswordRecovery({ password, confirmedPassword }){
   }
 }
 
+// --- REESTABLECER CONTRASEÑA (correo)
+/*
+ * Verifica que el campo no esté vacío
+ * Verifica que el correo sea válido
+*/
+export function validateEmailPasswordRecovery({ email }){
+  if (!email) {
+    return {
+      valid: false,
+      message: "Introduce un correo"
+    }
+  }
+  if (!email.includes("@")){
+    return {
+      valid: false,
+      message: "El email no es valido"
+    }
+  }
+
+  return {
+    valid: true,
+    message: null
+  }
+}

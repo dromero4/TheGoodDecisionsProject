@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Field from "../../components/inputComponent";
 import axios from "axios";
+import { validateEmailPasswordRecovery } from "@/app/lib/validations/authValidation";
 
 export default function RecuperarPassword() {
     const [email, setEmail] = useState("");
@@ -12,6 +13,13 @@ export default function RecuperarPassword() {
 
     async function handleSubmit(e) {
         e.preventDefault();
+
+        const validation = validateEmailPasswordRecovery({ email });
+
+        if(!validation.valid) {
+            setError(validation.message);
+            return;
+        }
 
         try {
             const res = await axios.post("/api/auth/recuperarPassword", {
