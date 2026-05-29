@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { validateRegister } from "@/app/lib/validations/authValidation";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,7 +19,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-
   // Funcion para actualizar los campos del formulario de manera controlada.
   function updateField(field, value) {
     setForm((prev) => ({
@@ -27,10 +27,21 @@ export default function RegisterPage() {
     }));
   }
 
+
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    //VALIDACION FRONTEND ANTES DE ENVIAR EL FORMULARIO AL BACKEND
+    const validation = validateRegister(form);
+
+    if (!validation.valid) {
+      setError(validation.message);
+      setLoading(false);
+      return;
+    }
 
     try {
       // Llamada al endpoint de registro para crear el usaurio.
@@ -86,7 +97,7 @@ export default function RegisterPage() {
               className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-slate-900"
               placeholder="Tu nombre"
               required
-              />
+            />
           </Field>
 
           <Field label="Email">

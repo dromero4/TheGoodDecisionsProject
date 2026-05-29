@@ -41,4 +41,4 @@ describe("validateLogin", () => {
         expect(result.valid).toBe(true)
         expect(result.message).toBe(null)
     });
-})
+});

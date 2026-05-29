@@ -34,17 +34,10 @@ export function validateLogin({ email, password }) {
  * Verifica que la contraseña tenga más de 6 carácteres
 */
 export function validateRegister({ email, name, password }) {
-  if (!email || !password || !name ) {
+  if (!email || !password || !name) {
     return {
       valid: false,
-      message: "Email, nombre y contraseña son obligatorios"
-    }
-  }
-
-  if (password.length <= 6) {
-    return {
-      valid: false,
-      message: "La contraseña tiene que tener 6 carácteres o más"
+      message: "Todos los campos son obligatorios"
     }
   }
 
@@ -55,13 +48,20 @@ export function validateRegister({ email, name, password }) {
     }
   }
 
+  if (password.length <= 6) {
+    return {
+      valid: false,
+      message: "La contraseña tiene que tener 6 carácteres o más"
+    }
+  }
+
   return {
     valid: true,
     message: null
   }
 }
 
-// export function validatePasswordRecovery({ password, confirmedPassword }){
-
-// }
+export function validatePasswordRecovery({ password, confirmedPassword }){
+  
+}
 

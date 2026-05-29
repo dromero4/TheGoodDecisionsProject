@@ -12,7 +12,7 @@ export async function POST(request) {
         //PUEDE SER QUE LO MUEVA A UN FICHERO APARTE
         //---
         if(!password || !confirmPassword) return new Response(JSON.stringify({
-            message: "Email y contraseña son obligatorios",
+            message: "Los campos son obligatorios",
             status: 400
         }))
 
@@ -21,7 +21,7 @@ export async function POST(request) {
             status: 400
         }))
 
-        if(password.length < 6) return new Response(JSON.stringify({
+        if(password.length <= 6) return new Response(JSON.stringify({
             message: "La contraseña tiene que tener 6 carácteres o más",
             status: 400
         }))
