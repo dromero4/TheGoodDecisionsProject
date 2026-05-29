@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Field from "../components/inputComponent";
-import { prisma } from "../lib/prisma";
+import Field from "../../components/inputComponent";
+import { prisma } from "../../lib/prisma";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import Field from "../components/inputComponent";
+import Field from "../../components/inputComponent";
 import axios from "axios";
 
 export default function RecuperarPassword() {
