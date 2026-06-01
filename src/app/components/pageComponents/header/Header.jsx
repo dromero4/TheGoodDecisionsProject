@@ -14,7 +14,7 @@ export default function Header() {
     <>
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
 
-      <header className="relative border-b border-slate-200 bg-white px-5 py-6 text-slate-950">
+      <header aria-label="Encabezado principal" className="relative border-b border-slate-200 bg-white px-5 py-6 text-slate-950">
         <div className="absolute right-5 top-5 flex items-center gap-3">
           <Link
             href="/account/account-settings"
@@ -54,7 +54,7 @@ export default function Header() {
             <span className="font-bold">Customization</span> Market
           </h1>
 
-          <p className="mt-4 max-w-xl text-sm text-slate-500">
+          <p className="mt-4 max-w-xl text-sm text-slate-500" aria-label="Descripción del sitio">
             Elige prendas, personalízalas y crea tu colección desde una misma
             plataforma.
           </p>

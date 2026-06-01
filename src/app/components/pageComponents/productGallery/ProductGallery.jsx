@@ -288,7 +288,7 @@ export default function ProductGallery({ product }) {
         }, 5000);
     }
     return (
-       <main className="mx-auto grid w-full max-w-[1280px] grid-cols-1 gap-8 px-4 md:grid-cols-[minmax(0,760px)_420px] md:px-8">
+       <main className="mx-auto grid w-full max-w-[1280px] grid-cols-1 gap-8 px-4 md:grid-cols-[minmax(0,760px)_420px] md:px-8" aria-label="Galería de producto">
             <section className="min-w-0">
                 <ProductImages images={filteredImages} />
             </section>
