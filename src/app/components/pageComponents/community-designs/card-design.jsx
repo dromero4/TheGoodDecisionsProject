@@ -44,7 +44,7 @@ export default function CardDesign({ design }) {
                 {design.previewImage ? (
                     <Image
                         src={design.previewImage}
-                        alt={design.name}
+                        alt="Imagen de un diseño guardado"
                         fill
                         unoptimized
                         className="object-contain p-3 transition duration-300 group-hover:scale-[1.03]"

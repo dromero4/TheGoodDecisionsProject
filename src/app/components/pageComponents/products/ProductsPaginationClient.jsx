@@ -21,7 +21,7 @@ function ProductCard({ product }) {
         {product.image ? (
           <Image
             src={product.image}
-            alt={product.name}
+            alt={`Imagen de ${product.name}`}
             fill
             className="object-cover"
           />

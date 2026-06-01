@@ -31,7 +31,7 @@ export default function ProductImages({ images = [] }) {
         <div className="relative aspect-square w-full">
           <Image
             src={activeImage.url}
-            alt={activeImage.alt ?? String(activeImage.id ?? "Product image")}
+            alt="Imagen principal del producto"
             fill
             sizes="(max-width: 768px) 100vw, 420px"
             priority
@@ -66,7 +66,7 @@ export default function ProductImages({ images = [] }) {
             <div className="relative aspect-[5/4] w-full">
               <Image
                 src={img.url}
-                alt={img.alt ?? String(img.id ?? "Thumbnail")}
+                alt={img.alt ?? "Imagen del producto"}
                 fill
                 sizes="(max-width: 640px) 33vw, 180px"
                 className="object-cover"

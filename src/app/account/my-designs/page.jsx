@@ -71,7 +71,7 @@ export default function MyDesigns() {
                                         <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-white">
                                             <Image
                                                 src={diseño.previewImage}
-                                                alt={diseño.name}
+                                                alt="Imagen de un diseño guardado"
                                                 fill
                                                 unoptimized
                                                 className="object-contain"

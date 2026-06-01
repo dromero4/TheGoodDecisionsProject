@@ -73,7 +73,7 @@ export default function PreviewPanel({
             {previewImage ? (
               <Image
                 src={previewImage}
-                alt={zoneLabels[activeZone]}
+                alt={`Vista previa de ${zoneLabels[activeZone]}`}
                 fill
                 unoptimized
                 sizes="(max-width: 1280px) 100vw, 520px"
@@ -197,7 +197,7 @@ export default function PreviewPanel({
                   ) : element.imageUrl ? (
                     <Image
                       src={element.imageUrl}
-                      alt={element.name}
+                      alt="Elemento personalizado"
                       width={element.width || 120}
                       height={element.height || 120}
                       unoptimized
