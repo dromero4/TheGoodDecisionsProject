@@ -288,12 +288,12 @@ export default function ProductGallery({ product }) {
         }, 5000);
     }
     return (
-        <main className="flex justify-evenly">
-            <section>
+       <main className="mx-auto grid w-full max-w-[1280px] grid-cols-1 gap-8 px-4 md:grid-cols-[minmax(0,760px)_420px] md:px-8">
+            <section className="min-w-0">
                 <ProductImages images={filteredImages} />
             </section>
 
-            <section className="max-w-125">
+            <section className="w-full min-w-0 max-w-full md:max-w-[420px]">
                 <ProductInfo product={product} price={price} />
 
                 <ColorSelector
@@ -302,7 +302,6 @@ export default function ProductGallery({ product }) {
                     onSelect={handleColor}
                 />
 
-                {/* Resumen selección */}
                 <ProductSelectionSummary
                     totalUnits={totalUnits}
                     primarySize={primarySize}
@@ -314,9 +313,6 @@ export default function ProductGallery({ product }) {
                     }}
                 />
 
-
-
-                {/* Tallas + badge bonito */}
                 <SizeSelector
                     sizesForColor={sizesForColor}
                     sizeQty={sizeQty}
@@ -330,7 +326,6 @@ export default function ProductGallery({ product }) {
                     setQtyDraft={setQtyDraft}
                 />
 
-{/* Resumen del seleccion de tallas  */}
                 <SelectedSizesSummary
                     totalUnits={totalUnits}
                     sizeSummary={sizeSummary}
@@ -338,13 +333,13 @@ export default function ProductGallery({ product }) {
 
                 <hr className="mt-5" />
 
-                {/* Bulk discount */}
                 <BulkDiscountTable
                     tiers={tiers}
                     primarySize={primarySize}
                     selectedSizes={selectedSizes}
                 />
-                 <Personalization
+
+                <Personalization
                     product={product}
                     selectedColor={selectedColor}
                     quantity={totalUnits}
@@ -356,8 +351,6 @@ export default function ProductGallery({ product }) {
 
                 <ProductNotice totalUnits={totalUnits} />
 
-
-
                 <AddToCartButton
                     canAddToCart={canAddToCart}
                     onAddToCart={handleAddToCart}
@@ -365,13 +358,11 @@ export default function ProductGallery({ product }) {
                 />
 
                 {cartFeedback && (
-                    <div className="animate-slide-in-top transition-all fixed left-1/2 top-5 z-9999 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-800 shadow-2xl">
+                    <div className="animate-slide-in-top fixed left-1/2 top-5 z-9999 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-800 shadow-2xl transition-all">
                         {cartFeedback}
                     </div>
                 )}
-
             </section>
-
         </main>
     );
 }
