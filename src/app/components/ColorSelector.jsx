@@ -8,7 +8,9 @@ export default function ColorSelector({ colors, selectedColor, onSelect }) {
     <section className="flex flex-col gap-4">
 
       <span className="text-sm font-semibold tracking-wide uppercase opacity-80">Colors</span>
-      <div className={colors.length > MAX_COLORS ? "grid grid-cols-2 gap-2 h-50 overflow-y-auto border border-black/20 p-2.5 rounded-xl" : "grid grid-cols-2 gap-2 "}>
+      <div className={colors.length > MAX_COLORS
+      ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-2 max-h-50 overflow-y-auto border border-black/20 p-2.5 rounded-xl"
+      : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-2"}>
         {colors.map(color => (
           <button
             key={color}

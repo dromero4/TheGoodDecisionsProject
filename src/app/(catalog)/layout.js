@@ -3,6 +3,7 @@ import "../globals.css";
 
 import Header from "../components/pageComponents/header/Header";
 import { CartProvider } from '../context/CartContext';
+import Footer from '../components/pageComponents/Footer/footer';
 
 
 export const metadata = {
@@ -18,6 +19,8 @@ export default function RootLayout({ children }) {
       <div className="flex">
         {children}
       </div>
+      
+      <Footer />
     </>
   );
 }

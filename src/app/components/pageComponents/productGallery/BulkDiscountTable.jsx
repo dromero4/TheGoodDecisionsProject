@@ -5,26 +5,26 @@ export default function BulkDiscountTable({
 }) {
   return (
     <section className="mt-6">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-sm font-semibold uppercase tracking-wide opacity-80">
+      <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <span className="text-xs font-semibold uppercase tracking-wide opacity-80 sm:text-sm">
           Descuento por volumen
         </span>
 
         {primarySize && selectedSizes.length > 1 && (
-          <span className="text-xs text-black/50">
+          <span className="text-[11px] text-black/50 sm:text-xs">
             Mostrando niveles para: <strong>{primarySize}</strong>
           </span>
         )}
       </div>
 
-      <div className="relative overflow-x-auto rounded-2xl border border-black/10 bg-white">
-        <table className="w-full cursor-default text-sm">
+      <div className="w-full overflow-hidden rounded-xl border border-black/10 bg-white sm:rounded-2xl">
+        <table className="w-full table-fixed cursor-default text-xs sm:text-sm">
           <thead className="bg-black/3">
             <tr>
-              <th className="px-4 py-3 text-left font-semibold text-black/70">
+              <th className="w-1/2 px-2 py-2 text-left font-semibold text-black/70 sm:px-4 sm:py-3">
                 Cantidad
               </th>
-              <th className="px-4 py-3 text-right font-semibold text-black/70">
+              <th className="w-1/2 px-2 py-2 text-right font-semibold text-black/70 sm:px-4 sm:py-3">
                 Precio
               </th>
             </tr>
@@ -37,17 +37,17 @@ export default function BulkDiscountTable({
                   key={tier.label}
                   className="transition-colors hover:bg-black/2"
                 >
-                  <th className="whitespace-nowrap px-4 py-3 text-left font-medium">
+                  <th className="px-2 py-2 text-left font-medium sm:px-4 sm:py-3">
                     {tier.label}
                   </th>
-                  <td className="whitespace-nowrap px-4 py-3 text-right">
+                  <td className="px-2 py-2 text-right sm:px-4 sm:py-3">
                     {tier.price} €
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td className="px-4 py-4 text-sm text-black/50" colSpan={2}>
+                <td className="px-2 py-3 text-xs text-black/50 sm:px-4 sm:py-4 sm:text-sm" colSpan={2}>
                   Selecciona un color y talla para ver los precios por volumen.
                 </td>
               </tr>
@@ -56,7 +56,7 @@ export default function BulkDiscountTable({
         </table>
       </div>
 
-      <p className="mt-2 text-xs text-black/50">
+      <p className="mt-2 text-[11px] leading-snug text-black/50 sm:text-xs">
         Precios mostrados por unidad. El precio final depende de la variante y
         su disponibilidad.
       </p>

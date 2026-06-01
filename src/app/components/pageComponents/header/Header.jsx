@@ -61,9 +61,9 @@ export default function Header() {
         </div>
       </header>
 
-      <section className="border-b border-slate-200 bg-slate-50 px-5 py-3 text-center">
+      <section className="border-b border-slate-200 bg-slate-50 px-5 py-5 mb-5 text-center">
         <p className="text-sm font-bold uppercase tracking-[0.18em] text-slate-700">
-          Create your collection now!
+          Crea tu colección ahora!
         </p>
       </section>
     </>
