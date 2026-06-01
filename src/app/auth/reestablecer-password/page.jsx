@@ -19,35 +19,45 @@ export default function ReestablecerPassword() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        //CONSEGUIMOS EL TOKEN MEDIANTE LA URL
-        const token = searchParams.get("token");
+        try {
 
-        //VERIFICAMOS CONTRASEÑAS ANTES DE ENVIARLAS
-        const validation = validatePasswordRecovery({password, confirmPassword})
 
-        if(!validation.valid) {
-            setError(validation.message)
-            return;
-        }
-        
-        //LLAMADA AL ENDPOINT
-        const res = await axios.post("/api/auth/reestablecerPassword", {
-            token,
-            password,
-            confirmPassword
-        });
+            //CONSEGUIMOS EL TOKEN MEDIANTE LA URL
+            const token = searchParams.get("token");
 
-        if (res.data.status !== 200) {
-            setError(res.data.message)
+            //VERIFICAMOS CONTRASEÑAS ANTES DE ENVIARLAS
+            const validation = validatePasswordRecovery(password, confirmPassword)
+
+            if (!validation.valid) {
+                setError(validation.message)
+                return;
+            }
+
+            //LLAMADA AL ENDPOINT
+            const res = await axios.post("/api/auth/reestablecerPassword", {
+                token,
+                password,
+                confirmPassword
+            });
+
+            if (res.data.status !== 200) {
+                setError(res.data.message)
+
+                setTimeout(() => {
+                    setFeedback(null)
+                }, 5000)
+            } else {
+                setFeedback(res.data.message);
+
+                setTimeout(() => {
+                    setFeedback(null)
+                }, 5000)
+            }
+        } catch (error) {
+            setError("Ha ocurrido un error, por favor intenta de nuevo")
 
             setTimeout(() => {
-                setFeedback(null)
-            }, 5000)
-        } else {
-            setFeedback(res.data.message);
-
-            setTimeout(() => {
-                setFeedback(null)
+                setError(null)
             }, 5000)
         }
 
@@ -115,9 +125,9 @@ export default function ReestablecerPassword() {
                 </aside>
                 <footer className="text-center flex justify-center mt-5 underline">
                     <Link
-                    href="/auth/login">
+                        href="/auth/login">
                         Iniciar sesión
-                        </Link>
+                    </Link>
                 </footer>
             </section>
         </main>

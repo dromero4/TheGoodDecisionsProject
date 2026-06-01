@@ -24,7 +24,15 @@ export async function POST(request) {
     const email = body.email
     const password = body.password
 
-    //Verificacion /services
+    //Verificacion de los datos de entrada
+    const validation = validateLogin({ email, password });
+
+    if (!validation.valid) {
+      return Response.json(
+        { error: validation.message },
+        { status: 400 }
+      );
+    }
 
     // Recuperamos el usuario de la base de datos mediante el correo
     const user = await prisma.user.findUnique({

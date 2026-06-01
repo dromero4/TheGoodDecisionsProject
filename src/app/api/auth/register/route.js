@@ -27,7 +27,11 @@ export async function POST(request) {
 
     // Verificaciones básicas. Si el email o la contraseña no son válidos, 
     // se lanzará un error que será capturado en el catch.
-    validateRegister({ email, password });
+    const validation = validateRegister({ email, password });
+
+    if (!validation.valid) {
+      return Response.json({ error: validation.error }, { status: 400 });
+    }
 
     const existingUser = await prisma.user.findUnique({
       where: { email },

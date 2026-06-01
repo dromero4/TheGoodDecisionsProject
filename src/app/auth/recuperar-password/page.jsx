@@ -4,6 +4,7 @@ import { useState } from "react";
 import Field from "../../components/inputComponent";
 import axios from "axios";
 import { validateEmailPasswordRecovery } from "@/app/lib/validations/authValidation";
+import Link from "next/link";
 
 export default function RecuperarPassword() {
     const [email, setEmail] = useState("");
@@ -88,6 +89,14 @@ export default function RecuperarPassword() {
                             Si el email está registrado, recibirás un enlace de recuperación. Revisa también la carpeta de spam.
                         </p>
                     </div>
+                    <footer className="mt-6 text-center text-xs leading-5 text-slate-500 hover:text-slate-700">
+                        <Link
+                            href="/auth/login"
+                            className="mt-6 text-center text-xs leading-5 text-slate-500 hover:text-slate-700"
+                        >
+                            Volver
+                        </Link>
+                    </footer>
 
                     <aside className="mt-4">
                         {feedback && (

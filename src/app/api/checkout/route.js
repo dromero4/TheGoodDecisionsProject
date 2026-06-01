@@ -2,7 +2,7 @@ import Stripe from "stripe";
 
 import { buildOrderSummary } from "@/app/lib/orders/buildOrderSummary";
 import { buildStripeLineItems } from "@/app/lib/orders/buildStripeLineItems";
-import { validateCheckoutPayload } from "@/app/lib/orders/validateCheckout";
+import { validateCheckoutPayload } from "@/app/lib/validations/validateCheckout";
 import {
   attachStripeSessionToOrder,
   createPendingOrder,
@@ -32,6 +32,8 @@ export async function POST(request) {
     const items = body.items || [];
     const customerEmail = body.customerEmail || "";
     const shippingAddress = body.shippingAddress || null;
+
+    console.log(shippingAddress);
 
     /*
       Validación del payload de checkout. 

@@ -31,4 +31,5 @@ export function validateCheckoutPayload({ items, shippingAddress }) {
   if (missingFields.length > 0) {
     throw new Error("Faltan datos obligatorios en la dirección de entrega.");
   }
+
 }

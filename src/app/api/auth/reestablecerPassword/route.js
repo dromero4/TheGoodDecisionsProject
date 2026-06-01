@@ -1,4 +1,5 @@
 import { prisma } from "@/app/lib/prisma";
+import { validatePasswordRecovery } from "@/app/lib/validations/authValidation";
 import bcrypt from "bcryptjs"
 
 export async function POST(request) {
@@ -9,23 +10,15 @@ export async function POST(request) {
         const password = body.password;
         const confirmPassword = body.confirmPassword;
 
-        //PUEDE SER QUE LO MUEVA A UN FICHERO APARTE
-        //---
-        if(!password || !confirmPassword) return new Response(JSON.stringify({
-            message: "Los campos son obligatorios",
-            status: 400
-        }))
 
-        if(password !== confirmPassword) return new Response(JSON.stringify({
-            message: "Las contraseñas no coinciden, vuelve a intentarlo",
-            status: 400
-        }))
+        const passwordValidation = validatePasswordRecovery(password, confirmPassword);
 
-        if(password.length <= 6) return new Response(JSON.stringify({
-            message: "La contraseña tiene que tener 6 carácteres o más",
-            status: 400
-        }))
-        //---
+        if (!passwordValidation.valid) {
+            return new Response(JSON.stringify({
+                message: passwordValidation.message,
+                status: 400
+            }));
+        }
 
         //VERIFICACIÓN DE TOKEN
         const token_db = await prisma.PasswordResetToken.findUnique({

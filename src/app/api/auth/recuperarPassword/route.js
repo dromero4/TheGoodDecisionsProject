@@ -3,6 +3,7 @@ import { Resend } from "resend";
 
 import crypto from "crypto";
 import { emailTemplate } from "@/app/lib/email/orderEmail";
+import { validateEmailPasswordRecovery } from "@/app/lib/validations/authValidation";
 
 export async function POST(request) {
     try {

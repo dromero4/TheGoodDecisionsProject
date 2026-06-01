@@ -67,7 +67,7 @@ export function validateRegister({ email, name, password }) {
  * Verifica que las contraseñas coincidan
  * Verifica que la contraseña tenga más de 6 carácteres
 */
-export function validatePasswordRecovery({ password, confirmedPassword }){
+export function validatePasswordRecovery( password, confirmedPassword ){
   if (!password || !confirmedPassword) {
     return {
       valid: false,
