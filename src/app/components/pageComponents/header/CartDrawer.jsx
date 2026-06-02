@@ -5,6 +5,7 @@ import { useCart } from "@/app/context/CartContext";
 import CartItem from "./CartItem";
 import ShippingAddressForm from "./ShippingAddressForm";
 import { validateCartBeforeCheckout } from "./cartValidation";
+import { validateShippingAddress } from "@/app/lib/validations/validateShippingAddress";
 
 const EMPTY_SHIPPING_ADDRESS = {
   fullName: "",
@@ -27,6 +28,8 @@ export default function CartDrawer({ open, onClose }) {
     removeFromCart,
     clearCart,
   } = useCart();
+
+  const [shippingErrors, setShippingErrors] = useState({});
 
   const [accountUser, setAccountUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(false);
@@ -87,39 +90,54 @@ export default function CartDrawer({ open, onClose }) {
   }
 
   async function handleCheckout() {
-    const validation = validateCartBeforeCheckout({
+    const cartValidation = validateCartBeforeCheckout({
       cartItems,
       cartQuantity,
       shippingAddress,
     });
 
-    if (!validation.valid) {
-      alert(validation.message);
+    if (!cartValidation.valid) {
+      alert(cartValidation.message);
       return;
     }
 
-    const response = await fetch("/api/checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        items: cartItems,
-        shippingAddress,
-        customerEmail: accountUser?.email || "",
-      }),
-    });
+    setShippingErrors({});
 
-    const data = await response.json();
+    const addressValidation = validateShippingAddress(shippingAddress);
 
-    if (!response.ok) {
-      console.error("CHECKOUT ERROR:", data);
-      alert(data.message || data.error || "Error creando el pago.");
+    if (!addressValidation.isValid) {
+      setShippingErrors(addressValidation.errors);
+      alert("Revisa los datos de la dirección de envío.");
       return;
     }
 
-    sessionStorage.setItem("lastStripeCheckoutUrl", data.url);
-    window.location.href = data.url;
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: cartItems,
+          shippingAddress,
+          customerEmail: accountUser?.email || "",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("CHECKOUT ERROR:", data);
+        alert(data.message || data.error || "Error creando el pago.");
+        return;
+      }
+
+      sessionStorage.setItem("lastStripeCheckoutUrl", data.url);
+      window.location.href = data.url;
+    } catch (error) {
+      console.error("CHECKOUT ERROR:", error?.message || error);
+      alert("Error inesperado creando el pago.");
+    }
   }
 
   if (!open) return null;
@@ -179,6 +197,7 @@ export default function CartDrawer({ open, onClose }) {
                 updateShippingField={updateShippingField}
                 loadingUser={loadingUser}
                 accountUser={accountUser}
+                errors={shippingErrors}
               />
             </div>
 

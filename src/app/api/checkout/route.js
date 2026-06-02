@@ -8,6 +8,7 @@ import {
   createPendingOrder,
 } from "@/app/lib/orders/createOrder";
 import { getCurrentUser } from "@/app/lib/auth";
+import { validateShippingAddress } from "@/app/lib/validations/validateShippingAddress";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -28,6 +29,18 @@ export async function POST(request) {
   const user = await getCurrentUser();
   try {
     const body = await request.json();
+
+    //Verificar shippingAddress
+    const addressValidation = validateShippingAddress(body.shippingAddress);
+    if (!addressValidation.isValid) {
+    return new Response(
+        JSON.stringify({
+            error: "La dirección de envío no es válida.",
+            errors: addressValidation.errors,
+        }),
+        { status: 400 }
+    );
+}
 
     const items = body.items || [];
     const customerEmail = body.customerEmail || "";

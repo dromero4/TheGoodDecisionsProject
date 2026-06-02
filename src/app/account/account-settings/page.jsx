@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import AccountNavbar from "../account-components/account-navbar";
 import Header from "../account-components/header";
 
+import verifyUserData from "@/app/lib/validations/verifyUserData.js";
+
 const EMPTY_FORM = {
     name: "",
     phone: "",
@@ -31,6 +33,7 @@ export default function AccountPage() {
     const [saving, setSaving] = useState(false);
     const [feedback, setFeedback] = useState("");
     const [error, setError] = useState("");
+    const [errors, setErrors] = useState({});
 
     async function loadUser() {
         setLoading(true);
@@ -52,6 +55,8 @@ export default function AccountPage() {
 
             const loadedUser = data.user;
             setUser(loadedUser);
+
+
 
             setForm({
                 name: loadedUser.name || "",
@@ -98,37 +103,45 @@ export default function AccountPage() {
     }
 
     async function handleSave(e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        setSaving(true);
-        setError("");
-        setFeedback("");
+    setSaving(true);
+    setError("");
+    setFeedback("");
+    setErrors({});
 
-        try {
-            const response = await fetch("/api/me", {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(form),
-            });
+    const validation = verifyUserData({ form });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.error || "No se ha podido guardar el perfil.");
-                return;
-            }
-
-            setUser(data.user);
-            setFeedback("Perfil actualizado correctamente.");
-        } catch {
-            setError("Error inesperado guardando el perfil.");
-        } finally {
-            setSaving(false);
-        }
+    if (!validation.isValid) {
+        setErrors(validation.errors);
+        setSaving(false);
+        return;
     }
 
+    try {
+        const response = await fetch("/api/me", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(form),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            setError(data.error || "No se ha podido guardar el perfil.");
+            return;
+        }
+
+        setUser(data.user);
+        setFeedback("Perfil actualizado correctamente.");
+    } catch {
+        setError("Error inesperado guardando el perfil.");
+    } finally {
+        setSaving(false);
+    }
+}
 
 
     if (loading) {
@@ -144,8 +157,8 @@ export default function AccountPage() {
     return (
         <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
             <section className="mx-auto max-w-5xl">
-            <AccountNavbar />
-            <Header title="Perfil de usuario" subtitle="Ajustes de la cuenta" />
+                <AccountNavbar />
+                <Header title="Perfil de usuario" subtitle="Ajustes de la cuenta" />
 
                 <form onSubmit={handleSave} className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.4fr]">
                     <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -158,7 +171,7 @@ export default function AccountPage() {
                         </p>
 
                         <div className="mt-6 space-y-4">
-                            <Field label="Nombre">
+                            <Field label="Nombre" error={errors.name}>
                                 <input
                                     type="text"
                                     value={form.name}
@@ -168,7 +181,7 @@ export default function AccountPage() {
                                 />
                             </Field>
 
-                            <Field label="Teléfono">
+                            <Field label="Teléfono" error={errors.phone}>
                                 <input
                                     type="tel"
                                     value={form.phone}
@@ -199,7 +212,7 @@ export default function AccountPage() {
                         </p>
 
                         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <Field label="Nombre completo">
+                            <Field label="Nombre completo" error={errors.address?.fullName}>
                                 <input
                                     type="text"
                                     value={form.address.fullName}
@@ -209,7 +222,7 @@ export default function AccountPage() {
                                 />
                             </Field>
 
-                            <Field label="Teléfono de entrega">
+                            <Field label="Teléfono de entrega" error={errors.address?.phone}>
                                 <input
                                     type="tel"
                                     value={form.address.phone}
@@ -219,7 +232,7 @@ export default function AccountPage() {
                                 />
                             </Field>
 
-                            <Field label="Calle">
+                            <Field label="Calle" error={errors.address?.street}>
                                 <input
                                     type="text"
                                     value={form.address.street}
@@ -229,7 +242,7 @@ export default function AccountPage() {
                                 />
                             </Field>
 
-                            <Field label="Número">
+                            <Field label="Número" error={errors.address?.number}>
                                 <input
                                     type="text"
                                     value={form.address.number}
@@ -249,7 +262,7 @@ export default function AccountPage() {
                                 />
                             </Field>
 
-                            <Field label="Código postal">
+                            <Field label="Código postal" error={errors.address?.postalCode}>
                                 <input
                                     type="text"
                                     value={form.address.postalCode}
@@ -259,7 +272,7 @@ export default function AccountPage() {
                                 />
                             </Field>
 
-                            <Field label="Ciudad">
+                            <Field label="Ciudad" error={errors.address?.city}>
                                 <input
                                     type="text"
                                     value={form.address.city}
@@ -269,7 +282,7 @@ export default function AccountPage() {
                                 />
                             </Field>
 
-                            <Field label="Provincia">
+                            <Field label="Provincia" error={errors.address?.province}>
                                 <input
                                     type="text"
                                     value={form.address.province}
@@ -279,7 +292,7 @@ export default function AccountPage() {
                                 />
                             </Field>
 
-                            <Field label="País">
+                            <Field label="País" error={errors.address?.country}>
                                 <input
                                     type="text"
                                     value={form.address.country}
@@ -330,13 +343,20 @@ export default function AccountPage() {
     );
 }
 
-function Field({ label, children }) {
+function Field({ label, children, error }) {
     return (
         <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-slate-700">
                 {label}
             </span>
+
             {children}
+
+            {error && (
+                <span className="mt-1.5 block text-xs font-medium text-red-600">
+                    {error}
+                </span>
+            )}
         </label>
     );
 }

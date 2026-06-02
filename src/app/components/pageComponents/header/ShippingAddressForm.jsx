@@ -3,6 +3,7 @@ export default function ShippingAddressForm({
   updateShippingField,
   loadingUser,
   accountUser,
+  errors = {},
 }) {
   return (
     <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
@@ -25,60 +26,93 @@ export default function ShippingAddressForm({
 
       <div className="grid grid-cols-1 gap-3">
         <Input
+        id="fullName"
           value={shippingAddress.fullName}
           onChange={(value) => updateShippingField("fullName", value)}
           placeholder="Nombre completo"
         />
+        {errors?.fullName && (
+          <p className="mt-1 text-xs text-red-600">{errors.fullName}</p>
+        )}
+        
 
         <Input
+          id="phone"
           type="tel"
           value={shippingAddress.phone}
           onChange={(value) => updateShippingField("phone", value)}
           placeholder="Teléfono"
         />
+        {errors?.phone && (
+          <p className="mt-1 text-xs text-red-600">{errors.phone}</p>
+        )}
+        
 
         <div className="grid grid-cols-[1fr_70px] gap-3">
           <Input
+            id="street"
             value={shippingAddress.street}
             onChange={(value) => updateShippingField("street", value)}
             placeholder="Calle"
           />
+          {errors?.street && (
+            <p className="mt-1 text-xs text-red-600">{errors.street}</p>
+            
+          )}
 
           <Input
+            id="number"
             value={shippingAddress.number}
             onChange={(value) => updateShippingField("number", value)}
             placeholder="Nº"
           />
         </div>
+          {errors?.number && (
+            <p className="mt-1 text-xs text-red-600">{errors.number}</p>
+          )}
 
         <Input
+          id="floorDoor"
           value={shippingAddress.floorDoor}
           onChange={(value) => updateShippingField("floorDoor", value)}
           placeholder="Piso / puerta / local"
         />
+        {errors?.floorDoor && (
+          <p className="mt-1 text-xs text-red-600">{errors.floorDoor}</p>
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           <Input
+            id="postalCode"
             value={shippingAddress.postalCode}
             onChange={(value) => updateShippingField("postalCode", value)}
             placeholder="Código postal"
           />
+          {errors?.postalCode && (
+            <p className="mt-1 text-xs text-red-600">{errors.postalCode}</p>
+          )}
 
           <Input
+            id="city"
             value={shippingAddress.city}
             onChange={(value) => updateShippingField("city", value)}
             placeholder="Ciudad"
           />
+          {errors?.city && (
+            <p className="mt-1 text-xs text-red-600">{errors.city}</p>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <Input
+            id="province"
             value={shippingAddress.province}
             onChange={(value) => updateShippingField("province", value)}
             placeholder="Provincia"
           />
 
           <Input
+            id="country"
             value={shippingAddress.country}
             onChange={(value) => updateShippingField("country", value)}
             placeholder="País"
