@@ -1,5 +1,7 @@
 "use client";
 
+import { colorTranslations } from "@/app/lib/translations/apiTranslations";
+
 export default function ColorSelector({ colors, selectedColor, onSelect }) {
 
   const MAX_COLORS = 10;
@@ -23,11 +25,16 @@ export default function ColorSelector({ colors, selectedColor, onSelect }) {
               }
             `}
           >
-            {color}
+        {translateColor(color)}
           </button>
         ))}
 
       </div>
     </section>
   );
+}
+
+export function translateColor(color) {
+  if (!color) return "";
+  return colorTranslations[color] || color;
 }

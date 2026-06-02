@@ -1,5 +1,7 @@
 import ProductAccordion from "../../ProductAccordion";
 
+import { shortDescriptionTranslations, longDescriptionLineTranslations } from "../../../lib/translations/apiTranslations";
+
 export default function ProductInfo({ product, price }) {
   return (
     <main className="mb-5">
@@ -7,7 +9,7 @@ export default function ProductInfo({ product, price }) {
         {product?.externalId} - {product?.name}
       </div>
 
-      <div>{product?.shortDescription}</div>
+      <div>{translateShortDescription(product.shortDescription)}</div>
 
       <div className="mt-2 text-3xl font-semibold">
         {price ? (
@@ -20,8 +22,29 @@ export default function ProductInfo({ product, price }) {
       </div>
 
       <ProductAccordion title="Description">
-        {product?.longDescription}
+        {translateLongDescription(product?.longDescription)}
       </ProductAccordion>
     </main>
   );
+}
+
+export function translateShortDescription(description) {
+  if (!description) return "";
+  return shortDescriptionTranslations[description] || description;
+}
+
+export function translateLongDescription(description) {
+  if (!description) return "";
+
+  return description
+    .split("\n")
+    .map((line) => {
+      const cleanLine = line.trim();
+
+      if (!cleanLine) return "";
+
+      return longDescriptionLineTranslations[cleanLine] || cleanLine;
+    })
+    .filter(Boolean)
+    .join("\n");
 }

@@ -11,7 +11,7 @@ export default function ProductAccordion({ title, children }) {
                 onClick={() => setOpen(!open)}
                 className="w-full flex justify-between items-center px-4 py-3 font-bold uppercase text-sm"
             >
-                {title}
+                Descripción
 
                 <span
                     className={`transition-transform ${open ? "rotate-180" : ""

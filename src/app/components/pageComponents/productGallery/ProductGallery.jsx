@@ -51,8 +51,6 @@ export default function ProductGallery({ product }) {
         const n = Math.max(0, Math.floor(Number(value) || 0));
 
 
-        console.log("PRODUCT VARIANTS:", product?.variants);
-        console.log("FIRST VARIANT:", product?.variants?.[0]);
 
         if (n > stock) {
             alert(`Solo hay ${stock} unidades disponibles en la talla ${size}.`);
