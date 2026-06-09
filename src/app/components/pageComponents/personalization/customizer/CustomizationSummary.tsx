@@ -1,6 +1,6 @@
 import type { CustomElement } from "./customizerTypes";
 import { formatMoney, formatTechnique } from "./customizerHelpers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 
@@ -37,6 +37,31 @@ export default function CustomizationSummary({
   onSaveDesign,
 }: CustomizationSummaryProps) {
   const [designName, setDesignName] = useState("");
+
+  const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const response = await fetch("/api/me");
+
+        if (!response.ok) {
+          setUser(null);
+          return;
+        }
+
+        const data = await response.json();
+        setUser(data.user);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoadingUser(false);
+      }
+    }
+
+    loadUser();
+  }, []);
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
@@ -153,7 +178,10 @@ export default function CustomizationSummary({
 
       <hr  className="my-5 opacity-10"/>
 
-      <div className="max-w-100">
+      {loadingUser ? (
+        <p className="text-center text-sm text-slate-500">Cargando...</p>
+      ) : user ? (
+        <div className="max-w-100">
         <input
           type="text"
           placeholder="Introduce el nombre de tu diseño"
@@ -169,6 +197,11 @@ export default function CustomizationSummary({
           Guardar diseño
         </button>
       </div>
+      ) : (
+        <p className="text-center text-sm text-slate-500">
+          Debes iniciar sesión para guardar tu diseño.
+        </p>
+      )}
     </div>
   );
 }
