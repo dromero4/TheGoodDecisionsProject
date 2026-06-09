@@ -6,6 +6,7 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { validatePasswordRecovery } from "@/app/lib/validations/authValidation";
+import { Suspense } from "react";
 
 export default function ReestablecerPassword() {
     const [password, setPassword] = useState("");
@@ -20,8 +21,6 @@ export default function ReestablecerPassword() {
         e.preventDefault();
 
         try {
-
-
             //CONSEGUIMOS EL TOKEN MEDIANTE LA URL
             const token = searchParams.get("token");
 
@@ -64,6 +63,7 @@ export default function ReestablecerPassword() {
     }
 
     return (
+        <Suspense fallback={<p>Cargando...</p>}>
         <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
             <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
                 <div className="mb-8 text-center">
@@ -131,5 +131,6 @@ export default function ReestablecerPassword() {
                 </footer>
             </section>
         </main>
+        </Suspense>
     );
 }
