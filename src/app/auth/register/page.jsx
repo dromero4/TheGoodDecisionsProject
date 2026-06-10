@@ -55,6 +55,8 @@ export default function RegisterPage() {
 
       const data = await response.json();
 
+      console.log("Respuesta del servidor:", data);
+
       if (!response.ok) {
         setError(data.error || "No se ha podido crear la cuenta.");
         return;

@@ -27,7 +27,7 @@ export async function POST(request) {
 
     // Verificaciones básicas. Si el email o la contraseña no son válidos, 
     // se lanzará un error que será capturado en el catch.
-    const validation = validateRegister({ email, password });
+    const validation = validateRegister({ email, password, name });
 
     if (!validation.valid) {
       return Response.json({ error: validation.error }, { status: 400 });
@@ -44,12 +44,6 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-
-    //Verificamos si el correo es correcto
-    if(!email.contains("@")) return Response.json({
-      error: "El email no es valido",
-      status: 400
-    });
 
     // Momento de hashear el password y crear el usuario en la base de datos.
     const passwordHash = await bcrypt.hash(password, 10);
