@@ -35,7 +35,7 @@ export default function Account() {
 
             try {
                 const res = await axios.get("/api/me/my-orders")
-                setOrdersQty(res.data.length);
+                setOrdersQty(res.data.length || 0);
             } catch (error) {
                 console.error("No se ha podido mostrar el numero de pedidos")
             }
