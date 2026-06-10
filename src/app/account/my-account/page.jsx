@@ -19,7 +19,7 @@ export default function Account() {
         async function getRecentOrders() {
             try {
                 const res = await axios.get("/api/me/my-orders/orders");
-                setRecentOrders(res.data);
+                setRecentOrders(Array.isArray(res.data) ? res.data : []);
             } catch (error) {
                 console.error("Error cargando pedidos recientes", error)
             } finally {
@@ -35,6 +35,9 @@ export default function Account() {
 
             try {
                 const res = await axios.get("/api/me/my-orders")
+
+                console.log("Pedidos obtenidos:", res.data);
+
                 setOrdersQty(res.data.length || 0);
             } catch (error) {
                 console.error("No se ha podido mostrar el numero de pedidos")
