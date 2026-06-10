@@ -47,7 +47,7 @@ export default function ElementContentSettings({
             />
           </Field>
 
-          <Field label="Tamaño de tipografía">
+          {/* <Field label="Tamaño de tipografía">
             <input
               type="number"
               value={selectedElement.fontSize ?? 24}
@@ -58,7 +58,7 @@ export default function ElementContentSettings({
               }
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none focus:border-blue-500"
             />
-          </Field>
+          </Field> */}
         </div>
       ) : (
         <div className="space-y-4">
