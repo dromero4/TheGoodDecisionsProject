@@ -105,8 +105,8 @@ Para facilitar la revisión del proyecto, se ha habilitado una cuenta de prueba 
 Aunque para testear el envio del correo necesitareis crear una cuenta, porque _test@test.es_ es un correo de prueba.
 
 ### Cuenta de usuario
-Email: test@test.es <br>
-Contraseña: testTheGoodDecisions <br>
+Email: cuenta@test.es <br>
+Contraseña: cuentaTestTheGoodDecisions <br>
 
 ### Tarjeta de test
 Número de tarjeta: 4242 4242 4242 4242 <br>
